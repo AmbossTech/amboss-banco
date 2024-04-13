@@ -9,5 +9,5 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     bundleIdentifier: 'com.anonymous.ambossbanco',
   },
 
-  plugins: ['expo-localization'],
+  plugins: ['expo-localization', 'expo-router'],
 });
