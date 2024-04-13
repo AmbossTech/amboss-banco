@@ -1,13 +1,13 @@
-import { ExpoConfig, ConfigContext } from "expo/config";
+import { ExpoConfig, ConfigContext } from 'expo/config';
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
-  slug: "my-app",
-  name: "My App",
+  slug: 'my-app',
+  name: 'My App',
 
   ios: {
-    bundleIdentifier: "com.anonymous.ambossbanco",
+    bundleIdentifier: 'com.anonymous.ambossbanco',
   },
 
-  plugins: ["expo-localization"],
+  plugins: ['expo-localization'],
 });
