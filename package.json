@@ -6,7 +6,9 @@
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "ts:check": "tsc",
+    "upgrade-latest": "npx npm-check -u"
   },
   "dependencies": {
     "expo": "~50.0.14",
