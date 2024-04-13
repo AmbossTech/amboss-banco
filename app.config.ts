@@ -8,4 +8,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ios: {
     bundleIdentifier: "com.anonymous.ambossbanco",
   },
+
+  plugins: ["expo-localization"],
 });
