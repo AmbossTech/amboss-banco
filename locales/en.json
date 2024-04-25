@@ -1,4 +1,5 @@
 {
-  "welcome": "Hello",
-  "name": "Charlie"
+  "welcomeTitle": "Hello",
+  "name": "Charlie",
+  "welcome": { "title": "Welcome!" }
 }
