@@ -1,4 +1,3 @@
-import { useQuery } from '@apollo/client';
 import {
   FC,
   ReactNode,
@@ -6,9 +5,8 @@ import {
   useContext,
   useEffect,
   useReducer,
-  useState,
 } from 'react';
-import { GetWallets } from '../graphql/queries/getWallets';
+import { useGetWalletsQuery } from '../graphql/queries/__generated__/getWallets.generated';
 
 type State = {
   loading: boolean;
@@ -42,7 +40,7 @@ const WalletProvider: FC<ProviderProps> = ({ children }) => {
     loading: true,
   });
 
-  const { data } = useQuery(GetWallets);
+  const { data } = useGetWalletsQuery();
 
   useEffect(() => {
     if (!data?.wallets?.find_many?.length) return;

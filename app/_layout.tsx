@@ -7,6 +7,8 @@ import { SessionProvider } from '../src/context/session';
 import { createNewApolloClient } from '../src/apollo/client';
 import { Text, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { GetUser } from '../src/graphql/queries/getUser';
+import { GetUserQuery } from '../src/graphql/queries/__generated__/getUser.generated';
 
 export const AUTH_TOKEN_KEY = 'amboss-banco-api-auth';
 
@@ -35,15 +37,8 @@ export default function HomeLayout() {
 
       const tempClient = createNewApolloClient(authToken);
 
-      const result = await tempClient.query({
-        query: gql`
-          query User {
-            user {
-              id
-              email
-            }
-          }
-        `,
+      const result = await tempClient.query<GetUserQuery>({
+        query: GetUser,
       });
 
       if (!result.data) {

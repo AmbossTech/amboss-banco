@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client';
 
 export const GetWallets = gql`
-  query Query {
+  query GetWallets {
     wallets {
       id
       find_many {

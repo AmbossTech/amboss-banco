@@ -2,9 +2,8 @@ import { StatusBar } from 'expo-status-bar';
 import { Text, View } from 'react-native';
 
 import { i18n } from '../../i18n';
-import { useQuery } from '@apollo/client';
-import { GetWalletAccounts } from '../../src/graphql/queries/getWalletAccounts';
 import { useWalletState } from '../../src/context/wallet';
+import { useGetWalletAccountsQuery } from '../../src/graphql/queries/__generated__/getWalletAccounts.generated';
 
 export default function Page() {
   const { currentWallet, loading } = useWalletState();
@@ -13,7 +12,7 @@ export default function Page() {
     data,
     error,
     loading: accountsLoading,
-  } = useQuery(GetWalletAccounts, {
+  } = useGetWalletAccountsQuery({
     skip: loading || !currentWallet,
     variables: { findOneId: currentWallet },
   });
