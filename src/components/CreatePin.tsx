@@ -50,7 +50,7 @@ export const CreatePin = () => {
       setRepeatCode([]);
       setShowRepeat(false);
 
-      router.replace('/wallet');
+      router.replace('/tabs');
     }
 
     setLoading(false);

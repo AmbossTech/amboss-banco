@@ -20,7 +20,7 @@ export default function Page() {
     // console.log(mn);
 
     // dispatch({ type: 'setPassphrase', passphrase: mn });
-    // router.push('/wallet');
+    // router.push('/tabs');
   };
 
   if (showPin) return <CreatePin />;
