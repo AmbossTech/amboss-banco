@@ -6,19 +6,27 @@ import { Text } from 'react-native';
 import { i18n } from '../i18n';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSessionStore } from '../src/stores/SessionStore';
-import { ROUTES } from '../src/constants';
+import { ROUTES, STORAGE_KEYS } from '../src/constants';
+import { getItemAsync } from 'expo-secure-store';
 
 export default function Page() {
   const authToken = useSessionStore(state => state.authToken);
 
   useEffect(() => {
-    setTimeout(() => {
+    const run = async () => {
       if (!!authToken) {
-        router.replace(ROUTES.wallet.tabs);
+        const savedPin = await getItemAsync(STORAGE_KEYS.userAuthPin);
+        if (!savedPin) {
+          router.replace(ROUTES.login.setPin);
+        } else {
+          router.replace(ROUTES.wallet.tabs);
+        }
       } else {
         router.replace(ROUTES.login.main);
       }
-    }, 0);
+    };
+
+    setTimeout(() => run(), 0);
   }, [authToken]);
 
   return (

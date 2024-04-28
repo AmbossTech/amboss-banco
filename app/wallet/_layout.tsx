@@ -1,8 +1,9 @@
-import { Slot } from 'expo-router';
+import { Slot, router } from 'expo-router';
 import { useGetWalletsQuery } from '../../src/graphql/queries/__generated__/getWallets.generated';
 import { useEffect } from 'react';
 import { useWalletStore } from '../../src/stores/WalletStore';
 import { useGetWalletAccountsLazyQuery } from '../../src/graphql/queries/__generated__/getWalletAccounts.generated';
+import { ROUTES } from '../../src/constants';
 
 export default function HomeLayout() {
   const { data, loading, error } = useGetWalletsQuery();
@@ -16,7 +17,11 @@ export default function HomeLayout() {
 
   useEffect(() => {
     if (loading || error) return;
-    if (!data?.wallets?.find_many?.length) return;
+
+    if (!data?.wallets?.find_many?.length) {
+      router.replace(ROUTES.onboard.wallet.main);
+      return;
+    }
 
     const firstWallet = data.wallets.find_many[0];
 

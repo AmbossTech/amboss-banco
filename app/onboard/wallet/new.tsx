@@ -1,27 +1,26 @@
-import { entropyToMnemonic } from '@scure/bip39';
-import { wordlist } from '@scure/bip39/wordlists/english';
+// import { entropyToMnemonic, mnemonicToSeed } from 'bip39';
 import { getRandomBytes } from 'expo-crypto';
-import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
+// import ecc from '@bitcoinerlab/secp256k1';
+// import * as ecc from 'react-native-fast-crypto';
+// import { SLIP77Factory } from 'slip77';
 
-import { CreatePin } from '../../../src/components/CreatePin';
+// const slip77 = SLIP77Factory(ecc);
 
 export default function Page() {
-  const [showPin, setShowPin] = useState(false);
-
-  const create = () => {
-    setShowPin(true);
+  const create = async () => {
     // const bytes = getRandomBytes(16);
-    // const mn = entropyToMnemonic(bytes, wordlist);
-    // console.log(mn);
+    // const mnemonic = entropyToMnemonic(bytes, wordlist);
 
-    // dispatch({ type: 'setPassphrase', passphrase: mn });
-    // router.push('/tabs');
+    const mnemonic = '';
+
+    // const seed = await mnemonicToSeed(mnemonic);
+    // const masterBlindingKey = slip77.fromSeed(seed).masterKey.toString('hex');
+
+    // console.log(JSON.stringify({ mnemonic, masterBlindingKey }, null, 2));
+    // console.log(wolletDescriptor);
   };
-
-  if (showPin) return <CreatePin />;
 
   return (
     <View className="flex-1 items-center justify-center bg-purple-300">

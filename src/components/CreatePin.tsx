@@ -1,13 +1,10 @@
-import { entropyToMnemonic } from '@scure/bip39';
-import { wordlist } from '@scure/bip39/wordlists/english';
-import { getRandomBytes } from 'expo-crypto';
-import { useState } from 'react';
+// import { entropyToMnemonic } from '@scure/bip39';
+// import { wordlist } from '@scure/bip39/wordlists/english';
+// import { getRandomBytes } from 'expo-crypto';
+import { FC, useState } from 'react';
 import { Alert, Dimensions, Text, View } from 'react-native';
-
 import DialpadKeypad from './Dialpad/Keypad';
 import DialpadPin from './Dialpad/Pin';
-import { router } from 'expo-router';
-import { ROUTES } from '../constants';
 
 const { width, height } = Dimensions.get('window');
 
@@ -17,10 +14,10 @@ const dialPadSize = width * 0.2;
 const dialPadTextSize = dialPadSize * 0.4;
 
 const pinLength = 6;
-const pinContainerSize = width / 2;
-const pinSize = pinContainerSize / pinLength;
 
-export const CreatePin = () => {
+export const CreatePin: FC<{ callback: (pin: string) => void }> = ({
+  callback,
+}) => {
   const [loading, setLoading] = useState(false);
   const [showRepeat, setShowRepeat] = useState(false);
   const [code, setCode] = useState<number[]>([]);
@@ -39,8 +36,8 @@ export const CreatePin = () => {
       setRepeatCode([]);
       setShowRepeat(false);
     } else {
-      const bytes = getRandomBytes(16);
-      const mnemonic = entropyToMnemonic(bytes, wordlist);
+      // const bytes = getRandomBytes(16);
+      // const mnemonic = entropyToMnemonic(bytes, wordlist);
 
       // await actions.setMnemonic(mnemonic, code);
 
@@ -48,7 +45,9 @@ export const CreatePin = () => {
       setRepeatCode([]);
       setShowRepeat(false);
 
-      router.replace(ROUTES.wallet.tabs);
+      callback(code.join(''));
+
+      // router.replace(ROUTES.wallet.tabs);
     }
 
     setLoading(false);
@@ -75,7 +74,6 @@ export const CreatePin = () => {
 
         <DialpadPin
           pinLength={pinLength}
-          pinSize={pinSize}
           code={repeatCode}
           dialPadContent={dialPadContent}
         />
@@ -101,7 +99,6 @@ export const CreatePin = () => {
 
       <DialpadPin
         pinLength={pinLength}
-        pinSize={pinSize}
         code={code}
         dialPadContent={dialPadContent}
       />
