@@ -1,12 +1,11 @@
 import { entropyToMnemonic } from '@scure/bip39';
 import { wordlist } from '@scure/bip39/wordlists/english';
 import { getRandomBytes } from 'expo-crypto';
-import { useCallback, useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Alert, Dimensions, Text, View } from 'react-native';
 
 import DialpadKeypad from './Dialpad/Keypad';
 import DialpadPin from './Dialpad/Pin';
-import { useSessionDispatch } from '../context/session';
 import { router } from 'expo-router';
 
 const { width, height } = Dimensions.get('window');
@@ -26,8 +25,6 @@ export const CreatePin = () => {
   const [code, setCode] = useState<number[]>([]);
   const [repeatCode, setRepeatCode] = useState<number[]>([]);
 
-  const actions = useSessionDispatch();
-
   const handleCreate = async () => {
     setLoading(true);
     console.log('Creating...');
@@ -44,13 +41,13 @@ export const CreatePin = () => {
       const bytes = getRandomBytes(16);
       const mnemonic = entropyToMnemonic(bytes, wordlist);
 
-      await actions.setMnemonic(mnemonic, code);
+      // await actions.setMnemonic(mnemonic, code);
 
       setCode([]);
       setRepeatCode([]);
       setShowRepeat(false);
 
-      router.replace('/tabs');
+      router.replace('/wallet/tabs');
     }
 
     setLoading(false);

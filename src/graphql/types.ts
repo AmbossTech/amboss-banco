@@ -166,7 +166,11 @@ export type WalletLiquidTransaction = {
   __typename?: 'WalletLiquidTransaction';
   balance: Scalars['String']['output'];
   blinded_url: Scalars['String']['output'];
+  block_height: Scalars['String']['output'];
+  date?: Maybe<Scalars['String']['output']>;
+  fee: Scalars['String']['output'];
   id: Scalars['String']['output'];
+  tx_id: Scalars['String']['output'];
   unblinded_url: Scalars['String']['output'];
 };
 

@@ -8,7 +8,7 @@ export default function Page() {
   return (
     <SafeAreaView className="flex-1 items-center justify-center bg-yellow-300">
       <Text>{i18n.t('welcome.title')}</Text>
-      <StatusBar style="auto" />
+      <StatusBar style="light" />
       <Link href="/onboard/wallet" asChild>
         <Pressable className="flex flex-col items-center">
           <Text className="text-xs text-white">Get Started</Text>

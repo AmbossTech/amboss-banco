@@ -15,7 +15,7 @@ export default function Page() {
           <Text>Restore Wallet</Text>
         </Pressable>
       </Link>
-      <StatusBar style="auto" />
+      <StatusBar style="light" />
     </View>
   );
 }

@@ -1,4 +1,4 @@
-import { Link, useGlobalSearchParams } from 'expo-router';
+import { Link, router, useGlobalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { Alert, Pressable, Text, TextInput } from 'react-native';
 
@@ -8,11 +8,12 @@ import { useMutation } from '@apollo/client';
 import { handleError } from '../../src/utils/graphql';
 import { VerifyPin } from '../../src/graphql/mutations/verifyPin';
 import { setItemAsync } from 'expo-secure-store';
-import { AUTH_TOKEN_KEY, useApolloAuthDispatch } from '../_layout';
+import { AUTH_TOKEN_KEY } from '../_layout';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSessionStore } from '../../src/stores/SessionStore';
 
 export default function Page() {
-  const actions = useApolloAuthDispatch();
+  const setAuthToken = useSessionStore(s => s.setAuthToken);
 
   const [pin, onChangePin] = useState('');
   const { email } = useGlobalSearchParams();
@@ -27,7 +28,8 @@ export default function Page() {
 
     const handleLogin = async () => {
       await setItemAsync(AUTH_TOKEN_KEY, data.publicAuth.verifyPin.jwt);
-      await actions.resetClient();
+      setAuthToken(data.publicAuth.verifyPin.jwt);
+      router.replace('/');
     };
 
     handleLogin();
@@ -35,7 +37,7 @@ export default function Page() {
 
   return (
     <SafeAreaView className="flex-1 items-center justify-center bg-yellow-300">
-      <StatusBar style="auto" />
+      <StatusBar style="light" />
 
       <Link href="/login" asChild>
         <Pressable className="flex flex-col items-center">

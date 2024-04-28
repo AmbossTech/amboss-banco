@@ -6,14 +6,13 @@ import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
 const defaultOptions = {} as const;
 export type GetWalletAccountsQueryVariables = Types.Exact<{
-  findOneId: Types.Scalars['String']['input'];
+  id: Types.Scalars['String']['input'];
 }>;
 
 export type GetWalletAccountsQuery = {
   __typename?: 'Query';
   wallets: {
     __typename?: 'WalletQueries';
-    id: string;
     find_one: {
       __typename?: 'Wallet';
       id: string;
@@ -30,7 +29,6 @@ export type GetWalletAccountsQuery = {
           balance: string;
           asset_info: {
             __typename?: 'WalletLiquidAssetInfo';
-            id: string;
             name: string;
             ticker: string;
             precision: number;
@@ -42,6 +40,10 @@ export type GetWalletAccountsQuery = {
             balance: string;
             blinded_url: string;
             unblinded_url: string;
+            tx_id: string;
+            fee: string;
+            date?: string | null;
+            block_height: string;
           }>;
         }>;
       }>;
@@ -50,10 +52,9 @@ export type GetWalletAccountsQuery = {
 };
 
 export const GetWalletAccountsDocument = gql`
-  query GetWalletAccounts($findOneId: String!) {
+  query GetWalletAccounts($id: String!) {
     wallets {
-      id
-      find_one(id: $findOneId) {
+      find_one(id: $id) {
         id
         name
         accounts {
@@ -65,7 +66,6 @@ export const GetWalletAccountsDocument = gql`
             asset_id
             balance
             asset_info {
-              id
               name
               ticker
               precision
@@ -76,6 +76,10 @@ export const GetWalletAccountsDocument = gql`
               balance
               blinded_url
               unblinded_url
+              tx_id
+              fee
+              date
+              block_height
             }
           }
         }
@@ -96,7 +100,7 @@ export const GetWalletAccountsDocument = gql`
  * @example
  * const { data, loading, error } = useGetWalletAccountsQuery({
  *   variables: {
- *      findOneId: // value for 'findOneId'
+ *      id: // value for 'id'
  *   },
  * });
  */

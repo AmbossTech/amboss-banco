@@ -7,10 +7,8 @@ import { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
 import { CreatePin } from '../../../src/components/CreatePin';
-import { useSessionDispatch } from '../../../src/context/session';
 
 export default function Page() {
-  const dispatch = useSessionDispatch();
   const [showPin, setShowPin] = useState(false);
 
   const create = () => {
@@ -33,7 +31,7 @@ export default function Page() {
         <Text>Create</Text>
       </Pressable>
 
-      <StatusBar style="auto" />
+      <StatusBar style="light" />
     </View>
   );
 }

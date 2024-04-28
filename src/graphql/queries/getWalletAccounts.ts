@@ -1,10 +1,9 @@
 import { gql } from '@apollo/client';
 
 export const GetWalletAccounts = gql`
-  query GetWalletAccounts($findOneId: String!) {
+  query GetWalletAccounts($id: String!) {
     wallets {
-      id
-      find_one(id: $findOneId) {
+      find_one(id: $id) {
         id
         name
         accounts {
@@ -16,7 +15,6 @@ export const GetWalletAccounts = gql`
             asset_id
             balance
             asset_info {
-              id
               name
               ticker
               precision
@@ -27,6 +25,10 @@ export const GetWalletAccounts = gql`
               balance
               blinded_url
               unblinded_url
+              tx_id
+              fee
+              date
+              block_height
             }
           }
         }

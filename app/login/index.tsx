@@ -19,7 +19,7 @@ export default function Page() {
 
   return (
     <SafeAreaView className="flex-1 items-center justify-center bg-yellow-300">
-      <StatusBar style="auto" />
+      <StatusBar style="light" />
       <Text>{i18n.t('welcome.title')}</Text>
       <TextInput
         className="m-4 w-full bg-green-50 p-2"
