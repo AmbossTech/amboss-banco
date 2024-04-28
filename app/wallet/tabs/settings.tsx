@@ -1,19 +1,19 @@
 import { deleteItemAsync } from 'expo-secure-store';
 import { StatusBar } from 'expo-status-bar';
 import { Pressable, Text } from 'react-native';
-import { AUTH_TOKEN_KEY } from '../../_layout';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSessionStore } from '../../../src/stores/SessionStore';
 import { router } from 'expo-router';
+import { ROUTES, STORAGE_KEYS } from '../../../src/constants';
 
 export default function Page() {
   const setAuthToken = useSessionStore(s => s.setAuthToken);
 
   const handleClick = async () => {
     console.log('Deleting auth token...');
-    await deleteItemAsync(AUTH_TOKEN_KEY);
+    await deleteItemAsync(STORAGE_KEYS.authToken);
     setAuthToken(undefined);
-    router.replace('/');
+    router.replace(ROUTES.login.main);
   };
 
   return (

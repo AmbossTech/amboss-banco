@@ -8,13 +8,14 @@ import { useMutation } from '@apollo/client';
 import { GetEmailPin } from '../../src/graphql/mutations/getEmailPin';
 import { handleError } from '../../src/utils/graphql';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { ROUTES } from '../../src/constants';
 
 export default function Page() {
   const [email, onChangeEmail] = useState('');
 
   const [getPin] = useMutation(GetEmailPin, {
     onError: err => Alert.alert('Unable to Login', handleError(err)),
-    onCompleted: () => router.push(`/login/pin?email=${email}`),
+    onCompleted: () => router.push(ROUTES.login.pin(email)),
   });
 
   return (

@@ -7,6 +7,7 @@ import { Alert, Dimensions, Text, View } from 'react-native';
 import DialpadKeypad from './Dialpad/Keypad';
 import DialpadPin from './Dialpad/Pin';
 import { router } from 'expo-router';
+import { ROUTES } from '../constants';
 
 const { width, height } = Dimensions.get('window');
 
@@ -47,7 +48,7 @@ export const CreatePin = () => {
       setRepeatCode([]);
       setShowRepeat(false);
 
-      router.replace('/wallet/tabs');
+      router.replace(ROUTES.wallet.tabs);
     }
 
     setLoading(false);

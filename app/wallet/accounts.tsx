@@ -13,6 +13,7 @@ import {
   useSafeAreaInsets,
 } from 'react-native-safe-area-context';
 import { useWalletStore } from '../../src/stores/WalletStore';
+import { ROUTES } from '../../src/constants';
 
 export default function Page() {
   const walletId = useWalletStore(s => s.walletId);
@@ -78,7 +79,7 @@ export default function Page() {
           <Pressable
             onPress={() => {
               setAccountAndAsset(item.accountInfo.id, item.id);
-              router.push('/wallet/tabs');
+              router.push(ROUTES.wallet.tabs);
             }}
           >
             <View className="mb-4 flex w-full flex-row items-center justify-between rounded-lg bg-zinc-900 p-4">

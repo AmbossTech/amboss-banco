@@ -8,9 +8,9 @@ import { useMutation } from '@apollo/client';
 import { handleError } from '../../src/utils/graphql';
 import { VerifyPin } from '../../src/graphql/mutations/verifyPin';
 import { setItemAsync } from 'expo-secure-store';
-import { AUTH_TOKEN_KEY } from '../_layout';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSessionStore } from '../../src/stores/SessionStore';
+import { ROUTES, STORAGE_KEYS } from '../../src/constants';
 
 export default function Page() {
   const setAuthToken = useSessionStore(s => s.setAuthToken);
@@ -27,9 +27,9 @@ export default function Page() {
     if (!data?.publicAuth.verifyPin.jwt) return;
 
     const handleLogin = async () => {
-      await setItemAsync(AUTH_TOKEN_KEY, data.publicAuth.verifyPin.jwt);
+      await setItemAsync(STORAGE_KEYS.authToken, data.publicAuth.verifyPin.jwt);
       setAuthToken(data.publicAuth.verifyPin.jwt);
-      router.replace('/');
+      router.replace(ROUTES.home);
     };
 
     handleLogin();

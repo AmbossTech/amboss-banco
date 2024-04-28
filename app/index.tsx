@@ -6,6 +6,7 @@ import { Text } from 'react-native';
 import { i18n } from '../i18n';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSessionStore } from '../src/stores/SessionStore';
+import { ROUTES } from '../src/constants';
 
 export default function Page() {
   const authToken = useSessionStore(state => state.authToken);
@@ -13,9 +14,9 @@ export default function Page() {
   useEffect(() => {
     setTimeout(() => {
       if (!!authToken) {
-        router.replace('/wallet/tabs');
+        router.replace(ROUTES.wallet.tabs);
       } else {
-        router.replace('/login');
+        router.replace(ROUTES.login.main);
       }
     }, 0);
   }, [authToken]);

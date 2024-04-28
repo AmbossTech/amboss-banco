@@ -8,8 +8,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GetUser } from '../src/graphql/queries/getUser';
 import { GetUserQuery } from '../src/graphql/queries/__generated__/getUser.generated';
 import { useSessionStore } from '../src/stores/SessionStore';
-
-export const AUTH_TOKEN_KEY = 'amboss-banco-api-auth';
+import { STORAGE_KEYS } from '../src/constants';
 
 export default function HomeLayout() {
   const [loading, setLoading] = useState(true);
@@ -20,7 +19,7 @@ export default function HomeLayout() {
   useEffect(() => {
     console.log('Running useEffect...');
     const checkAuth = async () => {
-      const authToken = await getItemAsync(AUTH_TOKEN_KEY);
+      const authToken = await getItemAsync(STORAGE_KEYS.authToken);
 
       console.log('AUTH TOKEN: ', authToken?.slice(0, 10));
 
@@ -36,7 +35,7 @@ export default function HomeLayout() {
       });
 
       if (!result.data) {
-        await deleteItemAsync(AUTH_TOKEN_KEY);
+        await deleteItemAsync(STORAGE_KEYS.authToken);
         setLoading(false);
         return;
       }
