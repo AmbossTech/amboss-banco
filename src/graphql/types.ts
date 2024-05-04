@@ -29,7 +29,30 @@ export type Scalars = {
   Float: { input: number; output: number };
 };
 
+export type Mutation = {
+  __typename?: 'Mutation';
+  signUp: Scalars['Boolean']['output'];
+};
+
+export type MutationSignUpArgs = {
+  input: SignUpInput;
+};
+
 export type Query = {
   __typename?: 'Query';
   hello: Scalars['String']['output'];
+};
+
+export type RsaKeyPairInput = {
+  protected_private_key: Scalars['String']['input'];
+  public_key: Scalars['String']['input'];
+};
+
+export type SignUpInput = {
+  email: Scalars['String']['input'];
+  master_password_hash: Scalars['String']['input'];
+  password_hint: Scalars['String']['input'];
+  protected_symmetric_key: Scalars['String']['input'];
+  rsa_key_pair: RsaKeyPairInput;
+  symmetric_key_iv: Scalars['String']['input'];
 };
