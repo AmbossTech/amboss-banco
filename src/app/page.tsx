@@ -1,5 +1,6 @@
 import { SignUpForm } from '@/components/SignUpForm';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import Wasm from '@/components/Wasm';
 
 export default function Home() {
   return (
@@ -12,6 +13,7 @@ export default function Home() {
       <div className="flex w-full max-w-5xl items-center justify-center py-10 2xl:py-40">
         <SignUpForm />
       </div>
+      <Wasm />
     </main>
   );
 }

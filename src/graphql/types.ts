@@ -31,11 +31,16 @@ export type Scalars = {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  signUp: Scalars['Boolean']['output'];
+  signUp: NewAccount;
 };
 
 export type MutationSignUpArgs = {
   input: SignUpInput;
+};
+
+export type NewAccount = {
+  __typename?: 'NewAccount';
+  id: Scalars['String']['output'];
 };
 
 export type Query = {
@@ -51,7 +56,7 @@ export type RsaKeyPairInput = {
 export type SignUpInput = {
   email: Scalars['String']['input'];
   master_password_hash: Scalars['String']['input'];
-  password_hint: Scalars['String']['input'];
+  password_hint?: InputMaybe<Scalars['String']['input']>;
   protected_symmetric_key: Scalars['String']['input'];
   rsa_key_pair: RsaKeyPairInput;
   symmetric_key_iv: Scalars['String']['input'];

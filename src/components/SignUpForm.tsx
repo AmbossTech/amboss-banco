@@ -1,6 +1,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -15,6 +16,12 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { useSignUpMutation } from '@/graphql/mutations/__generated__/signUp.generated';
+import {
+  argon2Hash,
+  createProtectedSymmetricKey,
+  rsaGenerateProtectedKeyPair,
+} from '@/utils/crypto';
 import {
   evaluatePasswordStrength,
   MIN_PASSWORD_LENGTH,
@@ -31,7 +38,7 @@ const FormSchema = z
       message: `Password needs to be at least ${MIN_PASSWORD_LENGTH} characters.`,
     }),
     confirm_password: z.string(),
-    password_hint: z.string(),
+    password_hint: z.string().optional(),
     accept_tos_and_pp: z.boolean(),
   })
   .refine(data => data.password === data.confirm_password, {
@@ -44,14 +51,20 @@ const FormSchema = z
   });
 
 export function SignUpForm() {
+  const [loading, setLoading] = useState(false);
+
+  const [signUp, { data }] = useSignUpMutation();
+
+  console.log(data);
+
   const form = useForm<z.infer<typeof FormSchema>>({
     reValidateMode: 'onChange',
     resolver: zodResolver(FormSchema),
     defaultValues: {
       email: '',
       password: '',
-      confirm_password: '',
       password_hint: '',
+      confirm_password: '',
       accept_tos_and_pp: false,
     },
   });
@@ -60,10 +73,38 @@ export function SignUpForm() {
   const strength = evaluatePasswordStrength(password);
 
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
+    if (loading) return;
+
+    setLoading(true);
     try {
-      console.log(JSON.stringify(data, null, 2));
+      const masterKey = await argon2Hash(data.password, data.email);
+      const masterPasswordHash = await argon2Hash(masterKey, data.password);
+
+      const { protectedSymmetricKey, iv } =
+        await createProtectedSymmetricKey(masterKey);
+
+      const { publicKey, protectedPrivateKey } =
+        await rsaGenerateProtectedKeyPair(masterKey, iv);
+
+      signUp({
+        variables: {
+          input: {
+            email: data.email,
+            master_password_hash: masterPasswordHash,
+            password_hint: data.password_hint || undefined,
+            symmetric_key_iv: iv,
+            protected_symmetric_key: protectedSymmetricKey,
+            rsa_key_pair: {
+              public_key: publicKey,
+              protected_private_key: protectedPrivateKey,
+            },
+          },
+        },
+      });
     } catch (error) {
       console.log('ERROR', error);
+    } finally {
+      setLoading(false);
     }
   };
 
