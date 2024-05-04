@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 import { Noto_Sans } from 'next/font/google';
 
 import { ApolloWrapper } from '@/libs/apollo/wrapper';
+import { ThemeProvider } from '@/libs/themes/wrapper';
 
 const font = Noto_Sans({
   subsets: ['latin'],
@@ -20,9 +21,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={font.className}>
-        <ApolloWrapper>{children}</ApolloWrapper>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <ApolloWrapper>{children}</ApolloWrapper>
+        </ThemeProvider>
       </body>
     </html>
   );
