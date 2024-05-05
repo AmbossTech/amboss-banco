@@ -2,6 +2,7 @@ import './globals.css';
 
 import type { Metadata } from 'next';
 import { Noto_Sans } from 'next/font/google';
+import { cookies } from 'next/headers';
 
 import { ApolloWrapper } from '@/libs/apollo/wrapper';
 import { ThemeProvider } from '@/libs/themes/wrapper';
@@ -20,6 +21,11 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cookieStore = cookies();
+
+  const accessToken = cookieStore.get('amboss_banco_access_token')?.value;
+  const refreshToken = cookieStore.get('amboss_banco_refresh_token')?.value;
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={font.className}>
@@ -29,7 +35,9 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <ApolloWrapper>{children}</ApolloWrapper>
+          <ApolloWrapper accessToken={accessToken} refreshToken={refreshToken}>
+            {children}
+          </ApolloWrapper>
         </ThemeProvider>
       </body>
     </html>

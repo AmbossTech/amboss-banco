@@ -1,18 +1,111 @@
 'use client';
 
-import { ApolloLink, HttpLink } from '@apollo/client';
+import { from, fromPromise, GraphQLRequest, HttpLink } from '@apollo/client';
+import { setContext } from '@apollo/client/link/context';
+import { onError } from '@apollo/client/link/error';
 import {
   ApolloNextAppProvider,
   NextSSRApolloClient,
   NextSSRInMemoryCache,
-  SSRMultipartLink,
 } from '@apollo/experimental-nextjs-app-support/ssr';
 
-// have a function to create a client for you
-function makeClient() {
+import {
+  RefreshTokenDocument,
+  RefreshTokenMutation,
+} from '@/graphql/mutations/__generated__/refreshToken.generated';
+
+const isRefreshRequest = (operation: GraphQLRequest) => {
+  return operation.operationName === 'RefreshToken';
+};
+
+const returnTokenDependingOnOperation = (
+  accessToken: string = '',
+  refreshToken: string = '',
+  operation: GraphQLRequest
+) => {
+  return isRefreshRequest(operation) ? refreshToken : accessToken;
+};
+
+const refreshTokens = async (
+  accessToken: string = '',
+  refreshToken: string = ''
+) => {
+  const result = await makeClient(
+    accessToken,
+    refreshToken
+  ).mutate<RefreshTokenMutation>({
+    mutation: RefreshTokenDocument,
+  });
+
+  return result.data?.refreshToken.access_token || '';
+};
+
+const makeClient = (
+  accessToken: string | undefined,
+  refreshToken: string | undefined
+) => {
+  const ssrMode = typeof window === 'undefined';
+
+  const authLink = setContext((operation, { headers }) => {
+    const token = returnTokenDependingOnOperation(
+      accessToken,
+      refreshToken,
+      operation
+    );
+
+    return {
+      headers: {
+        ...headers,
+        Authorization: token ? `Bearer ${token}` : '',
+      },
+    };
+  });
+
+  const errorLink = onError(
+    ({ graphQLErrors, networkError, operation, forward }) => {
+      if (graphQLErrors) {
+        for (const err of graphQLErrors) {
+          switch (err.extensions.code) {
+            case 'UNAUTHENTICATED':
+              if (operation.operationName === 'refreshToken') return;
+              if (ssrMode) return;
+
+              if (!refreshToken) {
+                window.location.replace('/');
+                return;
+              }
+
+              return fromPromise(
+                refreshTokens(accessToken, refreshToken).catch(() => {
+                  window.location.replace('/');
+                })
+              )
+                .filter(value => Boolean(value))
+                .flatMap(accessToken => {
+                  const oldHeaders = operation.getContext().headers;
+
+                  operation.setContext({
+                    headers: {
+                      ...oldHeaders,
+                      Authorization: `Bearer ${accessToken}`,
+                    },
+                  });
+
+                  return forward(operation);
+                });
+          }
+        }
+      }
+
+      if (networkError) console.log(`[Network error]: ${networkError}`);
+    }
+  );
+
   const httpLink = new HttpLink({
     // this needs to be an absolute url, as relative urls cannot be used in SSR
-    uri: 'http://localhost:5000/api/graphql',
+    uri: 'http://localhost:3000/api/graphql',
+    credentials: 'include',
+    // credentials: 'same-origin',
     // you can disable result caching here if you want to
     // (this does not work if you are rendering your page with `export const dynamic = "force-static"`)
     fetchOptions: { cache: 'no-store' },
@@ -22,28 +115,26 @@ function makeClient() {
     // const { data } = useSuspenseQuery(MY_QUERY, { context: { fetchOptions: { cache: "force-cache" }}});
   });
 
-  return new NextSSRApolloClient({
-    // use the `NextSSRInMemoryCache`, not the normal `InMemoryCache`
-    cache: new NextSSRInMemoryCache(),
-    link:
-      typeof window === 'undefined'
-        ? ApolloLink.from([
-            // in a SSR environment, if you use multipart features like
-            // @defer, you need to decide how to handle these.
-            // This strips all interfaces with a `@defer` directive from your queries.
-            new SSRMultipartLink({
-              stripDefer: true,
-            }),
-            httpLink,
-          ])
-        : httpLink,
-  });
-}
+  const link = from([authLink, errorLink, httpLink]);
 
-// you need to create a component to wrap your app in
-export function ApolloWrapper({ children }: React.PropsWithChildren) {
+  return new NextSSRApolloClient({
+    cache: new NextSSRInMemoryCache(),
+    link,
+  });
+};
+
+export function ApolloWrapper({
+  accessToken,
+  refreshToken,
+  children,
+}: React.PropsWithChildren<{
+  accessToken: string | undefined;
+  refreshToken: string | undefined;
+}>) {
   return (
-    <ApolloNextAppProvider makeClient={makeClient}>
+    <ApolloNextAppProvider
+      makeClient={() => makeClient(accessToken, refreshToken)}
+    >
       {children}
     </ApolloNextAppProvider>
   );

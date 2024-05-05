@@ -29,9 +29,21 @@ export type Scalars = {
   Float: { input: number; output: number };
 };
 
+export type LoginInput = {
+  email: Scalars['String']['input'];
+  master_password_hash: Scalars['String']['input'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
+  login: NewAccount;
+  logout: Scalars['Boolean']['output'];
+  refreshToken: RefreshToken;
   signUp: NewAccount;
+};
+
+export type MutationLoginArgs = {
+  input: LoginInput;
 };
 
 export type MutationSignUpArgs = {
@@ -40,17 +52,27 @@ export type MutationSignUpArgs = {
 
 export type NewAccount = {
   __typename?: 'NewAccount';
+  access_token: Scalars['String']['output'];
   id: Scalars['String']['output'];
+  refresh_token: Scalars['String']['output'];
 };
 
 export type Query = {
   __typename?: 'Query';
   hello: Scalars['String']['output'];
+  user: User;
 };
 
 export type RsaKeyPairInput = {
   protected_private_key: Scalars['String']['input'];
   public_key: Scalars['String']['input'];
+};
+
+export type RefreshToken = {
+  __typename?: 'RefreshToken';
+  access_token: Scalars['String']['output'];
+  id: Scalars['String']['output'];
+  refresh_token: Scalars['String']['output'];
 };
 
 export type SignUpInput = {
@@ -60,4 +82,9 @@ export type SignUpInput = {
   protected_symmetric_key: Scalars['String']['input'];
   rsa_key_pair: RsaKeyPairInput;
   symmetric_key_iv: Scalars['String']['input'];
+};
+
+export type User = {
+  __typename?: 'User';
+  id: Scalars['String']['output'];
 };

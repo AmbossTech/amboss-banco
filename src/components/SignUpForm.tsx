@@ -1,6 +1,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -51,9 +52,15 @@ const FormSchema = z
   });
 
 export function SignUpForm() {
+  const { push } = useRouter();
   const [loading, setLoading] = useState(false);
 
-  const [signUp, { data }] = useSignUpMutation();
+  const [signUp, { data }] = useSignUpMutation({
+    onError: () => console.log('errooooooooor'),
+    onCompleted: () => {
+      push('/user');
+    },
+  });
 
   console.log(data);
 
