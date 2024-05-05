@@ -1,7 +1,7 @@
-import Link from 'next/link';
-
+import { LoginForm } from '@/components/LoginForm';
 import { ThemeToggle } from '@/components/ThemeToggle';
-import { Button } from '@/components/ui/button';
+
+// import Wasm from '@/components/Wasm';
 
 export default function Home() {
   return (
@@ -11,14 +11,10 @@ export default function Home() {
 
         <ThemeToggle />
       </div>
-      <div className="flex w-full items-center justify-center gap-4">
-        <Button>
-          <Link href="/login">Login</Link>
-        </Button>
-        <Button variant="secondary">
-          <Link href="/sign-up">Sign Up</Link>
-        </Button>
+      <div className="flex w-full max-w-5xl items-center justify-center py-10 2xl:py-40">
+        <LoginForm />
       </div>
+      {/* <Wasm /> */}
     </main>
   );
 }

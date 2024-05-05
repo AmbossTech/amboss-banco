@@ -1,7 +1,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useRouter } from 'next/navigation';
+import { Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -52,17 +52,14 @@ const FormSchema = z
   });
 
 export function SignUpForm() {
-  const { push } = useRouter();
   const [loading, setLoading] = useState(false);
 
-  const [signUp, { data }] = useSignUpMutation({
+  const [signUp] = useSignUpMutation({
     onError: () => console.log('errooooooooor'),
     onCompleted: () => {
-      push('/user');
+      window.location.href = '/user';
     },
   });
-
-  console.log(data);
 
   const form = useForm<z.infer<typeof FormSchema>>({
     reValidateMode: 'onChange',
@@ -215,7 +212,10 @@ export function SignUpForm() {
             </FormItem>
           )}
         />
-        <Button type="submit">Sign Up</Button>
+        <Button type="submit" disabled={loading}>
+          {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+          Sign Up
+        </Button>
       </form>
     </Form>
   );

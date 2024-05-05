@@ -71,13 +71,13 @@ const makeClient = (
               if (ssrMode) return;
 
               if (!refreshToken) {
-                window.location.replace('/');
+                window.location.href = '/';
                 return;
               }
 
               return fromPromise(
                 refreshTokens(accessToken, refreshToken).catch(() => {
-                  window.location.replace('/');
+                  window.location.href = '/';
                 })
               )
                 .filter(value => Boolean(value))
