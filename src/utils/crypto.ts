@@ -38,8 +38,6 @@ export const createSymmetricKey = (): {
   const symmetricKey = randomBytes(64);
   const iv = randomBytes(16);
 
-  console.log('SYMMETRIC: ', bufToHex(symmetricKey));
-
   return { symmetricKey, iv };
 };
 

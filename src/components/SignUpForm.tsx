@@ -2,7 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -19,14 +19,15 @@ import {
 import { Input } from '@/components/ui/input';
 import { useSignUpMutation } from '@/graphql/mutations/__generated__/signUp.generated';
 import {
-  argon2Hash,
-  createProtectedSymmetricKey,
-  rsaGenerateProtectedKeyPair,
-} from '@/utils/crypto';
-import {
   evaluatePasswordStrength,
   MIN_PASSWORD_LENGTH,
 } from '@/utils/password';
+import {
+  CreateAccount,
+  CreateAccountResult,
+  WorkerMessage,
+  WorkerResponse,
+} from '@/workers/types';
 
 import { Checkbox } from './ui/checkbox';
 
@@ -52,6 +53,8 @@ const FormSchema = z
   });
 
 export function SignUpForm() {
+  const workerRef = useRef<Worker>();
+
   const [loading, setLoading] = useState(false);
 
   const [signUp] = useSignUpMutation({
@@ -80,37 +83,50 @@ export function SignUpForm() {
     if (loading) return;
 
     setLoading(true);
-    try {
-      const masterKey = await argon2Hash(data.password, data.email);
-      const masterPasswordHash = await argon2Hash(masterKey, data.password);
-
-      const { protectedSymmetricKey, iv } =
-        await createProtectedSymmetricKey(masterKey);
-
-      const { publicKey, protectedPrivateKey } =
-        await rsaGenerateProtectedKeyPair(masterKey, iv);
-
-      signUp({
-        variables: {
-          input: {
-            email: data.email,
-            master_password_hash: masterPasswordHash,
-            password_hint: data.password_hint || undefined,
-            symmetric_key_iv: iv,
-            protected_symmetric_key: protectedSymmetricKey,
-            rsa_key_pair: {
-              public_key: publicKey,
-              protected_private_key: protectedPrivateKey,
-            },
-          },
+    if (workerRef.current) {
+      const message: WorkerMessage<CreateAccount> = {
+        type: 'create',
+        payload: {
+          email: data.email,
+          password,
+          password_hint: data.password_hint,
         },
-      });
-    } catch (error) {
-      console.log('ERROR', error);
-    } finally {
-      setLoading(false);
+      };
+
+      workerRef.current.postMessage(message);
     }
   };
+
+  useEffect(() => {
+    workerRef.current = new Worker(
+      new URL('../workers/account.ts', import.meta.url)
+    );
+
+    workerRef.current.onmessage = event => {
+      const message: WorkerResponse<CreateAccountResult> = event.data;
+
+      switch (message.type) {
+        case 'create':
+          signUp({ variables: { input: message.payload } });
+          break;
+
+        default:
+          console.error('Unhandled message type:', event.data.type);
+          break;
+      }
+
+      setLoading(false);
+    };
+
+    workerRef.current.onerror = error => {
+      console.error('Worker error:', error);
+      setLoading(false);
+    };
+
+    return () => {
+      if (workerRef.current) workerRef.current.terminate();
+    };
+  }, [signUp]);
 
   return (
     <Form {...form}>
