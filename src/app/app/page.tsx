@@ -11,11 +11,11 @@ export default function Page() {
 
       <div className="flex w-full items-center justify-center gap-4">
         <Button asChild>
-          <Link href={ROUTES.login}>Login</Link>
+          <Link href={ROUTES.app.wallet.new}>New Wallet</Link>
         </Button>
-        <Button variant="secondary" asChild>
+        {/* <Button variant="secondary" asChild>
           <Link href={ROUTES.signup}>Sign Up</Link>
-        </Button>
+        </Button> */}
       </div>
     </main>
   );

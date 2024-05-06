@@ -13,6 +13,7 @@ import {
   RefreshTokenDocument,
   RefreshTokenMutation,
 } from '@/graphql/mutations/__generated__/refreshToken.generated';
+import { ROUTES } from '@/utils/routes';
 
 const isRefreshRequest = (operation: GraphQLRequest) => {
   return operation.operationName === 'RefreshToken';
@@ -71,13 +72,13 @@ const makeClient = (
               if (ssrMode) return;
 
               if (!refreshToken) {
-                window.location.href = '/';
+                window.location.href = ROUTES.home;
                 return;
               }
 
               return fromPromise(
                 refreshTokens(accessToken, refreshToken).catch(() => {
-                  window.location.href = '/';
+                  window.location.href = ROUTES.home;
                 })
               )
                 .filter(value => Boolean(value))

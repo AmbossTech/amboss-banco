@@ -22,6 +22,7 @@ import {
   evaluatePasswordStrength,
   MIN_PASSWORD_LENGTH,
 } from '@/utils/password';
+import { ROUTES } from '@/utils/routes';
 import {
   CreateAccount,
   CreateAccountResult,
@@ -60,7 +61,7 @@ export function SignUpForm() {
   const [signUp] = useSignUpMutation({
     onError: () => console.log('errooooooooor'),
     onCompleted: () => {
-      window.location.href = '/user';
+      window.location.href = ROUTES.app.home;
     },
   });
 

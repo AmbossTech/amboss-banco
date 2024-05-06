@@ -19,6 +19,7 @@ import { Input } from '@/components/ui/input';
 import { useLoginMutation } from '@/graphql/mutations/__generated__/login.generated';
 import { argon2Hash } from '@/utils/crypto';
 import { MIN_PASSWORD_LENGTH } from '@/utils/password';
+import { ROUTES } from '@/utils/routes';
 
 const FormSchema = z.object({
   email: z.string().email().min(5, {
@@ -33,10 +34,10 @@ export function LoginForm() {
   const [loading, setLoading] = useState(false);
 
   const [login] = useLoginMutation({
-    onError: () => console.log('errooooooooor'),
     onCompleted: () => {
-      window.location.href = '/user';
+      window.location.href = ROUTES.app.home;
     },
+    onError: () => console.log('errooooooooor'),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
