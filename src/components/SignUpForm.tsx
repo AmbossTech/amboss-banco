@@ -23,12 +23,7 @@ import {
   MIN_PASSWORD_LENGTH,
 } from '@/utils/password';
 import { ROUTES } from '@/utils/routes';
-import {
-  CreateAccount,
-  CreateAccountResult,
-  WorkerMessage,
-  WorkerResponse,
-} from '@/workers/types';
+import { WorkerMessage, WorkerResponse } from '@/workers/account/types';
 
 import { Checkbox } from './ui/checkbox';
 
@@ -59,10 +54,10 @@ export function SignUpForm() {
   const [loading, setLoading] = useState(false);
 
   const [signUp] = useSignUpMutation({
-    onError: () => console.log('errooooooooor'),
     onCompleted: () => {
       window.location.href = ROUTES.app.home;
     },
+    onError: () => console.log('errooooooooor'),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -85,7 +80,7 @@ export function SignUpForm() {
 
     setLoading(true);
     if (workerRef.current) {
-      const message: WorkerMessage<CreateAccount> = {
+      const message: WorkerMessage = {
         type: 'create',
         payload: {
           email: data.email,
@@ -100,11 +95,11 @@ export function SignUpForm() {
 
   useEffect(() => {
     workerRef.current = new Worker(
-      new URL('../workers/account.ts', import.meta.url)
+      new URL('../workers/account/account.ts', import.meta.url)
     );
 
     workerRef.current.onmessage = event => {
-      const message: WorkerResponse<CreateAccountResult> = event.data;
+      const message: WorkerResponse = event.data;
 
       switch (message.type) {
         case 'create':
@@ -157,7 +152,7 @@ export function SignUpForm() {
               <FormLabel>Master Password</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="supersecretpassword"
+                  placeholder="super secret password"
                   type="password"
                   {...field}
                 />
@@ -180,7 +175,7 @@ export function SignUpForm() {
               <FormLabel>Confirm your Master Password</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="supersecretpassword"
+                  placeholder="super secret password"
                   type="password"
                   {...field}
                 />

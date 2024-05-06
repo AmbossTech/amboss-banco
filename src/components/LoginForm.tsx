@@ -97,7 +97,7 @@ export function LoginForm() {
               <FormLabel>Master Password</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="supersecretpassword"
+                  placeholder="super secret password"
                   type="password"
                   {...field}
                 />

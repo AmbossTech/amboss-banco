@@ -36,10 +36,15 @@ export type LoginInput = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  checkPassword: Scalars['Boolean']['output'];
   login: NewAccount;
   logout: Scalars['Boolean']['output'];
   refreshToken: RefreshToken;
   signUp: NewAccount;
+};
+
+export type MutationCheckPasswordArgs = {
+  password: Scalars['String']['input'];
 };
 
 export type MutationLoginArgs = {
@@ -86,5 +91,6 @@ export type SignUpInput = {
 
 export type User = {
   __typename?: 'User';
+  email: Scalars['String']['output'];
   id: Scalars['String']['output'];
 };

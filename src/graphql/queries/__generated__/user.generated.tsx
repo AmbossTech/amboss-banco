@@ -10,13 +10,14 @@ export type UserQueryVariables = Types.Exact<{ [key: string]: never }>;
 
 export type UserQuery = {
   __typename?: 'Query';
-  user: { __typename?: 'User'; id: string };
+  user: { __typename?: 'User'; id: string; email: string };
 };
 
 export const UserDocument = gql`
   query User {
     user {
       id
+      email
     }
   }
 `;

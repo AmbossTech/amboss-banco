@@ -5,8 +5,8 @@ import {
 } from '@/utils/crypto';
 
 import {
-  CreateAccount,
   CreateAccountResult,
+  GenerateMasterKeyAndHashResult,
   WorkerMessage,
   WorkerResponse,
 } from './types';
@@ -40,11 +40,23 @@ async function generateAccount(
   };
 }
 
-self.onmessage = async e => {
-  switch (e.data.type) {
-    case 'create':
-      const message: WorkerMessage<CreateAccount> = e.data;
+async function generateMasterKeyAndHash(
+  email: string,
+  password: string
+): Promise<GenerateMasterKeyAndHashResult> {
+  const masterKey = await argon2Hash(password, email);
+  const masterPasswordHash = await argon2Hash(masterKey, password);
 
+  return {
+    masterKey,
+    masterPasswordHash,
+  };
+}
+
+self.onmessage = async e => {
+  const message: WorkerMessage = e.data;
+  switch (message.type) {
+    case 'create': {
       const {
         payload: { email, password, password_hint },
       } = message;
@@ -55,7 +67,7 @@ self.onmessage = async e => {
         password_hint
       );
 
-      const response: WorkerResponse<CreateAccountResult> = {
+      const response: WorkerResponse = {
         type: 'create',
         payload: accountParams,
       };
@@ -63,6 +75,25 @@ self.onmessage = async e => {
       self.postMessage(response);
 
       break;
+    }
+
+    case 'generateMaster': {
+      const {
+        payload: { email, password },
+      } = message;
+
+      const result = await generateMasterKeyAndHash(email, password);
+
+      const response: WorkerResponse = {
+        type: 'generateMaster',
+        payload: result,
+      };
+
+      self.postMessage(response);
+
+      break;
+    }
+
     default:
       console.error('Unhandled message type:', e.data.type);
       break;
