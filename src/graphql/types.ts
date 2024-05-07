@@ -94,6 +94,7 @@ export type Query = {
   __typename?: 'Query';
   hello: Scalars['String']['output'];
   user: User;
+  wallets: WalletQueries;
 };
 
 export type RsaKeyPairInput = {
@@ -117,6 +118,20 @@ export type SignUpInput = {
   symmetric_key_iv: Scalars['String']['input'];
 };
 
+export type SimpleWallet = {
+  __typename?: 'SimpleWallet';
+  accounts: Array<SimpleWalletAccount>;
+  id: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+};
+
+export type SimpleWalletAccount = {
+  __typename?: 'SimpleWalletAccount';
+  account_type: WalletAccountType;
+  id: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+};
+
 export type User = {
   __typename?: 'User';
   email: Scalars['String']['output'];
@@ -124,9 +139,54 @@ export type User = {
   symmetric_key_iv: Scalars['String']['output'];
 };
 
+export type Wallet = {
+  __typename?: 'Wallet';
+  accounts: Array<WalletAccount>;
+  id: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+};
+
+export type WalletAccount = {
+  __typename?: 'WalletAccount';
+  account_type: WalletAccountType;
+  id: Scalars['String']['output'];
+  liquid_assets: Array<WalletLiquidAsset>;
+  name: Scalars['String']['output'];
+};
+
 export enum WalletAccountType {
   Liquid = 'LIQUID',
 }
+
+export type WalletLiquidAsset = {
+  __typename?: 'WalletLiquidAsset';
+  asset_id: Scalars['String']['output'];
+  asset_info: WalletLiquidAssetInfo;
+  balance: Scalars['String']['output'];
+  id: Scalars['String']['output'];
+  transactions: Array<WalletLiquidTransaction>;
+};
+
+export type WalletLiquidAssetInfo = {
+  __typename?: 'WalletLiquidAssetInfo';
+  id: Scalars['String']['output'];
+  is_featured: Scalars['Boolean']['output'];
+  name: Scalars['String']['output'];
+  precision: Scalars['Float']['output'];
+  ticker: Scalars['String']['output'];
+};
+
+export type WalletLiquidTransaction = {
+  __typename?: 'WalletLiquidTransaction';
+  balance: Scalars['String']['output'];
+  blinded_url: Scalars['String']['output'];
+  block_height: Scalars['String']['output'];
+  date?: Maybe<Scalars['String']['output']>;
+  fee: Scalars['String']['output'];
+  id: Scalars['String']['output'];
+  tx_id: Scalars['String']['output'];
+  unblinded_url: Scalars['String']['output'];
+};
 
 export type WalletMutations = {
   __typename?: 'WalletMutations';
@@ -137,4 +197,15 @@ export type WalletMutations = {
 
 export type WalletMutationsCreateArgs = {
   input: CreateWalletInput;
+};
+
+export type WalletQueries = {
+  __typename?: 'WalletQueries';
+  find_many: Array<SimpleWallet>;
+  find_one: Wallet;
+  id: Scalars['String']['output'];
+};
+
+export type WalletQueriesFind_OneArgs = {
+  id: Scalars['String']['input'];
 };

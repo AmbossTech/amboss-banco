@@ -177,8 +177,6 @@ const VaultButton = () => {
 
   const [open, setOpen] = useState(false);
 
-  console.log('MASTER KEY: ', masterKey);
-
   const handleClear = () => {
     clearKeys();
     setOpen(false);

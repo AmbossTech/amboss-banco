@@ -4,8 +4,8 @@ import type { Metadata } from 'next';
 import { Noto_Sans } from 'next/font/google';
 import { cookies } from 'next/headers';
 
-import { ApolloWrapper } from '@/libs/apollo/wrapper';
-import { ThemeProvider } from '@/libs/themes/wrapper';
+import { ApolloWrapper } from '@/lib/apollo/wrapper';
+import { ThemeProvider } from '@/lib/themes/wrapper';
 
 const font = Noto_Sans({
   subsets: ['latin'],

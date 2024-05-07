@@ -8,6 +8,7 @@ export const ROUTES = {
     wallet: {
       new: '/app/wallet/new',
       restore: '/app/wallet/restore',
+      id: (id: string) => `/app/wallet/${id}`,
     },
   },
 };
