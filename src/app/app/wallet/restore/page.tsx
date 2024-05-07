@@ -1,5 +1,5 @@
 import { InternalHeader } from '@/components/header/InternalHeader';
-import { NewWallet } from '@/views/wallet/NewWallet';
+import { RestoreWallet } from '@/views/wallet/RestoreWallet';
 
 export default function Page() {
   return (
@@ -7,7 +7,7 @@ export default function Page() {
       <InternalHeader />
 
       <div className="flex w-full items-center justify-center gap-4">
-        <NewWallet />
+        <RestoreWallet />
       </div>
     </main>
   );

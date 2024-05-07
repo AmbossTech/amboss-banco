@@ -10,7 +10,12 @@ export type UserQueryVariables = Types.Exact<{ [key: string]: never }>;
 
 export type UserQuery = {
   __typename?: 'Query';
-  user: { __typename?: 'User'; id: string; email: string };
+  user: {
+    __typename?: 'User';
+    id: string;
+    email: string;
+    symmetric_key_iv: string;
+  };
 };
 
 export const UserDocument = gql`
@@ -18,6 +23,7 @@ export const UserDocument = gql`
     user {
       id
       email
+      symmetric_key_iv
     }
   }
 `;

@@ -29,6 +29,33 @@ export type Scalars = {
   Float: { input: number; output: number };
 };
 
+export type BroadcastLiquidTransaction = {
+  __typename?: 'BroadcastLiquidTransaction';
+  tx_id: Scalars['String']['output'];
+};
+
+export type CreateAccountInput = {
+  liquid_descriptor: Scalars['String']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+  type: WalletAccountType;
+};
+
+export type CreateLiquidTransaction = {
+  __typename?: 'CreateLiquidTransaction';
+  base_64: Scalars['String']['output'];
+};
+
+export type CreateWallet = {
+  __typename?: 'CreateWallet';
+  id: Scalars['String']['output'];
+};
+
+export type CreateWalletInput = {
+  accounts: Array<CreateAccountInput>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  vault?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type LoginInput = {
   email: Scalars['String']['input'];
   master_password_hash: Scalars['String']['input'];
@@ -41,6 +68,7 @@ export type Mutation = {
   logout: Scalars['Boolean']['output'];
   refreshToken: RefreshToken;
   signUp: NewAccount;
+  wallets: WalletMutations;
 };
 
 export type MutationCheckPasswordArgs = {
@@ -93,4 +121,20 @@ export type User = {
   __typename?: 'User';
   email: Scalars['String']['output'];
   id: Scalars['String']['output'];
+  symmetric_key_iv: Scalars['String']['output'];
+};
+
+export enum WalletAccountType {
+  Liquid = 'LIQUID',
+}
+
+export type WalletMutations = {
+  __typename?: 'WalletMutations';
+  broadcast_liquid_transaction: BroadcastLiquidTransaction;
+  create: CreateWallet;
+  create_liquid_transaction: CreateLiquidTransaction;
+};
+
+export type WalletMutationsCreateArgs = {
+  input: CreateWalletInput;
 };

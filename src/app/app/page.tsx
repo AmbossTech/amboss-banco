@@ -13,9 +13,9 @@ export default function Page() {
         <Button asChild>
           <Link href={ROUTES.app.wallet.new}>New Wallet</Link>
         </Button>
-        {/* <Button variant="secondary" asChild>
-          <Link href={ROUTES.signup}>Sign Up</Link>
-        </Button> */}
+        <Button variant="secondary" asChild>
+          <Link href={ROUTES.app.wallet.restore}>Restore Wallet</Link>
+        </Button>
       </div>
     </main>
   );

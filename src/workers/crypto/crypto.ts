@@ -1,12 +1,14 @@
-import { generateMnemonic } from '@scure/bip39';
-import { wordlist } from '@scure/bip39/wordlists/english';
 import { Mnemonic, Network, Signer } from 'lwk_wasm';
 
-const generateNewMnemonic = async () => {
-  const mnemonic = generateMnemonic(wordlist);
+import {
+  bufToHex,
+  bufToUTF8,
+  decryptCipher,
+  generateNewMnemonic,
+  restoreMnemonic,
+} from '@/utils/crypto';
 
-  return mnemonic;
-};
+import { CryptoWorkerMessage, CryptoWorkerResponse } from './types';
 
 const generateLiquidDescriptor = async (mnemonic: string) => {
   const network = Network.mainnet();
@@ -18,17 +20,65 @@ const generateLiquidDescriptor = async (mnemonic: string) => {
 };
 
 self.onmessage = async e => {
-  switch (e.data.type) {
-    case 'new':
-      const mnemonic = await generateNewMnemonic();
+  const message: CryptoWorkerMessage = e.data;
+  switch (message.type) {
+    case 'newWallet': {
+      const { masterKey, iv } = message.payload;
+      const { mnemonic, protectedMnemonic } = await generateNewMnemonic(
+        masterKey,
+        iv
+      );
+
       const liquidDescriptor = await generateLiquidDescriptor(mnemonic);
 
-      self.postMessage({
-        type: 'new',
-        payload: { mnemonic, liquidDescriptor },
+      const unprotectedMnemonic = await decryptCipher(
+        protectedMnemonic,
+        masterKey,
+        iv
+      );
+
+      console.log({
+        mnemonic,
+        protectedMnemonic: bufToHex(protectedMnemonic),
+        unprotectedMnemonic: bufToUTF8(unprotectedMnemonic),
       });
 
+      const response: CryptoWorkerResponse = {
+        type: 'newWallet',
+        payload: {
+          protectedMnemonic: bufToHex(protectedMnemonic),
+          liquidDescriptor,
+        },
+      };
+
+      self.postMessage(response);
+
       break;
+    }
+
+    case 'restoreWallet': {
+      const { masterKey, iv } = message.payload;
+
+      const { mnemonic, protectedMnemonic } = await restoreMnemonic(
+        message.payload.mnemonic,
+        masterKey,
+        iv
+      );
+
+      const liquidDescriptor = await generateLiquidDescriptor(mnemonic);
+
+      const response: CryptoWorkerResponse = {
+        type: 'newWallet',
+        payload: {
+          protectedMnemonic: bufToHex(protectedMnemonic),
+          liquidDescriptor,
+        },
+      };
+
+      self.postMessage(response);
+
+      break;
+    }
 
     default:
       break;

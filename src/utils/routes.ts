@@ -7,6 +7,7 @@ export const ROUTES = {
     user: '/app/user',
     wallet: {
       new: '/app/wallet/new',
+      restore: '/app/wallet/restore',
     },
   },
 };

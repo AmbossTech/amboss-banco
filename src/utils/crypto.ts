@@ -1,3 +1,5 @@
+import { generateMnemonic } from '@scure/bip39';
+import { wordlist } from '@scure/bip39/wordlists/english';
 import argon2 from 'argon2-browser';
 import { randomBytes } from 'crypto';
 
@@ -12,7 +14,35 @@ export const ARGON_DEFAULTS = {
 export const bufToHex = (buf: Buffer | ArrayBuffer): string =>
   Buffer.from(buf).toString('hex');
 
+export const bufToUTF8 = (buf: Buffer | ArrayBuffer): string =>
+  Buffer.from(buf).toString('utf-8');
+
 export const hexToBuf = (str: string): Buffer => Buffer.from(str, 'hex');
+
+export const generateNewMnemonic = async (masterKey: string, iv: string) => {
+  const mnemonic = generateMnemonic(wordlist);
+  const mnemonicBuffer = Buffer.from(mnemonic, 'utf-8');
+  const protectedMnemonic = await encryptCipher(mnemonicBuffer, masterKey, iv);
+
+  return {
+    mnemonic,
+    protectedMnemonic,
+  };
+};
+
+export const restoreMnemonic = async (
+  mnemonic: string,
+  masterKey: string,
+  iv: string
+) => {
+  const mnemonicBuffer = Buffer.from(mnemonic, 'utf-8');
+  const protectedMnemonic = await encryptCipher(mnemonicBuffer, masterKey, iv);
+
+  return {
+    mnemonic,
+    protectedMnemonic,
+  };
+};
 
 export const argon2Hash = async (
   key: string,
@@ -73,7 +103,7 @@ export const createProtectedSymmetricKey = async (
 };
 
 export const decryptCipher = async (
-  cipher: string,
+  cipher: ArrayBuffer,
   masterKey: string,
   iv: string
 ): Promise<ArrayBuffer> => {
@@ -91,10 +121,35 @@ export const decryptCipher = async (
       iv: hexToBuf(iv),
     },
     importedMasterKey,
-    hexToBuf(cipher)
+    cipher
   );
 
   return decryptedCipher;
+};
+
+export const encryptCipher = async (
+  cipher: ArrayBuffer,
+  masterKey: string,
+  iv: string
+): Promise<ArrayBuffer> => {
+  const importedMasterKey = await crypto.subtle.importKey(
+    'raw', // raw or jwk
+    Buffer.from(masterKey, 'hex'),
+    'AES-CBC',
+    false, // extractable
+    ['encrypt']
+  );
+
+  const encryptedCipher = await crypto.subtle.encrypt(
+    {
+      name: 'AES-CBC',
+      iv: hexToBuf(iv),
+    },
+    importedMasterKey,
+    cipher
+  );
+
+  return encryptedCipher;
 };
 
 export const rsaGenerateKeyPair = async (): Promise<
