@@ -101,8 +101,6 @@ export const WalletInfo: FC<{ id: string }> = ({ id }) => {
       t.date ? new Date(t.date) : new Date()
     ).reverse();
 
-    console.log(transactions);
-
     return sorted;
   }, [data, loading, error]);
 

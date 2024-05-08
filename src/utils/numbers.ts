@@ -8,5 +8,5 @@ export const numberWithPrecision = (
 
   const precise = parsed / Math.pow(10, precision);
 
-  return precise.toString();
+  return precise.toLocaleString();
 };
