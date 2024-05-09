@@ -13,12 +13,29 @@ export type CryptoWorkerMessage =
         masterKey: string;
         iv: string;
       };
+    }
+  | {
+      type: 'signPset';
+      payload: {
+        mnemonic: string;
+        descriptor: string;
+        masterKey: string;
+        iv: string;
+        pset: string;
+      };
     };
 
-export type CryptoWorkerResponse = {
-  type: 'newWallet';
-  payload: {
-    protectedMnemonic: string;
-    liquidDescriptor: string;
-  };
-};
+export type CryptoWorkerResponse =
+  | {
+      type: 'newWallet';
+      payload: {
+        protectedMnemonic: string;
+        liquidDescriptor: string;
+      };
+    }
+  | {
+      type: 'signPset';
+      payload: {
+        signedPset: string;
+      };
+    };

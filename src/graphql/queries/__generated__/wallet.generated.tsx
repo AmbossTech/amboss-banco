@@ -40,10 +40,12 @@ export type GetWalletQuery = {
       __typename?: 'Wallet';
       id: string;
       name: string;
+      vault: string;
       accounts: Array<{
         __typename?: 'WalletAccount';
         id: string;
         name: string;
+        descriptor: string;
         account_type: Types.WalletAccountType;
         liquid_assets: Array<{
           __typename?: 'WalletLiquidAsset';
@@ -163,9 +165,11 @@ export const GetWalletDocument = gql`
       find_one(id: $id) {
         id
         name
+        vault
         accounts {
           id
           name
+          descriptor
           account_type
           liquid_assets {
             id

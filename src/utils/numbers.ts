@@ -10,3 +10,16 @@ export const numberWithPrecision = (
 
   return precise.toLocaleString();
 };
+
+export const numberWithoutPrecision = (
+  num: number | string,
+  precision: number
+): string => {
+  const parsed = Number(num);
+
+  if (isNaN(parsed)) return '-';
+
+  const precise = parsed * Math.pow(10, precision);
+
+  return precise.toString();
+};

@@ -34,6 +34,11 @@ export type BroadcastLiquidTransaction = {
   tx_id: Scalars['String']['output'];
 };
 
+export type BroadcastLiquidTransactionInput = {
+  signed_pset: Scalars['String']['input'];
+  wallet_account_id: Scalars['String']['input'];
+};
+
 export type CreateAccountInput = {
   liquid_descriptor: Scalars['String']['input'];
   name?: InputMaybe<Scalars['String']['input']>;
@@ -45,6 +50,12 @@ export type CreateLiquidTransaction = {
   base_64: Scalars['String']['output'];
 };
 
+export type CreateLiquidTransactionInput = {
+  fee_rate: Scalars['Float']['input'];
+  recipients: Array<LiquidRecipient>;
+  wallet_account_id: Scalars['String']['input'];
+};
+
 export type CreateWallet = {
   __typename?: 'CreateWallet';
   id: Scalars['String']['output'];
@@ -54,6 +65,12 @@ export type CreateWalletInput = {
   accounts: Array<CreateAccountInput>;
   name?: InputMaybe<Scalars['String']['input']>;
   vault?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type LiquidRecipient = {
+  address: Scalars['String']['input'];
+  amount: Scalars['String']['input'];
+  asset_id?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type LoginInput = {
@@ -144,11 +161,13 @@ export type Wallet = {
   accounts: Array<WalletAccount>;
   id: Scalars['String']['output'];
   name: Scalars['String']['output'];
+  vault: Scalars['String']['output'];
 };
 
 export type WalletAccount = {
   __typename?: 'WalletAccount';
   account_type: WalletAccountType;
+  descriptor: Scalars['String']['output'];
   id: Scalars['String']['output'];
   liquid_assets: Array<WalletLiquidAsset>;
   name: Scalars['String']['output'];
@@ -195,8 +214,16 @@ export type WalletMutations = {
   create_liquid_transaction: CreateLiquidTransaction;
 };
 
+export type WalletMutationsBroadcast_Liquid_TransactionArgs = {
+  input: BroadcastLiquidTransactionInput;
+};
+
 export type WalletMutationsCreateArgs = {
   input: CreateWalletInput;
+};
+
+export type WalletMutationsCreate_Liquid_TransactionArgs = {
+  input: CreateLiquidTransactionInput;
 };
 
 export type WalletQueries = {

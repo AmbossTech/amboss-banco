@@ -24,9 +24,11 @@ export const GetWallet = gql`
       find_one(id: $id) {
         id
         name
+        vault
         accounts {
           id
           name
+          descriptor
           account_type
           liquid_assets {
             id

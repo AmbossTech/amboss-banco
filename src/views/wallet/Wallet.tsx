@@ -1,18 +1,30 @@
 'use client';
 
 import { sortBy } from 'lodash';
+import { ArrowDownToLine, ArrowUpToLine } from 'lucide-react';
+import Link from 'next/link';
 import { FC, useMemo } from 'react';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { useGetWalletQuery } from '@/graphql/queries/__generated__/wallet.generated';
 import { numberWithPrecision } from '@/utils/numbers';
+import { ROUTES } from '@/utils/routes';
 import { TransactionTable } from '@/views/wallet/TxTable';
 
 type AssetBalance = {
+  accountId: string;
   name: string;
   ticker: string;
   balance: string;
   precision: number;
+  assetId: string;
 };
 
 export type TransactionEntry = {
@@ -28,8 +40,14 @@ export type TransactionEntry = {
   blinded_url: string;
 };
 
-const BalanceCard: FC<{ input: AssetBalance }> = ({
-  input: { balance, name, precision, ticker },
+const BalanceCard: FC<{
+  walletId: string;
+  accountId: string;
+  input: AssetBalance;
+}> = ({
+  walletId,
+  accountId,
+  input: { balance, name, precision, ticker, assetId },
 }) => {
   return (
     <Card>
@@ -38,12 +56,29 @@ const BalanceCard: FC<{ input: AssetBalance }> = ({
         {/* <CardDescription>{name}</CardDescription> */}
       </CardHeader>
       <CardContent>{`${numberWithPrecision(balance, precision)} ${ticker}`}</CardContent>
-      {/* <CardFooter>{ticker}</CardFooter> */}
+      <CardFooter className="flex gap-2">
+        <Button>
+          <Link
+            href={ROUTES.app.wallet.receive(walletId, accountId)}
+            className="flex"
+          >
+            <ArrowDownToLine className="mr-2 h-4 w-4" />
+            Receive
+          </Link>
+        </Button>
+        <Button variant="secondary">
+          <Link
+            href={ROUTES.app.wallet.send(walletId, accountId, assetId)}
+            className="flex"
+          >
+            <ArrowUpToLine className="mr-2 h-4 w-4" />
+            Send
+          </Link>
+        </Button>
+      </CardFooter>
     </Card>
   );
 };
-
-// const Transactions = () => {};
 
 export const WalletInfo: FC<{ id: string }> = ({ id }) => {
   const { data, loading, error } = useGetWalletQuery({ variables: { id } });
@@ -59,6 +94,8 @@ export const WalletInfo: FC<{ id: string }> = ({ id }) => {
     accounts.forEach(a => {
       a.liquid_assets.forEach(l => {
         mapped.push({
+          accountId: a.id,
+          assetId: l.asset_id,
           name: l.asset_info.name,
           ticker: l.asset_info.ticker,
           balance: l.balance,
@@ -111,7 +148,12 @@ export const WalletInfo: FC<{ id: string }> = ({ id }) => {
       </h2>
       <div className="flex w-full max-w-5xl gap-4">
         {balances.map((b, index) => (
-          <BalanceCard input={b} key={`${b.ticker}${index}`} />
+          <BalanceCard
+            walletId={id}
+            accountId={b.accountId}
+            input={b}
+            key={`${b.ticker}${index}`}
+          />
         ))}
       </div>
       <h2 className="scroll-m-20 pb-2 pt-6 text-3xl font-semibold tracking-tight first:mt-0">

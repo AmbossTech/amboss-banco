@@ -66,9 +66,9 @@ export const columns: ColumnDef<TransactionEntry>[] = [
     cell: ({ row }) =>
       row.original.date ? (
         <div>
-          {format(row.original.date, 'MMM do, yyyy - HH:mm')}
-          <p className="text-muted-foreground text-xs">
-            {`${formatDistanceToNowStrict(row.original.date)} ago`}
+          {`${formatDistanceToNowStrict(row.original.date)} ago`}
+          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+            {format(row.original.date, 'MMM do, yyyy - HH:mm')}
           </p>
         </div>
       ) : (

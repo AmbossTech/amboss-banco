@@ -9,6 +9,10 @@ export const ROUTES = {
       new: '/app/wallet/new',
       restore: '/app/wallet/restore',
       id: (id: string) => `/app/wallet/${id}`,
+      send: (walletId: string, accountId: string, assetId: string) =>
+        `/app/wallet/${walletId}/account/${accountId}/send?assetId=${assetId}`,
+      receive: (walletId: string, accountId: string) =>
+        `/app/wallet/${walletId}/account/${accountId}/receive`,
     },
   },
 };
