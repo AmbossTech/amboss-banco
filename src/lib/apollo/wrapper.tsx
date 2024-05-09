@@ -1,6 +1,6 @@
 'use client';
 
-import { from, fromPromise, GraphQLRequest, HttpLink } from '@apollo/client';
+import { from, GraphQLRequest, HttpLink } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 import { onError } from '@apollo/client/link/error';
 import {
@@ -14,6 +14,8 @@ import {
   RefreshTokenMutation,
 } from '@/graphql/mutations/__generated__/refreshToken.generated';
 import { ROUTES } from '@/utils/routes';
+
+import { promiseToObservable } from './utils';
 
 const isRefreshRequest = (operation: GraphQLRequest) => {
   return operation.operationName === 'RefreshToken';
@@ -65,6 +67,7 @@ const makeClient = (
   const errorLink = onError(
     ({ graphQLErrors, networkError, operation, forward }) => {
       if (graphQLErrors) {
+        console.log(`[GraphQL error]: ${graphQLErrors}`);
         for (const err of graphQLErrors) {
           switch (err.extensions.code) {
             case 'UNAUTHENTICATED':
@@ -76,24 +79,22 @@ const makeClient = (
                 return;
               }
 
-              return fromPromise(
+              return promiseToObservable(
                 refreshTokens(accessToken, refreshToken).catch(() => {
                   window.location.href = ROUTES.home;
                 })
-              )
-                .filter(value => Boolean(value))
-                .flatMap(accessToken => {
-                  const oldHeaders = operation.getContext().headers;
+              ).flatMap(accessToken => {
+                const oldHeaders = operation.getContext().headers;
 
-                  operation.setContext({
-                    headers: {
-                      ...oldHeaders,
-                      Authorization: `Bearer ${accessToken}`,
-                    },
-                  });
-
-                  return forward(operation);
+                operation.setContext({
+                  headers: {
+                    ...oldHeaders,
+                    Authorization: `Bearer ${accessToken}`,
+                  },
                 });
+
+                return forward(operation);
+              });
           }
         }
       }
