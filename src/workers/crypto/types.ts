@@ -23,6 +23,14 @@ export type CryptoWorkerMessage =
         iv: string;
         pset: string;
       };
+    }
+  | {
+      type: 'decryptMnemonic';
+      payload: {
+        protectedMnemonic: string;
+        masterKey: string;
+        iv: string;
+      };
     };
 
 export type CryptoWorkerResponse =
@@ -37,5 +45,11 @@ export type CryptoWorkerResponse =
       type: 'signPset';
       payload: {
         signedPset: string;
+      };
+    }
+  | {
+      type: 'decryptMnemonic';
+      payload: {
+        mnemonic: string;
       };
     };

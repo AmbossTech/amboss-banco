@@ -9,7 +9,6 @@ import {
 
 import {
   bufToHex,
-  bufToUTF8,
   decryptCipher,
   generateNewMnemonic,
   restoreMnemonic,
@@ -54,18 +53,6 @@ self.onmessage = async e => {
       );
 
       const liquidDescriptor = await generateLiquidDescriptor(mnemonic);
-
-      const unprotectedMnemonic = await decryptCipher(
-        protectedMnemonic,
-        masterKey,
-        iv
-      );
-
-      console.log({
-        mnemonic,
-        protectedMnemonic: bufToHex(protectedMnemonic),
-        unprotectedMnemonic: bufToUTF8(unprotectedMnemonic),
-      });
 
       const response: CryptoWorkerResponse = {
         type: 'newWallet',
@@ -123,6 +110,27 @@ self.onmessage = async e => {
         type: 'signPset',
         payload: {
           signedPset,
+        },
+      };
+
+      self.postMessage(response);
+
+      break;
+    }
+
+    case 'decryptMnemonic': {
+      const { protectedMnemonic, masterKey, iv } = message.payload;
+
+      const unprotectedMnemonic = await decryptCipher(
+        Buffer.from(protectedMnemonic, 'hex'),
+        masterKey,
+        iv
+      );
+
+      const response: CryptoWorkerResponse = {
+        type: 'decryptMnemonic',
+        payload: {
+          mnemonic: Buffer.from(unprotectedMnemonic).toString('utf-8'),
         },
       };
 

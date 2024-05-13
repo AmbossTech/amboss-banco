@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+
 import { useLogoutMutation } from '@/graphql/mutations/__generated__/logout.generated';
 import { ROUTES } from '@/utils/routes';
 
@@ -12,14 +14,14 @@ export const InternalHeader = () => {
     onCompleted: () => {
       window.location.href = ROUTES.home;
     },
-    onError: error => {
-      console.log(error);
-    },
+    onError: err => console.log('ERROR', err),
   });
 
   return (
     <div className="mb-4 mt-1 flex w-full max-w-5xl items-center justify-between text-sm">
-      <p className="text-lg font-bold">Banco</p>
+      <Link href={ROUTES.app.home}>
+        <p className="text-lg font-bold">Banco</p>
+      </Link>
       <div className="flex gap-2">
         <VaultButton />
 

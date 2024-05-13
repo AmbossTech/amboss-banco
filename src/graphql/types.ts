@@ -56,6 +56,15 @@ export type CreateLiquidTransactionInput = {
   wallet_account_id: Scalars['String']['input'];
 };
 
+export type CreateOnchainAddress = {
+  __typename?: 'CreateOnchainAddress';
+  address: Scalars['String']['output'];
+};
+
+export type CreateOnchainAddressInput = {
+  wallet_account_id: Scalars['String']['input'];
+};
+
 export type CreateWallet = {
   __typename?: 'CreateWallet';
   id: Scalars['String']['output'];
@@ -124,6 +133,10 @@ export type RefreshToken = {
   access_token: Scalars['String']['output'];
   id: Scalars['String']['output'];
   refresh_token: Scalars['String']['output'];
+};
+
+export type RefreshWalletInput = {
+  wallet_id: Scalars['String']['input'];
 };
 
 export type SignUpInput = {
@@ -199,7 +212,7 @@ export type WalletLiquidTransaction = {
   __typename?: 'WalletLiquidTransaction';
   balance: Scalars['String']['output'];
   blinded_url: Scalars['String']['output'];
-  block_height: Scalars['String']['output'];
+  block_height?: Maybe<Scalars['String']['output']>;
   date?: Maybe<Scalars['String']['output']>;
   fee: Scalars['String']['output'];
   id: Scalars['String']['output'];
@@ -212,6 +225,8 @@ export type WalletMutations = {
   broadcast_liquid_transaction: BroadcastLiquidTransaction;
   create: CreateWallet;
   create_liquid_transaction: CreateLiquidTransaction;
+  create_onchain_address: CreateOnchainAddress;
+  refresh_wallet: Scalars['Boolean']['output'];
 };
 
 export type WalletMutationsBroadcast_Liquid_TransactionArgs = {
@@ -224,6 +239,14 @@ export type WalletMutationsCreateArgs = {
 
 export type WalletMutationsCreate_Liquid_TransactionArgs = {
   input: CreateLiquidTransactionInput;
+};
+
+export type WalletMutationsCreate_Onchain_AddressArgs = {
+  input: CreateOnchainAddressInput;
+};
+
+export type WalletMutationsRefresh_WalletArgs = {
+  input: RefreshWalletInput;
 };
 
 export type WalletQueries = {

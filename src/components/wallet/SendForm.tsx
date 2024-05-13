@@ -2,6 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { FC, useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -29,6 +30,7 @@ import { useUserQuery } from '@/graphql/queries/__generated__/user.generated';
 import { useGetWalletQuery } from '@/graphql/queries/__generated__/wallet.generated';
 import { useKeyStore } from '@/stores/private';
 import { numberWithoutPrecision } from '@/utils/numbers';
+import { ROUTES } from '@/utils/routes';
 import {
   CryptoWorkerMessage,
   CryptoWorkerResponse,
@@ -49,6 +51,7 @@ export const SendForm: FC<{
   assetId: string | undefined;
 }> = ({ walletId, accountId, assetId }) => {
   const workerRef = useRef<Worker>();
+  const { push } = useRouter();
 
   const { data: userData } = useUserQuery();
 
@@ -82,7 +85,10 @@ export const SendForm: FC<{
     });
 
   const [broadcast, { loading: broadcastLoading }] =
-    useBroadcastLiquidTransactionMutation();
+    useBroadcastLiquidTransactionMutation({
+      onError: error => console.error('ERRORRR', error),
+      onCompleted: () => push(ROUTES.app.wallet.id(walletId)),
+    });
 
   const loading =
     stateLoading || walletLoading || broadcastLoading || sendLoading;
@@ -207,7 +213,7 @@ export const SendForm: FC<{
       variables: {
         input: {
           wallet_account_id: accountId,
-          fee_rate: Number(values.feeRate),
+          fee_rate: Number(values.feeRate) * 1000,
           recipients: [
             {
               address: values.destination,

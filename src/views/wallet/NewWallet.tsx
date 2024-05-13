@@ -8,6 +8,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { useCreateWalletMutation } from '@/graphql/mutations/__generated__/wallet.generated';
 import { useUserQuery } from '@/graphql/queries/__generated__/user.generated';
+import { GetAllWalletsDocument } from '@/graphql/queries/__generated__/wallet.generated';
 import { WalletAccountType } from '@/graphql/types';
 import { useKeyStore } from '@/stores/private';
 import { ROUTES } from '@/utils/routes';
@@ -33,6 +34,8 @@ const NewWalletButton = () => {
     onError: error => {
       console.log('Create wallet error', error);
     },
+    refetchQueries: [{ query: GetAllWalletsDocument }],
+    awaitRefetchQueries: true,
   });
 
   const [loading, setLoading] = useState(false);
@@ -70,8 +73,6 @@ const NewWalletButton = () => {
 
       switch (message.type) {
         case 'newWallet':
-          console.log('Creating wallet', message);
-
           createWallet({
             variables: {
               input: {

@@ -37,7 +37,7 @@ export function LoginForm() {
     onCompleted: () => {
       window.location.href = ROUTES.app.home;
     },
-    onError: () => console.log('errooooooooor'),
+    onError: err => console.log('ERROR', err),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({

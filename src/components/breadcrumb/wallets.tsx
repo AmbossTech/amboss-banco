@@ -33,7 +33,7 @@ export const WalletBreadcrumb: FC<{ id: string }> = ({ id }) => {
   const wallets = data?.wallets.find_many || [];
 
   return (
-    <Breadcrumb className="mb-8 mt-2 w-full max-w-5xl">
+    <Breadcrumb className="w-full max-w-5xl">
       <BreadcrumbList>
         <BreadcrumbItem>
           <BreadcrumbLink href={ROUTES.app.home}>Home</BreadcrumbLink>

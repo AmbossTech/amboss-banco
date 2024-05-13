@@ -66,7 +66,7 @@ export type GetWalletQuery = {
             tx_id: string;
             date?: string | null;
             fee: string;
-            block_height: string;
+            block_height?: string | null;
             balance: string;
             blinded_url: string;
             unblinded_url: string;

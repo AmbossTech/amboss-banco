@@ -67,7 +67,6 @@ const makeClient = (
   const errorLink = onError(
     ({ graphQLErrors, networkError, operation, forward }) => {
       if (graphQLErrors) {
-        console.log(`[GraphQL error]: ${graphQLErrors}`);
         for (const err of graphQLErrors) {
           switch (err.extensions.code) {
             case 'UNAUTHENTICATED':
@@ -95,6 +94,9 @@ const makeClient = (
 
                 return forward(operation);
               });
+
+            default:
+              console.log(`[GraphQL error]: ${err}`);
           }
         }
       }
@@ -122,6 +124,7 @@ const makeClient = (
   return new NextSSRApolloClient({
     cache: new NextSSRInMemoryCache(),
     link,
+    connectToDevTools: true,
   });
 };
 
