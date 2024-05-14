@@ -92,7 +92,8 @@ export const WalletInfo: FC<{ id: string }> = ({ id }) => {
     const mapped: AssetBalance[] = [];
 
     accounts.forEach(a => {
-      a.liquid_assets.forEach(l => {
+      if (!a.liquid) return;
+      a.liquid.assets.forEach(l => {
         mapped.push({
           accountId: a.id,
           assetId: l.asset_id,
@@ -116,20 +117,19 @@ export const WalletInfo: FC<{ id: string }> = ({ id }) => {
     const transactions: TransactionEntry[] = [];
 
     accounts.forEach(a => {
-      a.liquid_assets.forEach(l => {
-        l.transactions.forEach(t => {
-          transactions.push({
-            id: t.id,
-            tx_id: t.tx_id,
-            balance: t.balance,
-            date: t.date,
-            fee: t.fee,
-            ticker: l.asset_info.ticker,
-            precision: l.asset_info.precision,
-            name: l.asset_info.name,
-            unblinded_url: t.unblinded_url,
-            blinded_url: t.blinded_url,
-          });
+      if (!a.liquid) return;
+      a.liquid.transactions.forEach(t => {
+        transactions.push({
+          id: t.id,
+          tx_id: t.tx_id,
+          balance: t.balance,
+          date: t.date,
+          fee: t.fee,
+          ticker: t.asset_info.ticker,
+          precision: t.asset_info.precision,
+          name: t.asset_info.name,
+          unblinded_url: t.unblinded_url,
+          blinded_url: t.blinded_url,
         });
       });
     });

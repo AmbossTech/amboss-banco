@@ -40,38 +40,56 @@ export type GetWalletQuery = {
       __typename?: 'Wallet';
       id: string;
       name: string;
-      vault: string;
+      details: {
+        __typename?: 'WalletDetails';
+        id: string;
+        type: Types.WalletType;
+        protected_mnemonic?: string | null;
+      };
       accounts: Array<{
         __typename?: 'WalletAccount';
         id: string;
         name: string;
         descriptor: string;
         account_type: Types.WalletAccountType;
-        liquid_assets: Array<{
-          __typename?: 'WalletLiquidAsset';
+        liquid?: {
+          __typename?: 'LiquidAccount';
           id: string;
-          balance: string;
-          asset_id: string;
-          asset_info: {
-            __typename?: 'WalletLiquidAssetInfo';
+          assets: Array<{
+            __typename?: 'LiquidAsset';
             id: string;
-            name: string;
-            is_featured: boolean;
-            precision: number;
-            ticker: string;
-          };
-          transactions: Array<{
-            __typename?: 'WalletLiquidTransaction';
-            id: string;
-            tx_id: string;
-            date?: string | null;
-            fee: string;
-            block_height?: string | null;
             balance: string;
-            blinded_url: string;
-            unblinded_url: string;
+            asset_id: string;
+            asset_info: {
+              __typename?: 'LiquidAssetInfo';
+              id: string;
+              is_featured: boolean;
+              name: string;
+              precision: number;
+              ticker: string;
+            };
           }>;
-        }>;
+          transactions: Array<{
+            __typename?: 'LiquidTransaction';
+            id: string;
+            unblinded_url: string;
+            tx_id: string;
+            fee: string;
+            date?: string | null;
+            block_height?: string | null;
+            blinded_url: string;
+            balance: string;
+            asset_id: string;
+            asset_info: {
+              __typename?: 'LiquidAssetInfo';
+              id: string;
+              is_featured: boolean;
+              name: string;
+              precision: number;
+              ticker: string;
+            };
+          }>;
+        } | null;
       }>;
     };
   };
@@ -165,32 +183,47 @@ export const GetWalletDocument = gql`
       find_one(id: $id) {
         id
         name
-        vault
+        details {
+          id
+          type
+          protected_mnemonic
+        }
         accounts {
           id
           name
           descriptor
           account_type
-          liquid_assets {
+          liquid {
             id
-            balance
-            asset_id
-            asset_info {
+            assets {
               id
-              name
-              is_featured
-              precision
-              ticker
+              balance
+              asset_id
+              asset_info {
+                id
+                is_featured
+                name
+                precision
+                ticker
+              }
             }
             transactions {
               id
-              tx_id
-              date
-              fee
-              block_height
-              balance
-              blinded_url
               unblinded_url
+              tx_id
+              fee
+              date
+              block_height
+              blinded_url
+              balance
+              asset_id
+              asset_info {
+                id
+                is_featured
+                name
+                precision
+                ticker
+              }
             }
           }
         }

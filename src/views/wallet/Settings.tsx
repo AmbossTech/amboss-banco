@@ -37,8 +37,8 @@ export const WalletSettings: FC<{ walletId: string }> = ({ walletId }) => {
   const loading = stateLoading || walletLoading || userLoading;
 
   useEffect(() => {
-    if (!data?.wallets.find_one.vault) return;
-    setProtectedMnemonic(data.wallets.find_one.vault);
+    if (!data?.wallets.find_one.details.protected_mnemonic) return;
+    setProtectedMnemonic(data.wallets.find_one.details.protected_mnemonic);
   }, [data]);
 
   useEffect(() => {
@@ -76,7 +76,7 @@ export const WalletSettings: FC<{ walletId: string }> = ({ walletId }) => {
   const handleDecrypt = () => {
     if (!masterKey) return;
     if (!userData?.user.symmetric_key_iv) return;
-    if (!data?.wallets.find_one.vault) return;
+    if (!data?.wallets.find_one.details.protected_mnemonic) return;
 
     setLoading(true);
 
@@ -84,7 +84,7 @@ export const WalletSettings: FC<{ walletId: string }> = ({ walletId }) => {
       const message: CryptoWorkerMessage = {
         type: 'decryptMnemonic',
         payload: {
-          protectedMnemonic: data.wallets.find_one.vault,
+          protectedMnemonic: data.wallets.find_one.details.protected_mnemonic,
           masterKey,
           iv: userData.user.symmetric_key_iv,
         },

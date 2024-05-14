@@ -21,7 +21,8 @@ import {
 import { Input } from '@/components/ui/input';
 import { useCreateWalletMutation } from '@/graphql/mutations/__generated__/wallet.generated';
 import { useUserQuery } from '@/graphql/queries/__generated__/user.generated';
-import { WalletAccountType } from '@/graphql/types';
+import { GetAllWalletsDocument } from '@/graphql/queries/__generated__/wallet.generated';
+import { WalletAccountType, WalletType } from '@/graphql/types';
 import { useKeyStore } from '@/stores/private';
 import { ROUTES } from '@/utils/routes';
 import {
@@ -68,6 +69,8 @@ const RestoreWalletButton = () => {
     onError: error => {
       console.log('Create wallet error', error);
     },
+    refetchQueries: [{ query: GetAllWalletsDocument }],
+    awaitRefetchQueries: true,
   });
 
   const [loading, setLoading] = useState(false);
@@ -111,7 +114,10 @@ const RestoreWalletButton = () => {
           createWallet({
             variables: {
               input: {
-                vault: message.payload.protectedMnemonic,
+                details: {
+                  type: WalletType.ClientGenerated,
+                  protected_mnemonic: message.payload.protectedMnemonic,
+                },
                 accounts: [
                   {
                     type: WalletAccountType.Liquid,

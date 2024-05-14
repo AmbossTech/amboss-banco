@@ -24,32 +24,47 @@ export const GetWallet = gql`
       find_one(id: $id) {
         id
         name
-        vault
+        details {
+          id
+          type
+          protected_mnemonic
+        }
         accounts {
           id
           name
           descriptor
           account_type
-          liquid_assets {
+          liquid {
             id
-            balance
-            asset_id
-            asset_info {
+            assets {
               id
-              name
-              is_featured
-              precision
-              ticker
+              balance
+              asset_id
+              asset_info {
+                id
+                is_featured
+                name
+                precision
+                ticker
+              }
             }
             transactions {
               id
-              tx_id
-              date
-              fee
-              block_height
-              balance
-              blinded_url
               unblinded_url
+              tx_id
+              fee
+              date
+              block_height
+              blinded_url
+              balance
+              asset_id
+              asset_info {
+                id
+                is_featured
+                name
+                precision
+                ticker
+              }
             }
           }
         }

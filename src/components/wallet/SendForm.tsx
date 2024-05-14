@@ -105,12 +105,13 @@ export const SendForm: FC<{
     );
 
     if (!currentAccount) return;
+    if (!data.wallets.find_one.details.protected_mnemonic) return;
 
     if (workerRef.current) {
       const message: CryptoWorkerMessage = {
         type: 'signPset',
         payload: {
-          mnemonic: data.wallets.find_one.vault,
+          mnemonic: data.wallets.find_one.details.protected_mnemonic,
           descriptor: currentAccount.descriptor,
           pset: sendData.wallets.create_liquid_transaction.base_64,
           masterKey,
@@ -130,11 +131,11 @@ export const SendForm: FC<{
       a => a.id === accountId
     );
 
-    if (!currentAccount) return;
+    if (!currentAccount?.liquid) return;
 
-    const firstAsset = currentAccount.liquid_assets[0];
+    const firstAsset = currentAccount.liquid.assets[0];
     const foundAsset = selectedAsset
-      ? currentAccount.liquid_assets.find(a => a.asset_id === selectedAsset)
+      ? currentAccount.liquid.assets.find(a => a.asset_id === selectedAsset)
       : undefined;
 
     const currentAsset = foundAsset || firstAsset;
@@ -152,9 +153,9 @@ export const SendForm: FC<{
       a => a.id === accountId
     );
 
-    if (!currentAccount) return [];
+    if (!currentAccount?.liquid?.assets) return [];
 
-    return currentAccount.liquid_assets;
+    return currentAccount.liquid.assets;
   }, [data, walletLoading, error, accountId]);
 
   useEffect(() => {

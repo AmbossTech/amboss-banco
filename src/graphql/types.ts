@@ -70,16 +70,59 @@ export type CreateWallet = {
   id: Scalars['String']['output'];
 };
 
+export type CreateWalletDetailsInput = {
+  protected_mnemonic?: InputMaybe<Scalars['String']['input']>;
+  type: WalletType;
+};
+
 export type CreateWalletInput = {
   accounts: Array<CreateAccountInput>;
+  details: CreateWalletDetailsInput;
   name?: InputMaybe<Scalars['String']['input']>;
-  vault?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type LiquidAccount = {
+  __typename?: 'LiquidAccount';
+  assets: Array<LiquidAsset>;
+  id: Scalars['String']['output'];
+  transactions: Array<LiquidTransaction>;
+};
+
+export type LiquidAsset = {
+  __typename?: 'LiquidAsset';
+  asset_id: Scalars['String']['output'];
+  asset_info: LiquidAssetInfo;
+  balance: Scalars['String']['output'];
+  id: Scalars['String']['output'];
+};
+
+export type LiquidAssetInfo = {
+  __typename?: 'LiquidAssetInfo';
+  id: Scalars['String']['output'];
+  is_featured: Scalars['Boolean']['output'];
+  name: Scalars['String']['output'];
+  precision: Scalars['Float']['output'];
+  ticker: Scalars['String']['output'];
 };
 
 export type LiquidRecipient = {
   address: Scalars['String']['input'];
   amount: Scalars['String']['input'];
   asset_id?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type LiquidTransaction = {
+  __typename?: 'LiquidTransaction';
+  asset_id: Scalars['String']['output'];
+  asset_info: LiquidAssetInfo;
+  balance: Scalars['String']['output'];
+  blinded_url: Scalars['String']['output'];
+  block_height?: Maybe<Scalars['String']['output']>;
+  date?: Maybe<Scalars['String']['output']>;
+  fee: Scalars['String']['output'];
+  id: Scalars['String']['output'];
+  tx_id: Scalars['String']['output'];
+  unblinded_url: Scalars['String']['output'];
 };
 
 export type LoginInput = {
@@ -172,9 +215,9 @@ export type User = {
 export type Wallet = {
   __typename?: 'Wallet';
   accounts: Array<WalletAccount>;
+  details: WalletDetails;
   id: Scalars['String']['output'];
   name: Scalars['String']['output'];
-  vault: Scalars['String']['output'];
 };
 
 export type WalletAccount = {
@@ -182,7 +225,7 @@ export type WalletAccount = {
   account_type: WalletAccountType;
   descriptor: Scalars['String']['output'];
   id: Scalars['String']['output'];
-  liquid_assets: Array<WalletLiquidAsset>;
+  liquid?: Maybe<LiquidAccount>;
   name: Scalars['String']['output'];
 };
 
@@ -190,34 +233,11 @@ export enum WalletAccountType {
   Liquid = 'LIQUID',
 }
 
-export type WalletLiquidAsset = {
-  __typename?: 'WalletLiquidAsset';
-  asset_id: Scalars['String']['output'];
-  asset_info: WalletLiquidAssetInfo;
-  balance: Scalars['String']['output'];
+export type WalletDetails = {
+  __typename?: 'WalletDetails';
   id: Scalars['String']['output'];
-  transactions: Array<WalletLiquidTransaction>;
-};
-
-export type WalletLiquidAssetInfo = {
-  __typename?: 'WalletLiquidAssetInfo';
-  id: Scalars['String']['output'];
-  is_featured: Scalars['Boolean']['output'];
-  name: Scalars['String']['output'];
-  precision: Scalars['Float']['output'];
-  ticker: Scalars['String']['output'];
-};
-
-export type WalletLiquidTransaction = {
-  __typename?: 'WalletLiquidTransaction';
-  balance: Scalars['String']['output'];
-  blinded_url: Scalars['String']['output'];
-  block_height?: Maybe<Scalars['String']['output']>;
-  date?: Maybe<Scalars['String']['output']>;
-  fee: Scalars['String']['output'];
-  id: Scalars['String']['output'];
-  tx_id: Scalars['String']['output'];
-  unblinded_url: Scalars['String']['output'];
+  protected_mnemonic?: Maybe<Scalars['String']['output']>;
+  type: WalletType;
 };
 
 export type WalletMutations = {
@@ -259,3 +279,7 @@ export type WalletQueries = {
 export type WalletQueriesFind_OneArgs = {
   id: Scalars['String']['input'];
 };
+
+export enum WalletType {
+  ClientGenerated = 'CLIENT_GENERATED',
+}
