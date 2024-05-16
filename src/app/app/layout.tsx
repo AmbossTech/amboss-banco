@@ -2,6 +2,7 @@
 
 import { redirect } from 'next/navigation';
 
+import { AppLayout } from '@/components/layout/AppLayout';
 import { useUserQuery } from '@/graphql/queries/__generated__/user.generated';
 import { ROUTES } from '@/utils/routes';
 
@@ -20,5 +21,5 @@ export default function Layout({
     redirect(ROUTES.login);
   }
 
-  return <>{children}</>;
+  return <AppLayout>{children}</AppLayout>;
 }

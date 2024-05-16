@@ -1,4 +1,4 @@
-import { InternalHeader } from '@/components/header/InternalHeader';
+import { WalletBreadcrumb } from '@/components/breadcrumb/wallets';
 import { SendForm } from '@/components/wallet/SendForm';
 
 export default function Page({
@@ -14,16 +14,13 @@ export default function Page({
       : '';
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-start p-2 2xl:p-24">
-      <InternalHeader />
-
-      <div className="w-full max-w-5xl">
-        <SendForm
-          walletId={params.walletId}
-          accountId={params.accountId}
-          assetId={assetId}
-        />
-      </div>
-    </main>
+    <div>
+      <WalletBreadcrumb id={params.walletId} />
+      <SendForm
+        walletId={params.walletId}
+        accountId={params.accountId}
+        assetId={assetId}
+      />
+    </div>
   );
 }

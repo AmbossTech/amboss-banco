@@ -21,7 +21,7 @@ export const UserWallets = () => {
 
   if (error) {
     return (
-      <Card className="my-10 w-full max-w-5xl">
+      <Card className="w-full">
         <CardHeader>
           <CardTitle className="text-lg">Wallets</CardTitle>
           <CardDescription>Error loading wallets.</CardDescription>
@@ -31,7 +31,7 @@ export const UserWallets = () => {
   }
 
   return (
-    <Card className="my-10 w-full max-w-5xl">
+    <Card className="w-full">
       <CardHeader>
         <CardTitle className="text-lg">Wallets</CardTitle>
         <CardDescription>{`You have ${data?.wallets.find_many.length || '-'} wallets.`}</CardDescription>

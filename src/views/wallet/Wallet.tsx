@@ -142,11 +142,11 @@ export const WalletInfo: FC<{ id: string }> = ({ id }) => {
   }, [data, loading, error]);
 
   return (
-    <div className="w-full max-w-5xl">
+    <div className="w-full">
       <h2 className="scroll-m-20 pb-2 text-3xl font-semibold tracking-tight first:mt-0">
         Accounts
       </h2>
-      <div className="flex w-full max-w-5xl gap-4">
+      <div className="flex w-full gap-4">
         {balances.map((b, index) => (
           <BalanceCard
             walletId={id}

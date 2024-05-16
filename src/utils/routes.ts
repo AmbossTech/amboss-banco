@@ -6,6 +6,7 @@ export const ROUTES = {
     home: '/app',
     user: '/app/user',
     wallet: {
+      home: '/app/wallet',
       new: '/app/wallet/new',
       restore: '/app/wallet/restore',
       id: (id: string) => `/app/wallet/${id}`,

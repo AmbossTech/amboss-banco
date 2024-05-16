@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 import { Noto_Sans } from 'next/font/google';
 import { cookies } from 'next/headers';
 
+import { Toaster } from '@/components/ui/toaster';
 import { ApolloWrapper } from '@/lib/apollo/wrapper';
 import { ThemeProvider } from '@/lib/themes/wrapper';
 
@@ -37,6 +38,7 @@ export default function RootLayout({
         >
           <ApolloWrapper accessToken={accessToken} refreshToken={refreshToken}>
             {children}
+            <Toaster />
           </ApolloWrapper>
         </ThemeProvider>
       </body>
