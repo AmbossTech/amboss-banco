@@ -13,7 +13,7 @@ import {
   VisibilityState,
 } from '@tanstack/react-table';
 import { format, formatDistanceToNowStrict } from 'date-fns';
-import { MoreHorizontal } from 'lucide-react';
+import { ArrowDown, ArrowUp, MoreHorizontal } from 'lucide-react';
 import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -60,6 +60,22 @@ export const columns: ColumnDef<TransactionEntry>[] = [
   //   enableSorting: false,
   //   enableHiding: false,
   // },
+  {
+    accessorKey: 'direction',
+    header: '',
+    cell: ({ row }) => {
+      const balance = Number(row.original.balance);
+      return balance < 0 ? (
+        <div>
+          <ArrowUp className="size-4" color={'red'} />
+        </div>
+      ) : (
+        <div>
+          <ArrowDown className="size-4" color={'green'} />
+        </div>
+      );
+    },
+  },
   {
     accessorKey: 'date',
     header: 'Date',
@@ -241,7 +257,7 @@ export const TransactionTable: React.FC<{
         </Table>
       </div>
       <div className="flex items-center justify-end space-x-2 py-4">
-        <div className="text-muted-foreground flex-1 text-sm">
+        <div className="flex-1 text-sm text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} of{' '}
           {table.getFilteredRowModel().rows.length} row(s) selected.
         </div>

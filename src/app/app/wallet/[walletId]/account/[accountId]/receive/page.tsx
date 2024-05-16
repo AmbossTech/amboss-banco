@@ -1,6 +1,6 @@
 'use client';
 
-import { WalletBreadcrumb } from '@/components/breadcrumb/wallets';
+import { SingleWalletBreadcrumb } from '@/components/breadcrumb/wallet';
 import { ReceiveAddress } from '@/views/wallet/ReceiveAddress';
 
 export default function Page({
@@ -10,7 +10,7 @@ export default function Page({
 }) {
   return (
     <div>
-      <WalletBreadcrumb id={params.walletId} />
+      <SingleWalletBreadcrumb id={params.walletId} currentTitle="Receive" />
       <ReceiveAddress accountId={params.accountId} />
     </div>
   );

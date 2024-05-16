@@ -98,7 +98,7 @@ export const AppLayout: FC<{ children: ReactNode }> = ({ children }) => {
               </SheetContent>
             </Sheet>
 
-            <h1 className="text-xl font-bold">Banco</h1>
+            <h1 className="text-xl font-black">BANCO</h1>
 
             <div className="hidden gap-2 md:flex">
               <VaultButton />

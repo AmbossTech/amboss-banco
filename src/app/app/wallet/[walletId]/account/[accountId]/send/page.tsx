@@ -1,4 +1,4 @@
-import { WalletBreadcrumb } from '@/components/breadcrumb/wallets';
+import { SingleWalletBreadcrumb } from '@/components/breadcrumb/wallet';
 import { SendForm } from '@/components/wallet/SendForm';
 
 export default function Page({
@@ -15,7 +15,7 @@ export default function Page({
 
   return (
     <div>
-      <WalletBreadcrumb id={params.walletId} />
+      <SingleWalletBreadcrumb id={params.walletId} currentTitle="Send" />
       <SendForm
         walletId={params.walletId}
         accountId={params.accountId}
