@@ -20,12 +20,13 @@ export const evaluatePasswordStrength = (password: string) => {
 
   switch (score) {
     case 0:
+      return { title: 'Weak', progress: 0 };
     case 1:
     case 2:
-      return { title: 'Weak' };
+      return { title: 'Weak', progress: 25 };
     case 3:
-      return { title: 'Medium' };
+      return { title: 'Medium', progress: 60 };
     case 4:
-      return { title: 'Strong' };
+      return { title: 'Strong', progress: 100 };
   }
 };

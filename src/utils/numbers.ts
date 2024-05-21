@@ -1,6 +1,7 @@
 export const numberWithPrecision = (
   num: number | string,
-  precision: number
+  precision: number,
+  ticker?: string
 ): string => {
   const parsed = Number(num);
 
@@ -8,7 +9,9 @@ export const numberWithPrecision = (
 
   const precise = parsed / Math.pow(10, precision);
 
-  return precise.toLocaleString();
+  const minimumFractionDigits = ticker === 'USDt' ? 2 : 0;
+
+  return precise.toLocaleString(undefined, { minimumFractionDigits });
 };
 
 export const numberWithoutPrecision = (

@@ -5,10 +5,18 @@ import { FC, useEffect, useRef, useState } from 'react';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useUserQuery } from '@/graphql/queries/__generated__/user.generated';
-import { useGetWalletQuery } from '@/graphql/queries/__generated__/wallet.generated';
+import { useGetWalletDetailsQuery } from '@/graphql/queries/__generated__/wallet.generated';
 import { useKeyStore } from '@/stores/private';
 import {
   CryptoWorkerMessage,
@@ -25,7 +33,7 @@ export const WalletSettings: FC<{ walletId: string }> = ({ walletId }) => {
 
   const masterKey = useKeyStore(s => s.masterKey);
 
-  const { data, loading: walletLoading } = useGetWalletQuery({
+  const { data, loading: walletLoading } = useGetWalletDetailsQuery({
     variables: { id: walletId },
     onError: err => console.log('ERROR', err),
   });
@@ -94,51 +102,75 @@ export const WalletSettings: FC<{ walletId: string }> = ({ walletId }) => {
     }
   };
 
-  if (!masterKey) {
-    return (
-      <Alert className="max-w-5xl">
-        <Shield className="h-4 w-4" />
-        <AlertTitle>Vault Locked!</AlertTitle>
-        <AlertDescription>
-          To decrypt your mnemonic you need to unlock your vault first.
-        </AlertDescription>
-      </Alert>
-    );
-  }
+  // if (!masterKey) {
+  //   return (
+  //     <Alert>
+  //       <Shield className="h-4 w-4" />
+  //       <AlertTitle>Vault Locked!</AlertTitle>
+  //       <AlertDescription>
+  //         To decrypt your mnemonic you need to unlock your vault first.
+  //       </AlertDescription>
+  //     </Alert>
+  //   );
+  // }
 
   return (
-    <div className="flex w-full max-w-5xl flex-col gap-4">
-      <div>
-        <Label htmlFor="protectedMnemonic">Encrypted Mnemonic</Label>
-        <div className="flex gap-2">
-          <Input
-            id="protectedMnemonic"
-            readOnly
-            defaultValue={protectedMnemonic}
-          />
-          <Button
-            disabled={loading || !!mnemonic}
-            onClick={() => handleDecrypt()}
-          >
-            Unencrypt
-          </Button>
-        </div>
-      </div>
+    <div className="flex flex-col gap-4">
+      <Card>
+        <CardHeader>
+          <CardTitle>Mnemonic</CardTitle>
+          <CardDescription>View your wallets secret mnemonic</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div>
+            <Label htmlFor="protectedMnemonic">Encrypted</Label>
+            <div className="flex gap-2">
+              <Input
+                id="protectedMnemonic"
+                readOnly
+                defaultValue={protectedMnemonic}
+              />
+              <Button
+                className="w-40"
+                disabled={loading || !!mnemonic || !masterKey}
+                onClick={() => handleDecrypt()}
+              >
+                Unencrypt
+              </Button>
+            </div>
+          </div>
 
-      <div>
-        <Label htmlFor="mnemonic">Clear text Mnemonic</Label>
-        <div className="flex gap-2">
-          <Input
-            id="mnemonic"
-            readOnly
-            defaultValue={mnemonic}
-            placeholder="Clear text Mnemonic"
-          />
-          <Button disabled={loading} onClick={() => setMnemonic('')}>
-            Clear Memory
-          </Button>
-        </div>
-      </div>
+          <div className="mt-2">
+            <Label htmlFor="mnemonic">Unencrypted</Label>
+            <div className="flex gap-2">
+              <Input
+                id="mnemonic"
+                readOnly
+                defaultValue={mnemonic}
+                placeholder="Clear text Mnemonic"
+              />
+              <Button
+                className="w-40"
+                disabled={loading || !mnemonic || !masterKey}
+                onClick={() => setMnemonic('')}
+              >
+                Clear Memory
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+        {!masterKey ? (
+          <CardFooter>
+            <Alert variant={'destructive'}>
+              <Shield color="red" className="size-4" />
+              <AlertTitle>Vault Locked!</AlertTitle>
+              <AlertDescription>
+                To decrypt your mnemonic you need to unlock your vault first.
+              </AlertDescription>
+            </Alert>
+          </CardFooter>
+        ) : null}
+      </Card>
     </div>
   );
 };

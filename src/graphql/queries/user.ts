@@ -6,6 +6,7 @@ export const User = gql`
       id
       email
       symmetric_key_iv
+      default_wallet_id
     }
   }
 `;

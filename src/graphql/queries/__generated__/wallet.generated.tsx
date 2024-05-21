@@ -27,6 +27,29 @@ export type GetAllWalletsQuery = {
   };
 };
 
+export type GetWalletDetailsQueryVariables = Types.Exact<{
+  id: Types.Scalars['String']['input'];
+}>;
+
+export type GetWalletDetailsQuery = {
+  __typename?: 'Query';
+  wallets: {
+    __typename?: 'WalletQueries';
+    id: string;
+    find_one: {
+      __typename?: 'Wallet';
+      id: string;
+      name: string;
+      details: {
+        __typename?: 'WalletDetails';
+        id: string;
+        type: Types.WalletType;
+        protected_mnemonic?: string | null;
+      };
+    };
+  };
+};
+
 export type GetWalletQueryVariables = Types.Exact<{
   id: Types.Scalars['String']['input'];
 }>;
@@ -175,6 +198,92 @@ export type GetAllWalletsSuspenseQueryHookResult = ReturnType<
 export type GetAllWalletsQueryResult = Apollo.QueryResult<
   GetAllWalletsQuery,
   GetAllWalletsQueryVariables
+>;
+export const GetWalletDetailsDocument = gql`
+  query getWalletDetails($id: String!) {
+    wallets {
+      id
+      find_one(id: $id) {
+        id
+        name
+        details {
+          id
+          type
+          protected_mnemonic
+        }
+      }
+    }
+  }
+`;
+
+/**
+ * __useGetWalletDetailsQuery__
+ *
+ * To run a query within a React component, call `useGetWalletDetailsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetWalletDetailsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetWalletDetailsQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetWalletDetailsQuery(
+  baseOptions: Apollo.QueryHookOptions<
+    GetWalletDetailsQuery,
+    GetWalletDetailsQueryVariables
+  > &
+    (
+      | { variables: GetWalletDetailsQueryVariables; skip?: boolean }
+      | { skip: boolean }
+    )
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<GetWalletDetailsQuery, GetWalletDetailsQueryVariables>(
+    GetWalletDetailsDocument,
+    options
+  );
+}
+export function useGetWalletDetailsLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetWalletDetailsQuery,
+    GetWalletDetailsQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetWalletDetailsQuery,
+    GetWalletDetailsQueryVariables
+  >(GetWalletDetailsDocument, options);
+}
+export function useGetWalletDetailsSuspenseQuery(
+  baseOptions?: Apollo.SuspenseQueryHookOptions<
+    GetWalletDetailsQuery,
+    GetWalletDetailsQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useSuspenseQuery<
+    GetWalletDetailsQuery,
+    GetWalletDetailsQueryVariables
+  >(GetWalletDetailsDocument, options);
+}
+export type GetWalletDetailsQueryHookResult = ReturnType<
+  typeof useGetWalletDetailsQuery
+>;
+export type GetWalletDetailsLazyQueryHookResult = ReturnType<
+  typeof useGetWalletDetailsLazyQuery
+>;
+export type GetWalletDetailsSuspenseQueryHookResult = ReturnType<
+  typeof useGetWalletDetailsSuspenseQuery
+>;
+export type GetWalletDetailsQueryResult = Apollo.QueryResult<
+  GetWalletDetailsQuery,
+  GetWalletDetailsQueryVariables
 >;
 export const GetWalletDocument = gql`
   query getWallet($id: String!) {

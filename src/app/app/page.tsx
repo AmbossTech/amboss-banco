@@ -1,3 +1,5 @@
+import { Dashboard } from '@/views/app/Dashboard';
+
 export default function Page() {
-  return <p>Dashboard</p>;
+  return <Dashboard />;
 }

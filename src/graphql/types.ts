@@ -207,6 +207,7 @@ export type SimpleWalletAccount = {
 
 export type User = {
   __typename?: 'User';
+  default_wallet_id?: Maybe<Scalars['String']['output']>;
   email: Scalars['String']['output'];
   id: Scalars['String']['output'];
   symmetric_key_iv: Scalars['String']['output'];

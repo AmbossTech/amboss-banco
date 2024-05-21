@@ -26,6 +26,7 @@ import { ROUTES } from '@/utils/routes';
 import { WorkerMessage, WorkerResponse } from '@/workers/account/types';
 
 import { Checkbox } from './ui/checkbox';
+import { Progress } from './ui/progress';
 
 const FormSchema = z
   .object({
@@ -158,10 +159,11 @@ export function SignUpForm() {
                 />
               </FormControl>
               <FormMessage />
+              <Progress value={strength?.progress || 0} />
               <FormDescription>
                 <strong>Important: </strong>
-                Your master password cannot be recovered if you forget it!{' '}
-                {strength ? `Password is: ${strength.title}` : null}
+                Your master password cannot be recovered if you forget it!
+                Minimum length is {MIN_PASSWORD_LENGTH}.
               </FormDescription>
             </FormItem>
           )}
@@ -194,6 +196,7 @@ export function SignUpForm() {
               <FormControl>
                 <Input
                   placeholder="Hint to remember your password"
+                  autoComplete="off"
                   {...field}
                 />
               </FormControl>

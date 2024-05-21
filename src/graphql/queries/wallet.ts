@@ -17,6 +17,23 @@ export const GetAllWallets = gql`
   }
 `;
 
+export const GetWalletDetails = gql`
+  query getWalletDetails($id: String!) {
+    wallets {
+      id
+      find_one(id: $id) {
+        id
+        name
+        details {
+          id
+          type
+          protected_mnemonic
+        }
+      }
+    }
+  }
+`;
+
 export const GetWallet = gql`
   query getWallet($id: String!) {
     wallets {

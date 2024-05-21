@@ -1,7 +1,13 @@
 'use client';
 
 import { sortBy } from 'lodash';
-import { ArrowDownToLine, ArrowUpToLine } from 'lucide-react';
+import {
+  ArrowDownToLine,
+  ArrowUpToLine,
+  Bitcoin,
+  DollarSign,
+  Loader2,
+} from 'lucide-react';
 import Link from 'next/link';
 import { FC, useMemo } from 'react';
 
@@ -40,6 +46,44 @@ export type TransactionEntry = {
   blinded_url: string;
 };
 
+const BalanceIcon: FC<{ ticker: string }> = ({ ticker }) => {
+  const classname = 'h-4 w-4 text-muted-foreground';
+  switch (ticker) {
+    case 'USDt':
+      return <DollarSign className={classname} />;
+    case 'LBTC':
+      return <Bitcoin className={classname} />;
+    default:
+      return null;
+  }
+};
+
+const Amount: FC<{ balance: string; precision: number; ticker: string }> = ({
+  balance,
+  precision,
+  ticker,
+}) => {
+  if (ticker === 'USDt') {
+    return (
+      <div className="text-2xl font-bold">{`$${numberWithPrecision(balance, precision, ticker)}`}</div>
+    );
+  }
+
+  return (
+    <div className="text-2xl font-bold">{`${numberWithPrecision(balance, precision)} ${ticker}`}</div>
+  );
+};
+
+const SubAmount: FC<{ balance: string; precision: number; ticker: string }> = ({
+  balance,
+  precision,
+  ticker,
+}) => {
+  return (
+    <p className="text-xs text-muted-foreground">{`${numberWithPrecision(balance, precision)} ${ticker}`}</p>
+  );
+};
+
 const BalanceCard: FC<{
   walletId: string;
   accountId: string;
@@ -51,13 +95,16 @@ const BalanceCard: FC<{
 }) => {
   return (
     <Card>
-      <CardHeader>
-        <CardTitle className="text-lg">{name}</CardTitle>
-        {/* <CardDescription>{name}</CardDescription> */}
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardTitle className="text-sm font-medium">{name}</CardTitle>
+        <BalanceIcon ticker={ticker} />
       </CardHeader>
-      <CardContent>{`${numberWithPrecision(balance, precision)} ${ticker}`}</CardContent>
-      <CardFooter className="flex gap-2">
-        <Button>
+      <CardContent>
+        <Amount balance={balance} precision={precision} ticker={ticker} />
+        <SubAmount balance={balance} precision={precision} ticker={ticker} />
+      </CardContent>
+      <CardFooter className="flex w-full gap-2">
+        <Button size={'sm'} className="w-full">
           <Link
             href={ROUTES.app.wallet.receive(walletId, accountId)}
             className="flex"
@@ -66,7 +113,7 @@ const BalanceCard: FC<{
             Receive
           </Link>
         </Button>
-        <Button variant="secondary">
+        <Button variant="secondary" size={'sm'} className="w-full">
           <Link
             href={ROUTES.app.wallet.send(walletId, accountId, assetId)}
             className="flex"
@@ -141,12 +188,20 @@ export const WalletInfo: FC<{ id: string }> = ({ id }) => {
     return sorted;
   }, [data, loading, error]);
 
+  if (loading) {
+    return (
+      <div className="my-10 flex w-full justify-center">
+        <Loader2 className="animate-spin" />
+      </div>
+    );
+  }
+
   return (
     <div className="w-full">
-      <h2 className="scroll-m-20 pb-2 text-3xl font-semibold tracking-tight first:mt-0">
-        Accounts
+      <h2 className="scroll-m-20 pb-2 text-xl font-semibold tracking-tight first:mt-0">
+        Spending Accounts
       </h2>
-      <div className="flex w-full gap-4">
+      <div className="flex w-full flex-col gap-4 md:flex-row">
         {balances.map((b, index) => (
           <BalanceCard
             walletId={id}
@@ -156,7 +211,7 @@ export const WalletInfo: FC<{ id: string }> = ({ id }) => {
           />
         ))}
       </div>
-      <h2 className="scroll-m-20 pb-2 pt-6 text-3xl font-semibold tracking-tight first:mt-0">
+      <h2 className="scroll-m-20 pb-2 pt-6 text-xl font-semibold tracking-tight first:mt-0">
         Transactions
       </h2>
       <TransactionTable data={transactions} />
