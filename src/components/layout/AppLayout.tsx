@@ -1,4 +1,4 @@
-import { LifeBuoy, Menu, Settings, Vault, Wallet } from 'lucide-react';
+import { Landmark, LifeBuoy, Menu, Settings, Wallet } from 'lucide-react';
 import Link from 'next/link';
 import { FC, ReactNode } from 'react';
 
@@ -26,7 +26,7 @@ export const AppLayout: FC<{ children: ReactNode }> = ({ children }) => {
           <div className="border-b p-2">
             <Button asChild variant="outline" size="icon" aria-label="Home">
               <Link href={ROUTES.app.home}>
-                <Vault className="size-5" />
+                <Landmark className="size-5" />
               </Link>
             </Button>
           </div>

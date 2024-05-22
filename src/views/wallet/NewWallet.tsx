@@ -1,13 +1,16 @@
 'use client';
 
-import { Loader2, Shield } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
+import { VaultLockedAlert } from '@/components/vault/VaultLockedAlert';
 import { useCreateWalletMutation } from '@/graphql/mutations/__generated__/wallet.generated';
-import { useUserQuery } from '@/graphql/queries/__generated__/user.generated';
+import {
+  UserDocument,
+  useUserQuery,
+} from '@/graphql/queries/__generated__/user.generated';
 import { GetAllWalletsDocument } from '@/graphql/queries/__generated__/wallet.generated';
 import { WalletAccountType, WalletType } from '@/graphql/types';
 import { useKeyStore } from '@/stores/private';
@@ -34,7 +37,7 @@ const NewWalletButton = () => {
     onError: error => {
       console.log('Create wallet error', error);
     },
-    refetchQueries: [{ query: GetAllWalletsDocument }],
+    refetchQueries: [{ query: GetAllWalletsDocument }, { query: UserDocument }],
     awaitRefetchQueries: true,
   });
 
@@ -112,7 +115,7 @@ const NewWalletButton = () => {
   return (
     <div>
       <Button disabled={isLoading} onClick={handleCreate}>
-        {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+        {isLoading ? <Loader2 className="mr-2 size-4 animate-spin" /> : null}
         New Wallet
       </Button>
     </div>
@@ -123,17 +126,7 @@ export function NewWallet() {
   const masterKey = useKeyStore(s => s.masterKey);
 
   if (!masterKey) {
-    return (
-      <Alert className="max-w-5xl">
-        <Shield className="h-4 w-4" />
-        <AlertTitle>Vault Locked!</AlertTitle>
-        <AlertDescription>
-          To create a new wallet you need to unlock your vault first. This
-          allows your private key to be encrypted before being sent to the
-          server.
-        </AlertDescription>
-      </Alert>
-    );
+    return <VaultLockedAlert />;
   }
 
   return (

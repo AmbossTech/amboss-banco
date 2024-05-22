@@ -18,8 +18,11 @@ import {
 import { Input } from '@/components/ui/input';
 import { useLoginMutation } from '@/graphql/mutations/__generated__/login.generated';
 import { argon2Hash } from '@/utils/crypto';
+import { handleApolloError } from '@/utils/error';
 import { MIN_PASSWORD_LENGTH } from '@/utils/password';
 import { ROUTES } from '@/utils/routes';
+
+import { useToast } from './ui/use-toast';
 
 const FormSchema = z.object({
   email: z.string().email().min(5, {
@@ -31,13 +34,23 @@ const FormSchema = z.object({
 });
 
 export function LoginForm() {
+  const { toast } = useToast();
+
   const [loading, setLoading] = useState(false);
 
   const [login] = useLoginMutation({
     onCompleted: () => {
       window.location.href = ROUTES.app.home;
     },
-    onError: err => console.log('ERROR', err),
+    onError: err => {
+      const messages = handleApolloError(err);
+
+      toast({
+        variant: 'destructive',
+        title: 'Error logging in.',
+        description: messages.join(', '),
+      });
+    },
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -66,7 +79,11 @@ export function LoginForm() {
         },
       });
     } catch (error) {
-      console.log('ERROR', error);
+      console.error(error);
+      toast({
+        variant: 'destructive',
+        title: 'Error logging in.',
+      });
     } finally {
       setLoading(false);
     }

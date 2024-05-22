@@ -1,13 +1,12 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Loader2, Shield } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -19,8 +18,12 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { VaultLockedAlert } from '@/components/vault/VaultLockedAlert';
 import { useCreateWalletMutation } from '@/graphql/mutations/__generated__/wallet.generated';
-import { useUserQuery } from '@/graphql/queries/__generated__/user.generated';
+import {
+  UserDocument,
+  useUserQuery,
+} from '@/graphql/queries/__generated__/user.generated';
 import { GetAllWalletsDocument } from '@/graphql/queries/__generated__/wallet.generated';
 import { WalletAccountType, WalletType } from '@/graphql/types';
 import { useKeyStore } from '@/stores/private';
@@ -69,7 +72,7 @@ const RestoreWalletButton = () => {
     onError: error => {
       console.log('Create wallet error', error);
     },
-    refetchQueries: [{ query: GetAllWalletsDocument }],
+    refetchQueries: [{ query: GetAllWalletsDocument }, { query: UserDocument }],
     awaitRefetchQueries: true,
   });
 
@@ -188,21 +191,11 @@ export function RestoreWallet() {
   const masterKey = useKeyStore(s => s.masterKey);
 
   if (!masterKey) {
-    return (
-      <Alert className="max-w-5xl">
-        <Shield className="h-4 w-4" />
-        <AlertTitle>Vault Locked!</AlertTitle>
-        <AlertDescription>
-          To create a new wallet you need to unlock your vault first. This
-          allows your private key to be encrypted before being sent to the
-          server.
-        </AlertDescription>
-      </Alert>
-    );
+    return <VaultLockedAlert />;
   }
 
   return (
-    <div className="flex w-full max-w-5xl justify-center">
+    <div className="flex w-full justify-center">
       <RestoreWalletButton />
     </div>
   );

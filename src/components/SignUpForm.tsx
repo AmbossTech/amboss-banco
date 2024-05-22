@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useSignUpMutation } from '@/graphql/mutations/__generated__/signUp.generated';
+import { handleApolloError } from '@/utils/error';
 import {
   evaluatePasswordStrength,
   MIN_PASSWORD_LENGTH,
@@ -27,6 +28,7 @@ import { WorkerMessage, WorkerResponse } from '@/workers/account/types';
 
 import { Checkbox } from './ui/checkbox';
 import { Progress } from './ui/progress';
+import { useToast } from './ui/use-toast';
 
 const FormSchema = z
   .object({
@@ -50,6 +52,8 @@ const FormSchema = z
   });
 
 export function SignUpForm() {
+  const { toast } = useToast();
+
   const workerRef = useRef<Worker>();
 
   const [loading, setLoading] = useState(false);
@@ -58,7 +62,15 @@ export function SignUpForm() {
     onCompleted: () => {
       window.location.href = ROUTES.app.home;
     },
-    onError: err => console.log('ERROR', err),
+    onError: err => {
+      const messages = handleApolloError(err);
+
+      toast({
+        variant: 'destructive',
+        title: 'Error logging in.',
+        description: messages.join(', '),
+      });
+    },
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -80,6 +92,7 @@ export function SignUpForm() {
     if (loading) return;
 
     setLoading(true);
+
     if (workerRef.current) {
       const message: WorkerMessage = {
         type: 'create',
