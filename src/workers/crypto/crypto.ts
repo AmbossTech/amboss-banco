@@ -7,6 +7,7 @@ import {
   WolletDescriptor,
 } from 'lwk_wasm';
 
+import { toWithError } from '@/utils/async';
 import {
   bufToHex,
   decryptCipher,
@@ -76,17 +77,23 @@ self.onmessage = async e => {
         iv
       );
 
-      const liquidDescriptor = await generateLiquidDescriptor(mnemonic);
+      const [liquidDescriptor, error] = await toWithError(
+        generateLiquidDescriptor(mnemonic)
+      );
 
-      const response: CryptoWorkerResponse = {
-        type: 'newWallet',
-        payload: {
-          protectedMnemonic: bufToHex(protectedMnemonic),
-          liquidDescriptor,
-        },
-      };
+      if (error) {
+        self.postMessage({ type: 'error', msg: error });
+      } else {
+        const response: CryptoWorkerResponse = {
+          type: 'newWallet',
+          payload: {
+            protectedMnemonic: bufToHex(protectedMnemonic),
+            liquidDescriptor,
+          },
+        };
 
-      self.postMessage(response);
+        self.postMessage(response);
+      }
 
       break;
     }

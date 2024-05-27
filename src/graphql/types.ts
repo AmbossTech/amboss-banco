@@ -166,11 +166,6 @@ export type Query = {
   wallets: WalletQueries;
 };
 
-export type RsaKeyPairInput = {
-  protected_private_key: Scalars['String']['input'];
-  public_key: Scalars['String']['input'];
-};
-
 export type RefreshToken = {
   __typename?: 'RefreshToken';
   access_token: Scalars['String']['output'];
@@ -182,12 +177,17 @@ export type RefreshWalletInput = {
   wallet_id: Scalars['String']['input'];
 };
 
+export type Secp256k1KeyPairInput = {
+  protected_private_key: Scalars['String']['input'];
+  public_key: Scalars['String']['input'];
+};
+
 export type SignUpInput = {
   email: Scalars['String']['input'];
   master_password_hash: Scalars['String']['input'];
   password_hint?: InputMaybe<Scalars['String']['input']>;
   protected_symmetric_key: Scalars['String']['input'];
-  rsa_key_pair: RsaKeyPairInput;
+  secp256k1_key_pair: Secp256k1KeyPairInput;
   symmetric_key_iv: Scalars['String']['input'];
 };
 

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
+import { useToast } from '@/components/ui/use-toast';
 import { VaultLockedAlert } from '@/components/vault/VaultLockedAlert';
 import { useCreateWalletMutation } from '@/graphql/mutations/__generated__/wallet.generated';
 import {
@@ -14,6 +15,7 @@ import {
 import { GetAllWalletsDocument } from '@/graphql/queries/__generated__/wallet.generated';
 import { WalletAccountType, WalletType } from '@/graphql/types';
 import { useKeyStore } from '@/stores/private';
+import { handleApolloError } from '@/utils/error';
 import { ROUTES } from '@/utils/routes';
 import {
   CryptoWorkerMessage,
@@ -21,6 +23,8 @@ import {
 } from '@/workers/crypto/types';
 
 const NewWalletButton = () => {
+  const { toast } = useToast();
+
   const workerRef = useRef<Worker>();
   const { push } = useRouter();
 
@@ -34,8 +38,14 @@ const NewWalletButton = () => {
     onCompleted: () => {
       push(ROUTES.app.home);
     },
-    onError: error => {
-      console.log('Create wallet error', error);
+    onError: err => {
+      const messages = handleApolloError(err);
+
+      toast({
+        variant: 'destructive',
+        title: 'Error creating new wallet.',
+        description: messages.join(', '),
+      });
     },
     refetchQueries: [{ query: GetAllWalletsDocument }, { query: UserDocument }],
     awaitRefetchQueries: true,

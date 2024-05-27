@@ -52,4 +52,5 @@ export type CryptoWorkerResponse =
       payload: {
         mnemonic: string;
       };
-    };
+    }
+  | { type: 'error'; msg: string };

@@ -1,7 +1,10 @@
+import init, * as ecies from 'ecies-wasm';
+
 import {
   argon2Hash,
+  bufToHex,
   createProtectedSymmetricKey,
-  rsaGenerateProtectedKeyPair,
+  encryptCipher,
 } from '@/utils/crypto';
 
 import {
@@ -10,6 +13,22 @@ import {
   WorkerMessage,
   WorkerResponse,
 } from './types';
+
+init();
+
+async function secp256k1GenerateProtectedKeyPair(
+  masterKey: string,
+  iv: string
+) {
+  const [privateKey, publicKey] = ecies.generateKeypair();
+
+  const protectedPrivateKey = await encryptCipher(privateKey, masterKey, iv);
+
+  return {
+    publicKey: bufToHex(publicKey),
+    protectedPrivateKey: bufToHex(protectedPrivateKey),
+  };
+}
 
 async function generateAccount(
   email: string,
@@ -22,10 +41,8 @@ async function generateAccount(
   const { protectedSymmetricKey, iv } =
     await createProtectedSymmetricKey(masterKey);
 
-  const { publicKey, protectedPrivateKey } = await rsaGenerateProtectedKeyPair(
-    masterKey,
-    iv
-  );
+  const { publicKey, protectedPrivateKey } =
+    await secp256k1GenerateProtectedKeyPair(masterKey, iv);
 
   return {
     email,
@@ -33,7 +50,7 @@ async function generateAccount(
     password_hint: password_hint || undefined,
     symmetric_key_iv: iv,
     protected_symmetric_key: protectedSymmetricKey,
-    rsa_key_pair: {
+    secp256k1_key_pair: {
       public_key: publicKey,
       protected_private_key: protectedPrivateKey,
     },

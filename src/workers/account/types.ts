@@ -25,7 +25,7 @@ export type CreateAccountResult = {
   password_hint: string | undefined;
   symmetric_key_iv: string;
   protected_symmetric_key: string;
-  rsa_key_pair: {
+  secp256k1_key_pair: {
     public_key: string;
     protected_private_key: string;
   };

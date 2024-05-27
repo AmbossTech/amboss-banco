@@ -4,6 +4,7 @@ export const handleApolloError = ({ graphQLErrors }: ApolloError): string[] => {
   const messages: string[] = [];
 
   if (graphQLErrors && graphQLErrors.length) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     graphQLErrors.forEach((e: any) => {
       const messageType = typeof e?.extensions?.response?.message;
 

@@ -11,6 +11,10 @@ export const ARGON_DEFAULTS = {
   parallelism: 4,
 };
 
+export const isASCII = (str: string) => {
+  return /^[\x00-\x7F]*$/.test(str);
+};
+
 export const bufToHex = (buf: Buffer | ArrayBuffer): string =>
   Buffer.from(buf).toString('hex');
 
@@ -79,26 +83,17 @@ export const createProtectedSymmetricKey = async (
 }> => {
   const { symmetricKey, iv } = createSymmetricKey();
 
-  const importedMasterKey = await crypto.subtle.importKey(
-    'raw', // raw or jwk
-    Buffer.from(masterKey, 'hex'),
-    'AES-CBC',
-    false, // extractable
-    ['encrypt']
-  );
+  const hexIV = bufToHex(iv);
 
-  const protectedSymmetricKey = await crypto.subtle.encrypt(
-    {
-      name: 'AES-CBC',
-      iv,
-    },
-    importedMasterKey,
-    symmetricKey
+  const protectedSymmetricKey = await encryptCipher(
+    symmetricKey,
+    masterKey,
+    hexIV
   );
 
   return {
     protectedSymmetricKey: bufToHex(protectedSymmetricKey),
-    iv: bufToHex(iv),
+    iv: hexIV,
   };
 };
 
@@ -178,22 +173,7 @@ export const rsaGenerateProtectedKeyPair = async (
 ) => {
   const [publicKey, privateKey] = await rsaGenerateKeyPair();
 
-  const importedMasterKey = await crypto.subtle.importKey(
-    'raw', // raw or jwk
-    Buffer.from(masterKey, 'hex'),
-    'AES-CBC',
-    false, // extractable
-    ['encrypt']
-  );
-
-  const protectedPrivateKey = await crypto.subtle.encrypt(
-    {
-      name: 'AES-CBC',
-      iv: hexToBuf(iv),
-    },
-    importedMasterKey,
-    privateKey
-  );
+  const protectedPrivateKey = await encryptCipher(privateKey, masterKey, iv);
 
   return {
     publicKey: bufToHex(publicKey),
