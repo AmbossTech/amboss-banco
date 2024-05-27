@@ -39,6 +39,10 @@ export type CryptoWorkerResponse =
       payload: {
         protectedMnemonic: string;
         liquidDescriptor: string;
+        secp256k1_key_pair: {
+          public_key: string;
+          protected_private_key: string;
+        };
       };
     }
   | {

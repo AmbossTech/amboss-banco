@@ -1,3 +1,4 @@
+import init, * as ecies from 'ecies-wasm';
 import {
   Mnemonic,
   Network,
@@ -11,11 +12,28 @@ import { toWithError } from '@/utils/async';
 import {
   bufToHex,
   decryptCipher,
+  encryptCipher,
   generateNewMnemonic,
   restoreMnemonic,
 } from '@/utils/crypto';
 
 import { CryptoWorkerMessage, CryptoWorkerResponse } from './types';
+
+init();
+
+async function secp256k1GenerateProtectedKeyPair(
+  masterKey: string,
+  iv: string
+) {
+  const [privateKey, publicKey] = ecies.generateKeypair();
+
+  const protectedPrivateKey = await encryptCipher(privateKey, masterKey, iv);
+
+  return {
+    publicKey: bufToHex(publicKey),
+    protectedPrivateKey: bufToHex(protectedPrivateKey),
+  };
+}
 
 const generateLiquidDescriptor = async (mnemonic: string) => {
   const network = Network.mainnet();
@@ -53,6 +71,9 @@ self.onmessage = async e => {
         iv
       );
 
+      const { publicKey, protectedPrivateKey } =
+        await secp256k1GenerateProtectedKeyPair(masterKey, iv);
+
       const liquidDescriptor = await generateLiquidDescriptor(mnemonic);
 
       const response: CryptoWorkerResponse = {
@@ -60,6 +81,10 @@ self.onmessage = async e => {
         payload: {
           protectedMnemonic: bufToHex(protectedMnemonic),
           liquidDescriptor,
+          secp256k1_key_pair: {
+            public_key: publicKey,
+            protected_private_key: protectedPrivateKey,
+          },
         },
       };
 
@@ -77,6 +102,9 @@ self.onmessage = async e => {
         iv
       );
 
+      const { publicKey, protectedPrivateKey } =
+        await secp256k1GenerateProtectedKeyPair(masterKey, iv);
+
       const [liquidDescriptor, error] = await toWithError(
         generateLiquidDescriptor(mnemonic)
       );
@@ -89,6 +117,10 @@ self.onmessage = async e => {
           payload: {
             protectedMnemonic: bufToHex(protectedMnemonic),
             liquidDescriptor,
+            secp256k1_key_pair: {
+              public_key: publicKey,
+              protected_private_key: protectedPrivateKey,
+            },
           },
         };
 

@@ -79,6 +79,7 @@ export type CreateWalletInput = {
   accounts: Array<CreateAccountInput>;
   details: CreateWalletDetailsInput;
   name?: InputMaybe<Scalars['String']['input']>;
+  secp256k1_key_pair: Secp256k1KeyPairInput;
 };
 
 export type LiquidAccount = {

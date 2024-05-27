@@ -127,6 +127,7 @@ const RestoreWalletButton = () => {
           createWallet({
             variables: {
               input: {
+                secp256k1_key_pair: message.payload.secp256k1_key_pair,
                 details: {
                   type: WalletType.ClientGenerated,
                   protected_mnemonic: message.payload.protectedMnemonic,
