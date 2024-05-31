@@ -219,6 +219,7 @@ export type Wallet = {
   accounts: Array<WalletAccount>;
   details: WalletDetails;
   id: Scalars['String']['output'];
+  lightning_address?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
 };
 

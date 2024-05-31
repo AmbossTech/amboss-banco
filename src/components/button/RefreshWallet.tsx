@@ -3,8 +3,9 @@
 import { Loader2, RefreshCcw } from 'lucide-react';
 import { FC } from 'react';
 
-import { Button } from '@/components/ui/button';
 import { useRefreshWalletMutation } from '@/graphql/mutations/__generated__/refreshWallet.generated';
+
+import { CommandItem } from '../ui/command';
 
 export const RefreshWallet: FC<{ walletId: string }> = ({ walletId }) => {
   const [refresh, { loading }] = useRefreshWalletMutation({
@@ -14,12 +15,13 @@ export const RefreshWallet: FC<{ walletId: string }> = ({ walletId }) => {
   });
 
   return (
-    <Button onClick={() => refresh()} disabled={loading} variant="outline">
+    <CommandItem onSelect={() => refresh()} className="cursor-pointer">
+      Refresh
       {loading ? (
-        <Loader2 className="h-4 w-4 animate-spin" />
+        <Loader2 className="ml-auto size-4 animate-spin" />
       ) : (
-        <RefreshCcw className="h-4 w-4" />
+        <RefreshCcw className="ml-auto size-4" />
       )}
-    </Button>
+    </CommandItem>
   );
 };

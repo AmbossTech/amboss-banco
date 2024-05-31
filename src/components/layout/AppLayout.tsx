@@ -18,6 +18,8 @@ import {
 } from '@/components/ui/tooltip';
 import { ROUTES } from '@/utils/routes';
 
+import { WalletButton } from '../button/WalletButton';
+
 export const AppLayout: FC<{ children: ReactNode }> = ({ children }) => {
   return (
     <TooltipProvider>
@@ -31,7 +33,7 @@ export const AppLayout: FC<{ children: ReactNode }> = ({ children }) => {
             </Button>
           </div>
           <nav className="grid gap-1 p-2">
-            <Tooltip>
+            {/* <Tooltip>
               <TooltipTrigger asChild>
                 <Button
                   variant="ghost"
@@ -48,7 +50,7 @@ export const AppLayout: FC<{ children: ReactNode }> = ({ children }) => {
               <TooltipContent side="right" sideOffset={5}>
                 Wallets
               </TooltipContent>
-            </Tooltip>
+            </Tooltip> */}
           </nav>
           <nav className="mt-auto grid gap-1 p-2">
             <Tooltip>
@@ -101,6 +103,7 @@ export const AppLayout: FC<{ children: ReactNode }> = ({ children }) => {
             <h1 className="text-xl font-black">BANCO</h1>
 
             <div className="hidden gap-2 md:flex">
+              <WalletButton />
               <VaultButton />
               <ThemeToggle />
             </div>

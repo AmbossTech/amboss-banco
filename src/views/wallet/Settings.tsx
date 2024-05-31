@@ -1,7 +1,8 @@
 'use client';
 
-import { Shield } from 'lucide-react';
+import { Copy, CopyCheck, Shield } from 'lucide-react';
 import { FC, useEffect, useRef, useState } from 'react';
+import { useCopyToClipboard } from 'usehooks-ts';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -102,20 +103,44 @@ export const WalletSettings: FC<{ walletId: string }> = ({ walletId }) => {
     }
   };
 
-  // if (!masterKey) {
-  //   return (
-  //     <Alert>
-  //       <Shield className="h-4 w-4" />
-  //       <AlertTitle>Vault Locked!</AlertTitle>
-  //       <AlertDescription>
-  //         To decrypt your mnemonic you need to unlock your vault first.
-  //       </AlertDescription>
-  //     </Alert>
-  //   );
-  // }
+  const [copiedText, copy] = useCopyToClipboard();
 
   return (
     <div className="flex flex-col gap-4">
+      <Card>
+        <CardHeader>
+          <CardTitle>Lightning Address</CardTitle>
+          <CardDescription>
+            This is the lightning address associated with this wallet.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div>
+            <Label htmlFor="protectedMnemonic">Lightning Address</Label>
+            <div className="flex gap-2">
+              <Input
+                id="protectedMnemonic"
+                readOnly
+                defaultValue={data?.wallets.find_one.lightning_address || ''}
+              />
+              <Button
+                onClick={() =>
+                  copy(data?.wallets.find_one.lightning_address || '')
+                }
+                disabled={!data?.wallets.find_one.lightning_address}
+              >
+                {copiedText ? 'Copied' : 'Copy'}
+                {copiedText ? (
+                  <CopyCheck className="ml-2 size-4" color="green" />
+                ) : (
+                  <Copy className="ml-2 size-4" />
+                )}
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       <Card>
         <CardHeader>
           <CardTitle>Mnemonic</CardTitle>

@@ -2,6 +2,7 @@
 
 import { CircleEqual, PlusCircle } from 'lucide-react';
 import Link from 'next/link';
+import { useLocalStorage } from 'usehooks-ts';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -11,15 +12,15 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { useUserQuery } from '@/graphql/queries/__generated__/user.generated';
+import { LOCALSTORAGE_KEYS } from '@/utils/constants';
 import { ROUTES } from '@/utils/routes';
 
 import { WalletInfo } from '../wallet/Wallet';
 
 export const Dashboard = () => {
-  const { data } = useUserQuery();
+  const [value] = useLocalStorage(LOCALSTORAGE_KEYS.currentWalletId, '');
 
-  if (!data?.user.default_wallet_id) {
+  if (!value) {
     return (
       <div className="flex justify-center py-4">
         <Card>
@@ -58,7 +59,7 @@ export const Dashboard = () => {
 
   return (
     <div className="py-4">
-      <WalletInfo id={data?.user.default_wallet_id} />
+      <WalletInfo id={value} />
     </div>
   );
 };
