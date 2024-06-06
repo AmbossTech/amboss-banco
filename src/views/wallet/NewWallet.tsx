@@ -14,7 +14,7 @@ import {
 } from '@/graphql/queries/__generated__/user.generated';
 import { GetAllWalletsDocument } from '@/graphql/queries/__generated__/wallet.generated';
 import { WalletAccountType, WalletType } from '@/graphql/types';
-import { useKeyStore } from '@/stores/private';
+import { useKeyStore } from '@/stores/keys';
 import { handleApolloError } from '@/utils/error';
 import { ROUTES } from '@/utils/routes';
 import {

@@ -28,7 +28,7 @@ import { useBroadcastLiquidTransactionMutation } from '@/graphql/mutations/__gen
 import { useCreateLiquidTransactionMutation } from '@/graphql/mutations/__generated__/createLiquidTransaction.generated';
 import { useUserQuery } from '@/graphql/queries/__generated__/user.generated';
 import { useGetWalletQuery } from '@/graphql/queries/__generated__/wallet.generated';
-import { useKeyStore } from '@/stores/private';
+import { useKeyStore } from '@/stores/keys';
 import { numberWithoutPrecision } from '@/utils/numbers';
 import { ROUTES } from '@/utils/routes';
 import {

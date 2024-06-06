@@ -18,7 +18,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useUserQuery } from '@/graphql/queries/__generated__/user.generated';
 import { useGetWalletDetailsQuery } from '@/graphql/queries/__generated__/wallet.generated';
-import { useKeyStore } from '@/stores/private';
+import { useKeyStore } from '@/stores/keys';
 import {
   CryptoWorkerMessage,
   CryptoWorkerResponse,

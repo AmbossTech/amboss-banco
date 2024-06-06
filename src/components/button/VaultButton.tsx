@@ -8,7 +8,7 @@ import { z } from 'zod';
 
 import { useCheckPasswordMutation } from '@/graphql/mutations/__generated__/checkPassword.generated';
 import { useUserQuery } from '@/graphql/queries/__generated__/user.generated';
-import { useKeyStore } from '@/stores/private';
+import { useKeyStore } from '@/stores/keys';
 import { MIN_PASSWORD_LENGTH } from '@/utils/password';
 import { WorkerMessage, WorkerResponse } from '@/workers/account/types';
 

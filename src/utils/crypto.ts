@@ -23,6 +23,11 @@ export const bufToUTF8 = (buf: Buffer | ArrayBuffer): string =>
 
 export const hexToBuf = (str: string): Buffer => Buffer.from(str, 'hex');
 
+export const uint8arrayToUtf8 = (str: Uint8Array): string => {
+  const decoder = new TextDecoder('utf-8');
+  return decoder.decode(str);
+};
+
 export const generateNewMnemonic = async (masterKey: string, iv: string) => {
   const mnemonic = generateMnemonic(wordlist);
   const mnemonicBuffer = Buffer.from(mnemonic, 'utf-8');

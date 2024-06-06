@@ -1,4 +1,11 @@
-import { Landmark, LifeBuoy, Menu, Settings, Wallet } from 'lucide-react';
+import {
+  Landmark,
+  LifeBuoy,
+  Menu,
+  MessageCircle,
+  Settings,
+  Wallet,
+} from 'lucide-react';
 import Link from 'next/link';
 import { FC, ReactNode } from 'react';
 
@@ -26,14 +33,14 @@ export const AppLayout: FC<{ children: ReactNode }> = ({ children }) => {
       <div className="grid h-screen w-full md:pl-[53px]">
         <aside className="inset-y fixed  left-0 z-20 hidden h-full flex-col border-r md:flex">
           <div className="border-b p-2">
-            <Button asChild variant="outline" size="icon" aria-label="Home">
+            <Button asChild variant="ghost" size="icon" aria-label="Home">
               <Link href={ROUTES.app.home}>
                 <Landmark className="size-5" />
               </Link>
             </Button>
           </div>
           <nav className="grid gap-1 p-2">
-            {/* <Tooltip>
+            <Tooltip>
               <TooltipTrigger asChild>
                 <Button
                   variant="ghost"
@@ -42,15 +49,15 @@ export const AppLayout: FC<{ children: ReactNode }> = ({ children }) => {
                   aria-label="Wallet"
                   asChild
                 >
-                  <Link href={ROUTES.app.wallet.home}>
-                    <Wallet className="size-5" />
+                  <Link href={ROUTES.app.contacts.home}>
+                    <MessageCircle className="size-5" />
                   </Link>
                 </Button>
               </TooltipTrigger>
               <TooltipContent side="right" sideOffset={5}>
-                Wallets
+                Contacts
               </TooltipContent>
-            </Tooltip> */}
+            </Tooltip>
           </nav>
           <nav className="mt-auto grid gap-1 p-2">
             <Tooltip>

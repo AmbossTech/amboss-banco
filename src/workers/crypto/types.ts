@@ -31,6 +31,28 @@ export type CryptoWorkerMessage =
         masterKey: string;
         iv: string;
       };
+    }
+  | {
+      type: 'eciesEncrypt';
+      payload: {
+        sender_pubkey: string;
+        receiver_pubkey: string;
+        receiver_lightning_address: string;
+        msg: string;
+      };
+    }
+  | {
+      type: 'decryptMessages';
+      payload: {
+        protectedPrivateKey: string;
+        masterKey: string;
+        iv: string;
+        messages: {
+          id: string;
+          contact_is_sender: boolean;
+          protected_message: string;
+        }[];
+      };
     };
 
 export type CryptoWorkerResponse =
@@ -57,4 +79,21 @@ export type CryptoWorkerResponse =
         mnemonic: string;
       };
     }
+  | {
+      type: 'eciesEncrypt';
+      payload: {
+        receiver_lightning_address: string;
+        sender_protected_message: string;
+        receiver_protected_message: string;
+      };
+    }
+  | {
+      type: 'decryptMessages';
+      payload: {
+        id: string;
+        contact_is_sender: boolean;
+        message: string;
+      }[];
+    }
+  | { type: 'loaded' }
   | { type: 'error'; msg: string };

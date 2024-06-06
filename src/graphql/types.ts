@@ -39,10 +39,41 @@ export type BroadcastLiquidTransactionInput = {
   wallet_account_id: Scalars['String']['input'];
 };
 
+export type ContactMessage = {
+  __typename?: 'ContactMessage';
+  contact_is_sender: Scalars['Boolean']['output'];
+  id: Scalars['String']['output'];
+  protected_message: Scalars['String']['output'];
+};
+
+export type ContactMutations = {
+  __typename?: 'ContactMutations';
+  create: CreateContact;
+  send_message: SendMessage;
+};
+
+export type ContactMutationsCreateArgs = {
+  input: CreateContactInput;
+};
+
+export type ContactMutationsSend_MessageArgs = {
+  input: SendMessageInput;
+};
+
 export type CreateAccountInput = {
   liquid_descriptor: Scalars['String']['input'];
   name?: InputMaybe<Scalars['String']['input']>;
   type: WalletAccountType;
+};
+
+export type CreateContact = {
+  __typename?: 'CreateContact';
+  id: Scalars['String']['output'];
+};
+
+export type CreateContactInput = {
+  lightning_address: Scalars['String']['input'];
+  wallet_id: Scalars['String']['input'];
 };
 
 export type CreateLiquidTransaction = {
@@ -134,6 +165,7 @@ export type LoginInput = {
 export type Mutation = {
   __typename?: 'Mutation';
   checkPassword: Scalars['Boolean']['output'];
+  contacts: ContactMutations;
   login: NewAccount;
   logout: Scalars['Boolean']['output'];
   refreshToken: RefreshToken;
@@ -178,9 +210,28 @@ export type RefreshWalletInput = {
   wallet_id: Scalars['String']['input'];
 };
 
+export type Secp256k1KeyPair = {
+  __typename?: 'Secp256k1KeyPair';
+  encryption_pubkey: Scalars['String']['output'];
+  id: Scalars['String']['output'];
+  protected_encryption_private_key: Scalars['String']['output'];
+};
+
 export type Secp256k1KeyPairInput = {
   protected_private_key: Scalars['String']['input'];
   public_key: Scalars['String']['input'];
+};
+
+export type SendMessage = {
+  __typename?: 'SendMessage';
+  id: Scalars['String']['output'];
+};
+
+export type SendMessageInput = {
+  contact_id: Scalars['String']['input'];
+  receiver_lightning_address: Scalars['String']['input'];
+  receiver_protected_message: Scalars['String']['input'];
+  sender_protected_message: Scalars['String']['input'];
 };
 
 export type SignUpInput = {
@@ -206,6 +257,12 @@ export type SimpleWalletAccount = {
   name: Scalars['String']['output'];
 };
 
+export type SimpleWalletContact = {
+  __typename?: 'SimpleWalletContact';
+  id: Scalars['String']['output'];
+  lightning_address: Scalars['String']['output'];
+};
+
 export type User = {
   __typename?: 'User';
   default_wallet_id?: Maybe<Scalars['String']['output']>;
@@ -217,10 +274,12 @@ export type User = {
 export type Wallet = {
   __typename?: 'Wallet';
   accounts: Array<WalletAccount>;
+  contacts: WalletContacts;
   details: WalletDetails;
   id: Scalars['String']['output'];
   lightning_address?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
+  secp256k1_key_pair: Secp256k1KeyPair;
 };
 
 export type WalletAccount = {
@@ -235,6 +294,25 @@ export type WalletAccount = {
 export enum WalletAccountType {
   Liquid = 'LIQUID',
 }
+
+export type WalletContact = {
+  __typename?: 'WalletContact';
+  encryption_pubkey?: Maybe<Scalars['String']['output']>;
+  id: Scalars['String']['output'];
+  lightning_address: Scalars['String']['output'];
+  messages: Array<ContactMessage>;
+};
+
+export type WalletContacts = {
+  __typename?: 'WalletContacts';
+  find_many: Array<SimpleWalletContact>;
+  find_one: WalletContact;
+  id: Scalars['String']['output'];
+};
+
+export type WalletContactsFind_OneArgs = {
+  id: Scalars['String']['input'];
+};
 
 export type WalletDetails = {
   __typename?: 'WalletDetails';

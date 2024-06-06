@@ -16,5 +16,8 @@ export const ROUTES = {
       receive: (walletId: string, accountId: string) =>
         `/app/wallet/${walletId}/account/${accountId}/receive`,
     },
+    contacts: {
+      home: '/app/contacts',
+    },
   },
 };
