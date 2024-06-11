@@ -1,11 +1,20 @@
 'use client';
 
-import { Plus } from 'lucide-react';
-import { FC, useEffect } from 'react';
+import { Plus, User } from 'lucide-react';
+import { FC, useEffect, useState } from 'react';
 import { useLocalStorage } from 'usehooks-ts';
 
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogTrigger } from '@/components/ui/dialog';
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from '@/components/ui/drawer';
 import {
   GetWalletContactsQuery,
   useGetWalletContactsQuery,
@@ -20,7 +29,10 @@ import { Messages } from './Messages';
 type ContactType =
   GetWalletContactsQuery['wallets']['find_one']['contacts']['find_many'][0];
 
-const ContactCard: FC<{ contact: ContactType }> = ({ contact }) => {
+const ContactCard: FC<{ contact: ContactType; cbk?: () => void }> = ({
+  contact,
+  cbk,
+}) => {
   const currentContact = useContactStore(s => s.currentContact);
   const setContact = useContactStore(s => s.setCurrentContact);
 
@@ -29,10 +41,19 @@ const ContactCard: FC<{ contact: ContactType }> = ({ contact }) => {
   return (
     <button
       className={cn(
-        'flex flex-col items-start gap-2 rounded-lg border p-3 text-left text-sm transition-all hover:bg-accent',
+        'flex w-full flex-col items-start gap-2 rounded-lg border p-3 text-left text-sm transition-all hover:bg-accent',
         currentContact?.id === contact.id && 'bg-muted'
       )}
-      onClick={() => setContact({ id: contact.id, user, domain })}
+      onClick={() => {
+        setContact({
+          id: contact.id,
+          user,
+          domain,
+          address: contact.lightning_address,
+        });
+
+        cbk?.();
+      }}
     >
       <div>
         <div className="font-semibold">{user}</div>
@@ -43,6 +64,8 @@ const ContactCard: FC<{ contact: ContactType }> = ({ contact }) => {
 };
 
 export const Contacts = () => {
+  const [open, setOpen] = useState(false);
+
   const currentContact = useContactStore(s => s.currentContact);
   const setContact = useContactStore(s => s.setCurrentContact);
 
@@ -59,7 +82,7 @@ export const Contacts = () => {
 
     const [user, domain] = lightning_address.split('@');
 
-    setContact({ id, user, domain });
+    setContact({ id, user, domain, address: lightning_address });
   });
 
   const contacts = data?.wallets.find_one.contacts.find_many || [];
@@ -69,23 +92,63 @@ export const Contacts = () => {
       <div className="flex flex-col gap-2">
         <div className="flex w-full items-center justify-between">
           <h1 className="text-sm font-semibold md:text-lg">Contacts</h1>
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button size={'icon'} variant={'outline'}>
-                <Plus className="size-4" />
-              </Button>
-            </DialogTrigger>
-            <AddContact walletId={value} />
-          </Dialog>
+          <div className="flex gap-2">
+            <Drawer open={open} onOpenChange={setOpen}>
+              <DrawerTrigger asChild className="flex md:hidden">
+                <Button size={'icon'} variant={'outline'}>
+                  <User className="size-4" />
+                </Button>
+              </DrawerTrigger>
+              <DrawerContent>
+                <DrawerHeader>
+                  <DrawerTitle>Contacts</DrawerTitle>
+                </DrawerHeader>
+
+                <div className="flex max-h-80 flex-col gap-1 overflow-y-auto px-4">
+                  {contacts.length ? (
+                    contacts.map(c => (
+                      <ContactCard
+                        key={c.id}
+                        contact={c}
+                        cbk={() => setOpen(p => !p)}
+                      />
+                    ))
+                  ) : (
+                    <div className="flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed p-3 text-sm text-muted-foreground">
+                      Add a contact to start
+                    </div>
+                  )}
+                </div>
+
+                <DrawerFooter>
+                  {/* <Button>Submit</Button> */}
+                  <DrawerClose asChild>
+                    <Button variant="outline">Close</Button>
+                  </DrawerClose>
+                </DrawerFooter>
+              </DrawerContent>
+            </Drawer>
+
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button size={'icon'} variant={'outline'}>
+                  <Plus className="size-4" />
+                </Button>
+              </DialogTrigger>
+              <AddContact walletId={value} />
+            </Dialog>
+          </div>
         </div>
 
-        {contacts.length ? (
-          contacts.map(c => <ContactCard key={c.id} contact={c} />)
-        ) : (
-          <div className="flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed p-3 text-sm text-muted-foreground">
-            Add a contact to start
-          </div>
-        )}
+        <div className="hidden w-full flex-col gap-2 md:flex">
+          {contacts.length ? (
+            contacts.map(c => <ContactCard key={c.id} contact={c} />)
+          ) : (
+            <div className="flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed p-3 text-sm text-muted-foreground">
+              Add a contact to start
+            </div>
+          )}
+        </div>
       </div>
 
       <Messages />

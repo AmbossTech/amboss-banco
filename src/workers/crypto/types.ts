@@ -17,6 +17,7 @@ export type CryptoWorkerMessage =
   | {
       type: 'signPset';
       payload: {
+        wallet_account_id: string;
         mnemonic: string;
         descriptor: string;
         masterKey: string;
@@ -70,6 +71,7 @@ export type CryptoWorkerResponse =
   | {
       type: 'signPset';
       payload: {
+        wallet_account_id: string;
         signedPset: string;
       };
     }

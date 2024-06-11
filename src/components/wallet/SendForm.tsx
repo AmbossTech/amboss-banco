@@ -98,21 +98,18 @@ export const SendForm: FC<{
     if (!sendData) return;
     if (!masterKey) return;
     if (!userData) return;
-    if (!data?.wallets.find_one) return;
-
-    const currentAccount = data.wallets.find_one.accounts.find(
-      a => a.id === accountId
-    );
-
-    if (!currentAccount) return;
-    if (!data.wallets.find_one.details.protected_mnemonic) return;
+    if (!data?.wallets.find_one.details.protected_mnemonic) return;
 
     if (workerRef.current) {
       const message: CryptoWorkerMessage = {
         type: 'signPset',
         payload: {
+          wallet_account_id:
+            sendData.wallets.create_liquid_transaction.wallet_account.id,
           mnemonic: data.wallets.find_one.details.protected_mnemonic,
-          descriptor: currentAccount.descriptor,
+          descriptor:
+            sendData.wallets.create_liquid_transaction.wallet_account
+              .descriptor,
           pset: sendData.wallets.create_liquid_transaction.base_64,
           masterKey,
           iv: userData.user.symmetric_key_iv,
@@ -187,10 +184,6 @@ export const SendForm: FC<{
             },
           });
 
-          break;
-
-        default:
-          console.error('Unhandled message type:', event.data.type);
           break;
       }
 

@@ -8,6 +8,7 @@ import { z } from 'zod';
 
 import { useCheckPasswordMutation } from '@/graphql/mutations/__generated__/checkPassword.generated';
 import { useUserQuery } from '@/graphql/queries/__generated__/user.generated';
+import { cn } from '@/lib/utils';
 import { useKeyStore } from '@/stores/keys';
 import { MIN_PASSWORD_LENGTH } from '@/utils/password';
 import { WorkerMessage, WorkerResponse } from '@/workers/account/types';
@@ -179,9 +180,11 @@ const UnlockDialogContent: FC<{ callback: () => void }> = ({ callback }) => {
   );
 };
 
-export const VaultButton: FC<{ lockedTitle?: string }> = ({
-  lockedTitle = 'Locked',
-}) => {
+export const VaultButton: FC<{
+  lockedTitle?: string;
+  className?: string;
+  size?: 'sm';
+}> = ({ lockedTitle = 'Locked', className, size }) => {
   const masterKey = useKeyStore(s => s.masterKey);
 
   const clearKeys = useKeyStore(s => s.clear);
@@ -197,12 +200,22 @@ export const VaultButton: FC<{ lockedTitle?: string }> = ({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         {!!masterKey ? (
-          <Button type="button" variant="outline">
+          <Button
+            type="button"
+            variant="outline"
+            size={size}
+            className={cn(className)}
+          >
             <Unlock className="mr-2 h-4 w-4" color="green" />
             Unlocked
           </Button>
         ) : (
-          <Button type="button" variant="outline">
+          <Button
+            type="button"
+            variant="outline"
+            size={size}
+            className={cn(className)}
+          >
             <Lock className="mr-2 h-4 w-4" color="red" />
             {lockedTitle}
           </Button>

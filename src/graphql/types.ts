@@ -79,6 +79,7 @@ export type CreateContactInput = {
 export type CreateLiquidTransaction = {
   __typename?: 'CreateLiquidTransaction';
   base_64: Scalars['String']['output'];
+  wallet_account: WalletAccount;
 };
 
 export type CreateLiquidTransactionInput = {
@@ -157,6 +158,15 @@ export type LiquidTransaction = {
   unblinded_url: Scalars['String']['output'];
 };
 
+export type LnUrlInfo = {
+  __typename?: 'LnUrlInfo';
+  fixed_fee: Scalars['String']['output'];
+  id: Scalars['String']['output'];
+  max_sendable: Scalars['String']['output'];
+  min_sendable: Scalars['String']['output'];
+  variable_fee_percentage: Scalars['String']['output'];
+};
+
 export type LoginInput = {
   email: Scalars['String']['input'];
   master_password_hash: Scalars['String']['input'];
@@ -168,6 +178,8 @@ export type Mutation = {
   contacts: ContactMutations;
   login: NewAccount;
   logout: Scalars['Boolean']['output'];
+  pay: PayMutations;
+  payInvoice: Scalars['Boolean']['output'];
   refreshToken: RefreshToken;
   signUp: NewAccount;
   wallets: WalletMutations;
@@ -181,6 +193,14 @@ export type MutationLoginArgs = {
   input: LoginInput;
 };
 
+export type MutationPayArgs = {
+  input: PayInput;
+};
+
+export type MutationPayInvoiceArgs = {
+  invoice: Scalars['String']['input'];
+};
+
 export type MutationSignUpArgs = {
   input: SignUpInput;
 };
@@ -190,6 +210,33 @@ export type NewAccount = {
   access_token: Scalars['String']['output'];
   id: Scalars['String']['output'];
   refresh_token: Scalars['String']['output'];
+};
+
+export type PayInput = {
+  wallet_id: Scalars['String']['input'];
+};
+
+export type PayLnAddressInput = {
+  address: Scalars['String']['input'];
+  amount: Scalars['Float']['input'];
+};
+
+export type PayLnInvoiceInput = {
+  invoice: Scalars['String']['input'];
+};
+
+export type PayMutations = {
+  __typename?: 'PayMutations';
+  lightning_address: CreateLiquidTransaction;
+  lightning_invoice: CreateLiquidTransaction;
+};
+
+export type PayMutationsLightning_AddressArgs = {
+  input: PayLnAddressInput;
+};
+
+export type PayMutationsLightning_InvoiceArgs = {
+  input: PayLnInvoiceInput;
 };
 
 export type Query = {
@@ -300,6 +347,7 @@ export type WalletContact = {
   encryption_pubkey?: Maybe<Scalars['String']['output']>;
   id: Scalars['String']['output'];
   lightning_address: Scalars['String']['output'];
+  lnurl_info?: Maybe<LnUrlInfo>;
   messages: Array<ContactMessage>;
 };
 

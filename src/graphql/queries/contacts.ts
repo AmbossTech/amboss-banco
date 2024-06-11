@@ -34,6 +34,13 @@ export const GetWalletContact = gql`
             id
             lightning_address
             encryption_pubkey
+            lnurl_info {
+              id
+              min_sendable
+              max_sendable
+              variable_fee_percentage
+              fixed_fee
+            }
           }
         }
       }

@@ -144,7 +144,8 @@ self.onmessage = async e => {
     }
 
     case 'signPset': {
-      const { descriptor, masterKey, iv, pset } = message.payload;
+      const { descriptor, masterKey, iv, pset, wallet_account_id } =
+        message.payload;
 
       const unprotectedMnemonic = await decryptCipher(
         Buffer.from(message.payload.mnemonic, 'hex'),
@@ -161,6 +162,7 @@ self.onmessage = async e => {
       const response: CryptoWorkerResponse = {
         type: 'signPset',
         payload: {
+          wallet_account_id,
           signedPset,
         },
       };

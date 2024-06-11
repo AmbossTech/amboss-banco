@@ -4,6 +4,7 @@ type Contact = {
   id: string;
   user: string;
   domain: string;
+  address: string;
 };
 
 type ContactState = {

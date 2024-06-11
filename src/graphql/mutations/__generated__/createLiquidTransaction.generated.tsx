@@ -17,6 +17,11 @@ export type CreateLiquidTransactionMutation = {
     create_liquid_transaction: {
       __typename?: 'CreateLiquidTransaction';
       base_64: string;
+      wallet_account: {
+        __typename?: 'WalletAccount';
+        id: string;
+        descriptor: string;
+      };
     };
   };
 };
@@ -25,6 +30,10 @@ export const CreateLiquidTransactionDocument = gql`
   mutation CreateLiquidTransaction($input: CreateLiquidTransactionInput!) {
     wallets {
       create_liquid_transaction(input: $input) {
+        wallet_account {
+          id
+          descriptor
+        }
         base_64
       }
     }

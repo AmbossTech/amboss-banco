@@ -57,6 +57,14 @@ export type GetWalletContactQuery = {
           id: string;
           lightning_address: string;
           encryption_pubkey?: string | null;
+          lnurl_info?: {
+            __typename?: 'LnUrlInfo';
+            id: string;
+            min_sendable: string;
+            max_sendable: string;
+            variable_fee_percentage: string;
+            fixed_fee: string;
+          } | null;
         };
       };
     };
@@ -202,6 +210,13 @@ export const GetWalletContactDocument = gql`
             id
             lightning_address
             encryption_pubkey
+            lnurl_info {
+              id
+              min_sendable
+              max_sendable
+              variable_fee_percentage
+              fixed_fee
+            }
           }
         }
       }
