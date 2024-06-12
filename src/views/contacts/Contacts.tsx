@@ -71,7 +71,10 @@ export const Contacts = () => {
 
   const [value] = useLocalStorage(LOCALSTORAGE_KEYS.currentWalletId, '');
 
-  const { data } = useGetWalletContactsQuery({ variables: { id: value } });
+  const { data } = useGetWalletContactsQuery({
+    variables: { id: value },
+    skip: !value,
+  });
 
   useEffect(() => {
     if (!!currentContact) return;

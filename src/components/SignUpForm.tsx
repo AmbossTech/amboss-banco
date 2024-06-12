@@ -2,6 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
+import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -26,6 +27,13 @@ import {
 import { ROUTES } from '@/utils/routes';
 import { WorkerMessage, WorkerResponse } from '@/workers/account/types';
 
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from './ui/card';
 import { Checkbox } from './ui/checkbox';
 import { Progress } from './ui/progress';
 import { useToast } from './ui/use-toast';
@@ -139,112 +147,137 @@ export function SignUpForm() {
   }, [signUp]);
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3 space-y-6">
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email</FormLabel>
-              <FormControl>
-                <Input placeholder="satoshi@nakamoto.com" {...field} />
-              </FormControl>
-              <FormMessage />
-              <FormDescription>
-                You will use your email to login.
-              </FormDescription>
-            </FormItem>
-          )}
-        />
+    <Card>
+      <CardHeader>
+        <CardTitle>Sign up</CardTitle>
+      </CardHeader>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)}>
+          <CardContent className="flex flex-col gap-4">
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input placeholder="satoshi@nakamoto.com" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                  <FormDescription>
+                    You will use your email to login.
+                  </FormDescription>
+                </FormItem>
+              )}
+            />
 
-        <FormField
-          control={form.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Master Password</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="super secret password"
-                  type="password"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-              <Progress value={strength?.progress || 0} />
-              <FormDescription>
-                <strong>Important: </strong>
-                Your master password cannot be recovered if you forget it!
-                Minimum length is {MIN_PASSWORD_LENGTH}.
-              </FormDescription>
-            </FormItem>
-          )}
-        />
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Master Password</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="super secret password"
+                      type="password"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                  <Progress value={strength?.progress || 0} />
+                  <FormDescription>
+                    <strong>Important: </strong>
+                    Your master password cannot be recovered if you forget it!
+                    Minimum length is {MIN_PASSWORD_LENGTH}.
+                  </FormDescription>
+                </FormItem>
+              )}
+            />
 
-        <FormField
-          control={form.control}
-          name="confirm_password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Confirm your Master Password</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="super secret password"
-                  type="password"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+            <FormField
+              control={form.control}
+              name="confirm_password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Confirm your Master Password</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="super secret password"
+                      type="password"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-        <FormField
-          control={form.control}
-          name="password_hint"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Master Password Hint</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="Hint to remember your password"
-                  autoComplete="off"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+            <FormField
+              control={form.control}
+              name="password_hint"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Master Password Hint</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Hint to remember your password"
+                      autoComplete="off"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-        <FormField
-          control={form.control}
-          name="accept_tos_and_pp"
-          render={({ field }) => (
-            <FormItem className="flex flex-row items-start space-x-3 space-y-0 py-4">
-              <FormControl>
-                <Checkbox
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                />
-              </FormControl>
-              <div className="flex flex-col gap-2">
-                <FormLabel>
-                  By checking this box you agree to the Terms of Service and the
-                  Privacy Policy.
-                </FormLabel>
+            <FormField
+              control={form.control}
+              name="accept_tos_and_pp"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0 py-4">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <div className="flex flex-col gap-2">
+                    <FormLabel>
+                      By checking this box you agree to the Terms of Service and
+                      the Privacy Policy.
+                    </FormLabel>
 
-                <FormMessage />
-              </div>
-            </FormItem>
-          )}
-        />
-        <Button type="submit" disabled={loading}>
-          {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-          Sign Up
-        </Button>
-      </form>
-    </Form>
+                    <FormMessage />
+                  </div>
+                </FormItem>
+              )}
+            />
+          </CardContent>
+
+          <CardFooter>
+            <div className="w-full">
+              <Button type="submit" disabled={loading} className="w-full">
+                {loading ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : null}
+                Sign Up
+              </Button>
+
+              <Link href={ROUTES.login} className="w-full">
+                <Button
+                  type="button"
+                  disabled={loading}
+                  variant={'ghost'}
+                  className="mt-4 w-full"
+                >
+                  Login
+                </Button>
+              </Link>
+            </div>
+          </CardFooter>
+        </form>
+      </Form>
+    </Card>
   );
 }

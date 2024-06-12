@@ -2,6 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
+import Link from 'next/link';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -22,6 +23,13 @@ import { handleApolloError } from '@/utils/error';
 import { MIN_PASSWORD_LENGTH } from '@/utils/password';
 import { ROUTES } from '@/utils/routes';
 
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from './ui/card';
 import { useToast } from './ui/use-toast';
 
 const FormSchema = z.object({
@@ -90,45 +98,69 @@ export function LoginForm() {
   };
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3 space-y-6">
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email</FormLabel>
-              <FormControl>
-                <Input placeholder="satoshi@nakamoto.com" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+    <Card className="w-full max-w-96">
+      <CardHeader>
+        <CardTitle>Login</CardTitle>
+      </CardHeader>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)}>
+          <CardContent className="flex flex-col gap-4">
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input placeholder="satoshi@nakamoto.com" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-        <FormField
-          control={form.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Master Password</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="super secret password"
-                  type="password"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Master Password</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="super secret password"
+                      type="password"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </CardContent>
 
-        <Button type="submit" disabled={loading}>
-          {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-          Login
-        </Button>
-      </form>
-    </Form>
+          <CardFooter>
+            <div className="w-full">
+              <Button type="submit" disabled={loading} className="w-full">
+                {loading ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : null}
+                Login
+              </Button>
+
+              <Link href={ROUTES.signup} className="w-full">
+                <Button
+                  type="button"
+                  disabled={loading}
+                  variant={'ghost'}
+                  className="mt-4 w-full"
+                >
+                  Sign Up
+                </Button>
+              </Link>
+            </div>
+          </CardFooter>
+        </form>
+      </Form>
+    </Card>
   );
 }

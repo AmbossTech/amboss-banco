@@ -7,9 +7,6 @@ export const ROUTES = {
     user: '/app/user',
     wallet: {
       home: '/app/wallet',
-      new: '/app/wallet/new',
-      restore: '/app/wallet/restore',
-      id: (id: string) => `/app/wallet/${id}`,
       settings: (id: string) => `/app/wallet/${id}/settings`,
       send: (walletId: string, accountId: string, assetId: string) =>
         `/app/wallet/${walletId}/account/${accountId}/send?assetId=${assetId}`,
@@ -18,6 +15,13 @@ export const ROUTES = {
     },
     contacts: {
       home: '/app/contacts',
+    },
+  },
+  setup: {
+    wallet: {
+      home: '/setup/wallet',
+      new: '/setup/wallet/new',
+      restore: '/setup/wallet/restore',
     },
   },
 };

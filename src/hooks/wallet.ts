@@ -8,6 +8,7 @@ export const useWalletInfo = () => {
 
   const { data, loading } = useGetWalletQuery({
     variables: { id: walletId },
+    skip: !walletId,
     errorPolicy: 'ignore',
   });
 

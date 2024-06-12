@@ -134,7 +134,7 @@ export function WalletButton() {
                 }}
               >
                 <Link
-                  href={ROUTES.app.wallet.new}
+                  href={ROUTES.setup.wallet.new}
                   className="flex w-full items-center justify-between"
                 >
                   New Wallet
@@ -148,7 +148,7 @@ export function WalletButton() {
                 }}
               >
                 <Link
-                  href={ROUTES.app.wallet.restore}
+                  href={ROUTES.setup.wallet.restore}
                   className="flex w-full items-center justify-between"
                 >
                   Restore Wallet
