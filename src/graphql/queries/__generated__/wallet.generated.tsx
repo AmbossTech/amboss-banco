@@ -85,6 +85,11 @@ export type GetWalletQuery = {
             id: string;
             balance: string;
             asset_id: string;
+            fiat_info: {
+              __typename?: 'FiatInfo';
+              id: string;
+              fiat_to_btc?: string | null;
+            };
             asset_info: {
               __typename?: 'LiquidAssetInfo';
               id: string;
@@ -105,6 +110,11 @@ export type GetWalletQuery = {
             blinded_url: string;
             balance: string;
             asset_id: string;
+            fiat_info: {
+              __typename?: 'FiatInfo';
+              id: string;
+              fiat_to_btc?: string | null;
+            };
             asset_info: {
               __typename?: 'LiquidAssetInfo';
               id: string;
@@ -312,6 +322,10 @@ export const GetWalletDocument = gql`
               id
               balance
               asset_id
+              fiat_info {
+                id
+                fiat_to_btc
+              }
               asset_info {
                 id
                 is_featured
@@ -330,6 +344,10 @@ export const GetWalletDocument = gql`
               blinded_url
               balance
               asset_id
+              fiat_info {
+                id
+                fiat_to_btc
+              }
               asset_info {
                 id
                 is_featured

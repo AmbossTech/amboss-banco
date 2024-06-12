@@ -20,6 +20,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { useGetWalletQuery } from '@/graphql/queries/__generated__/wallet.generated';
+import { cryptoToUsd } from '@/utils/fiat';
 import { numberWithPrecision } from '@/utils/numbers';
 import { ROUTES } from '@/utils/routes';
 import { TransactionTable } from '@/views/wallet/TxTable';
@@ -29,6 +30,7 @@ type AssetBalance = {
   name: string;
   ticker: string;
   balance: string;
+  formatted_balance: string;
   precision: number;
   assetId: string;
 };
@@ -37,6 +39,7 @@ export type TransactionEntry = {
   id: string;
   tx_id: string;
   balance: string;
+  formatted_balance: string;
   date: string | undefined | null;
   fee: string;
   ticker: string;
@@ -58,32 +61,6 @@ const BalanceIcon: FC<{ ticker: string }> = ({ ticker }) => {
   }
 };
 
-const Amount: FC<{ balance: string; precision: number; ticker: string }> = ({
-  balance,
-  precision,
-  ticker,
-}) => {
-  if (ticker === 'USDt') {
-    return (
-      <div className="text-2xl font-bold">{`$${numberWithPrecision(balance, precision, ticker)}`}</div>
-    );
-  }
-
-  return (
-    <div className="text-2xl font-bold">{`${numberWithPrecision(balance, precision)} ${ticker}`}</div>
-  );
-};
-
-const SubAmount: FC<{ balance: string; precision: number; ticker: string }> = ({
-  balance,
-  precision,
-  ticker,
-}) => {
-  return (
-    <p className="text-xs text-muted-foreground">{`${numberWithPrecision(balance, precision)} ${ticker}`}</p>
-  );
-};
-
 const BalanceCard: FC<{
   walletId: string;
   accountId: string;
@@ -91,7 +68,7 @@ const BalanceCard: FC<{
 }> = ({
   walletId,
   accountId,
-  input: { balance, name, precision, ticker, assetId },
+  input: { balance, name, precision, ticker, assetId, formatted_balance },
 }) => {
   return (
     <Card>
@@ -100,8 +77,8 @@ const BalanceCard: FC<{
         <BalanceIcon ticker={ticker} />
       </CardHeader>
       <CardContent>
-        <Amount balance={balance} precision={precision} ticker={ticker} />
-        <SubAmount balance={balance} precision={precision} ticker={ticker} />
+        <div className="text-2xl font-bold">{formatted_balance}</div>
+        <p className="text-xs text-muted-foreground">{`${numberWithPrecision(balance, precision)} ${ticker}`}</p>
       </CardContent>
       <CardFooter className="flex w-full gap-2">
         <Button size={'sm'} className="w-full">
@@ -140,6 +117,7 @@ export const WalletInfo: FC<{ id: string }> = ({ id }) => {
 
     accounts.forEach(a => {
       if (!a.liquid) return;
+
       a.liquid.assets.forEach(l => {
         mapped.push({
           accountId: a.id,
@@ -147,6 +125,12 @@ export const WalletInfo: FC<{ id: string }> = ({ id }) => {
           name: l.asset_info.name,
           ticker: l.asset_info.ticker,
           balance: l.balance,
+          formatted_balance: cryptoToUsd(
+            l.balance,
+            l.asset_info.precision,
+            l.asset_info.ticker,
+            l.fiat_info.fiat_to_btc
+          ),
           precision: l.asset_info.precision,
         });
       });
@@ -170,6 +154,12 @@ export const WalletInfo: FC<{ id: string }> = ({ id }) => {
           id: t.id,
           tx_id: t.tx_id,
           balance: t.balance,
+          formatted_balance: cryptoToUsd(
+            t.balance,
+            t.asset_info.precision,
+            t.asset_info.ticker,
+            t.fiat_info.fiat_to_btc
+          ),
           date: t.date,
           fee: t.fee,
           ticker: t.asset_info.ticker,

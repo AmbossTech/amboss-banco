@@ -117,15 +117,16 @@ export const columns: ColumnDef<TransactionEntry>[] = [
     cell: ({ row }) => {
       const amount = parseFloat(row.getValue('balance'));
 
-      // // Format the amount as a dollar amount
-      // const formatted = new Intl.NumberFormat('en-US', {
-      //   style: 'currency',
-      //   currency: 'USD',
-      // }).format(amount);
-
       const formatted = numberWithPrecision(amount, row.original.precision);
 
-      return (
+      return row.original.date ? (
+        <div className="text-right">
+          {row.original.formatted_balance}
+          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+            {`${formatted} ${row.original.ticker}`}
+          </p>
+        </div>
+      ) : (
         <div className="text-right font-medium">{`${formatted} ${row.original.ticker}`}</div>
       );
     },
@@ -258,8 +259,7 @@ export const TransactionTable: React.FC<{
       </div>
       <div className="flex items-center justify-end space-x-2 py-4">
         <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of{' '}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
+          {table.getFilteredRowModel().rows.length} transaction(s)
         </div>
         <div className="space-x-2">
           <Button

@@ -59,6 +59,10 @@ export const GetWallet = gql`
               id
               balance
               asset_id
+              fiat_info {
+                id
+                fiat_to_btc
+              }
               asset_info {
                 id
                 is_featured
@@ -77,6 +81,10 @@ export const GetWallet = gql`
               blinded_url
               balance
               asset_id
+              fiat_info {
+                id
+                fiat_to_btc
+              }
               asset_info {
                 id
                 is_featured

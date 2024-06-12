@@ -108,6 +108,12 @@ export type CreateWalletInput = {
   secp256k1_key_pair: Secp256k1KeyPairInput;
 };
 
+export type FiatInfo = {
+  __typename?: 'FiatInfo';
+  fiat_to_btc?: Maybe<Scalars['String']['output']>;
+  id: Scalars['String']['output'];
+};
+
 export type LiquidAccount = {
   __typename?: 'LiquidAccount';
   assets: Array<LiquidAsset>;
@@ -120,6 +126,7 @@ export type LiquidAsset = {
   asset_id: Scalars['String']['output'];
   asset_info: LiquidAssetInfo;
   balance: Scalars['String']['output'];
+  fiat_info: FiatInfo;
   id: Scalars['String']['output'];
 };
 
@@ -147,6 +154,7 @@ export type LiquidTransaction = {
   block_height?: Maybe<Scalars['String']['output']>;
   date?: Maybe<Scalars['String']['output']>;
   fee: Scalars['String']['output'];
+  fiat_info: FiatInfo;
   id: Scalars['String']['output'];
   tx_id: Scalars['String']['output'];
   unblinded_url: Scalars['String']['output'];
