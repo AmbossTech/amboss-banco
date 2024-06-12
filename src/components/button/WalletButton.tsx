@@ -89,7 +89,7 @@ export function WalletButton() {
                     key={w.value}
                     value={w.value}
                     onSelect={currentValue => {
-                      setValue(currentValue === value ? '' : currentValue);
+                      setValue(currentValue);
                       push(ROUTES.app.home);
                       setOpen(false);
                     }}

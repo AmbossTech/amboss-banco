@@ -27,6 +27,48 @@ export type PayLightningAddressMutation = {
   };
 };
 
+export type PayLiquidAddressMutationVariables = Types.Exact<{
+  addressInput: Types.PayLiquidAddressInput;
+  payInput: Types.PayInput;
+}>;
+
+export type PayLiquidAddressMutation = {
+  __typename?: 'Mutation';
+  pay: {
+    __typename?: 'PayMutations';
+    liquid_address: {
+      __typename?: 'CreateLiquidTransaction';
+      base_64: string;
+      wallet_account: {
+        __typename?: 'WalletAccount';
+        id: string;
+        descriptor: string;
+      };
+    };
+  };
+};
+
+export type PayLightningInvoiceMutationVariables = Types.Exact<{
+  invoiceInput: Types.PayLnInvoiceInput;
+  payInput: Types.PayInput;
+}>;
+
+export type PayLightningInvoiceMutation = {
+  __typename?: 'Mutation';
+  pay: {
+    __typename?: 'PayMutations';
+    lightning_invoice: {
+      __typename?: 'CreateLiquidTransaction';
+      base_64: string;
+      wallet_account: {
+        __typename?: 'WalletAccount';
+        id: string;
+        descriptor: string;
+      };
+    };
+  };
+};
+
 export const PayLightningAddressDocument = gql`
   mutation PayLightningAddress(
     $addressInput: PayLnAddressInput!
@@ -86,4 +128,124 @@ export type PayLightningAddressMutationResult =
 export type PayLightningAddressMutationOptions = Apollo.BaseMutationOptions<
   PayLightningAddressMutation,
   PayLightningAddressMutationVariables
+>;
+export const PayLiquidAddressDocument = gql`
+  mutation PayLiquidAddress(
+    $addressInput: PayLiquidAddressInput!
+    $payInput: PayInput!
+  ) {
+    pay(input: $payInput) {
+      liquid_address(input: $addressInput) {
+        wallet_account {
+          id
+          descriptor
+        }
+        base_64
+      }
+    }
+  }
+`;
+export type PayLiquidAddressMutationFn = Apollo.MutationFunction<
+  PayLiquidAddressMutation,
+  PayLiquidAddressMutationVariables
+>;
+
+/**
+ * __usePayLiquidAddressMutation__
+ *
+ * To run a mutation, you first call `usePayLiquidAddressMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `usePayLiquidAddressMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [payLiquidAddressMutation, { data, loading, error }] = usePayLiquidAddressMutation({
+ *   variables: {
+ *      addressInput: // value for 'addressInput'
+ *      payInput: // value for 'payInput'
+ *   },
+ * });
+ */
+export function usePayLiquidAddressMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    PayLiquidAddressMutation,
+    PayLiquidAddressMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    PayLiquidAddressMutation,
+    PayLiquidAddressMutationVariables
+  >(PayLiquidAddressDocument, options);
+}
+export type PayLiquidAddressMutationHookResult = ReturnType<
+  typeof usePayLiquidAddressMutation
+>;
+export type PayLiquidAddressMutationResult =
+  Apollo.MutationResult<PayLiquidAddressMutation>;
+export type PayLiquidAddressMutationOptions = Apollo.BaseMutationOptions<
+  PayLiquidAddressMutation,
+  PayLiquidAddressMutationVariables
+>;
+export const PayLightningInvoiceDocument = gql`
+  mutation PayLightningInvoice(
+    $invoiceInput: PayLnInvoiceInput!
+    $payInput: PayInput!
+  ) {
+    pay(input: $payInput) {
+      lightning_invoice(input: $invoiceInput) {
+        wallet_account {
+          id
+          descriptor
+        }
+        base_64
+      }
+    }
+  }
+`;
+export type PayLightningInvoiceMutationFn = Apollo.MutationFunction<
+  PayLightningInvoiceMutation,
+  PayLightningInvoiceMutationVariables
+>;
+
+/**
+ * __usePayLightningInvoiceMutation__
+ *
+ * To run a mutation, you first call `usePayLightningInvoiceMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `usePayLightningInvoiceMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [payLightningInvoiceMutation, { data, loading, error }] = usePayLightningInvoiceMutation({
+ *   variables: {
+ *      invoiceInput: // value for 'invoiceInput'
+ *      payInput: // value for 'payInput'
+ *   },
+ * });
+ */
+export function usePayLightningInvoiceMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    PayLightningInvoiceMutation,
+    PayLightningInvoiceMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    PayLightningInvoiceMutation,
+    PayLightningInvoiceMutationVariables
+  >(PayLightningInvoiceDocument, options);
+}
+export type PayLightningInvoiceMutationHookResult = ReturnType<
+  typeof usePayLightningInvoiceMutation
+>;
+export type PayLightningInvoiceMutationResult =
+  Apollo.MutationResult<PayLightningInvoiceMutation>;
+export type PayLightningInvoiceMutationOptions = Apollo.BaseMutationOptions<
+  PayLightningInvoiceMutation,
+  PayLightningInvoiceMutationVariables
 >;

@@ -8,7 +8,7 @@ export default function Page({
   params: { walletId: string; accountId: string };
 }) {
   return (
-    <div className="mt-2">
+    <div className="mt-4 flex justify-center">
       <ReceiveAddress accountId={params.accountId} />
     </div>
   );

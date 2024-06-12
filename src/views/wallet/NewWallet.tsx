@@ -5,6 +5,13 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { useToast } from '@/components/ui/use-toast';
 import { VaultLockedAlert } from '@/components/vault/VaultLockedAlert';
 import { useCreateWalletMutation } from '@/graphql/mutations/__generated__/wallet.generated';
@@ -105,11 +112,6 @@ const NewWalletButton = () => {
           });
 
           break;
-
-        default:
-          console.error('Unhandled message type:', event.data.type);
-          setLoading(false);
-          break;
       }
     };
 
@@ -124,12 +126,10 @@ const NewWalletButton = () => {
   }, [createWallet]);
 
   return (
-    <div>
-      <Button disabled={isLoading} onClick={handleCreate}>
-        {isLoading ? <Loader2 className="mr-2 size-4 animate-spin" /> : null}
-        New Wallet
-      </Button>
-    </div>
+    <Button disabled={isLoading} onClick={handleCreate} className="w-full">
+      {isLoading ? <Loader2 className="mr-2 size-4 animate-spin" /> : null}
+      New Wallet
+    </Button>
   );
 };
 
@@ -137,12 +137,28 @@ export function NewWallet() {
   const masterKey = useKeyStore(s => s.masterKey);
 
   if (!masterKey) {
-    return <VaultLockedAlert />;
+    return (
+      <div>
+        <h1 className="mb-2 font-semibold">Create New Wallet</h1>
+        <VaultLockedAlert />
+      </div>
+    );
   }
 
   return (
-    <div>
-      <NewWalletButton />
-    </div>
+    <Card>
+      <CardHeader>
+        <CardTitle>Create New Wallet</CardTitle>
+        <CardDescription>
+          The wallet will be created and encrypted client-side. No sensitive
+          information is stored on the server.
+        </CardDescription>
+      </CardHeader>
+      <CardFooter>
+        <div className="flex w-full justify-center">
+          <NewWalletButton />
+        </div>
+      </CardFooter>
+    </Card>
   );
 }

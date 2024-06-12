@@ -62,11 +62,6 @@ export const WalletSettings: FC<{ walletId: string }> = ({ walletId }) => {
         case 'decryptMnemonic':
           setMnemonic(message.payload.mnemonic);
           break;
-
-        default:
-          console.error('Unhandled message type:', event.data.type);
-
-          break;
       }
 
       setLoading(false);

@@ -9,6 +9,13 @@ import { z } from 'zod';
 
 import { Button } from '@/components/ui/button';
 import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import {
   Form,
   FormControl,
   FormDescription,
@@ -152,11 +159,6 @@ const RestoreWalletButton = () => {
           });
           setLoading(false);
           break;
-
-        default:
-          console.error('Unhandled message type:', event.data.type);
-          setLoading(false);
-          break;
       }
     };
 
@@ -198,7 +200,7 @@ const RestoreWalletButton = () => {
           )}
         />
 
-        <Button type="submit" disabled={loading}>
+        <Button type="submit" disabled={loading} className="w-full">
           {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
           Import
         </Button>
@@ -211,12 +213,28 @@ export function RestoreWallet() {
   const masterKey = useKeyStore(s => s.masterKey);
 
   if (!masterKey) {
-    return <VaultLockedAlert />;
+    return (
+      <div>
+        <h1 className="mb-2 font-semibold">Restore Wallet</h1>
+        <VaultLockedAlert />
+      </div>
+    );
   }
 
   return (
-    <div className="flex w-full justify-center">
-      <RestoreWalletButton />
-    </div>
+    <Card>
+      <CardHeader>
+        <CardTitle>Restore Wallet</CardTitle>
+        <CardDescription>
+          The wallet will be created and encrypted client-side. No sensitive
+          information is stored on the server.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="flex w-full justify-center">
+          <RestoreWalletButton />
+        </div>
+      </CardContent>
+    </Card>
   );
 }

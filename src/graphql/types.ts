@@ -82,12 +82,6 @@ export type CreateLiquidTransaction = {
   wallet_account: WalletAccount;
 };
 
-export type CreateLiquidTransactionInput = {
-  fee_rate: Scalars['Float']['input'];
-  recipients: Array<LiquidRecipient>;
-  wallet_account_id: Scalars['String']['input'];
-};
-
 export type CreateOnchainAddress = {
   __typename?: 'CreateOnchainAddress';
   address: Scalars['String']['output'];
@@ -138,7 +132,7 @@ export type LiquidAssetInfo = {
   ticker: Scalars['String']['output'];
 };
 
-export type LiquidRecipient = {
+export type LiquidRecipientInput = {
   address: Scalars['String']['input'];
   amount: Scalars['String']['input'];
   asset_id?: InputMaybe<Scalars['String']['input']>;
@@ -213,7 +207,14 @@ export type NewAccount = {
 };
 
 export type PayInput = {
-  wallet_id: Scalars['String']['input'];
+  account_id?: InputMaybe<Scalars['String']['input']>;
+  wallet_id?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type PayLiquidAddressInput = {
+  fee_rate: Scalars['Float']['input'];
+  recipients: Array<LiquidRecipientInput>;
+  send_all_lbtc?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type PayLnAddressInput = {
@@ -229,6 +230,7 @@ export type PayMutations = {
   __typename?: 'PayMutations';
   lightning_address: CreateLiquidTransaction;
   lightning_invoice: CreateLiquidTransaction;
+  liquid_address: CreateLiquidTransaction;
 };
 
 export type PayMutationsLightning_AddressArgs = {
@@ -237,6 +239,10 @@ export type PayMutationsLightning_AddressArgs = {
 
 export type PayMutationsLightning_InvoiceArgs = {
   input: PayLnInvoiceInput;
+};
+
+export type PayMutationsLiquid_AddressArgs = {
+  input: PayLiquidAddressInput;
 };
 
 export type Query = {
@@ -373,7 +379,6 @@ export type WalletMutations = {
   __typename?: 'WalletMutations';
   broadcast_liquid_transaction: BroadcastLiquidTransaction;
   create: CreateWallet;
-  create_liquid_transaction: CreateLiquidTransaction;
   create_onchain_address: CreateOnchainAddress;
   refresh_wallet: Scalars['Boolean']['output'];
 };
@@ -384,10 +389,6 @@ export type WalletMutationsBroadcast_Liquid_TransactionArgs = {
 
 export type WalletMutationsCreateArgs = {
   input: CreateWalletInput;
-};
-
-export type WalletMutationsCreate_Liquid_TransactionArgs = {
-  input: CreateLiquidTransactionInput;
 };
 
 export type WalletMutationsCreate_Onchain_AddressArgs = {

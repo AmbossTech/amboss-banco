@@ -1,5 +1,6 @@
 'use client';
 
+import { ApolloError, useApolloClient } from '@apollo/client';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -24,11 +25,23 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { useBroadcastLiquidTransactionMutation } from '@/graphql/mutations/__generated__/broadcastLiquidTransaction.generated';
-import { useCreateLiquidTransactionMutation } from '@/graphql/mutations/__generated__/createLiquidTransaction.generated';
-import { useUserQuery } from '@/graphql/queries/__generated__/user.generated';
+import {
+  BroadcastLiquidTransactionDocument,
+  BroadcastLiquidTransactionMutation,
+  BroadcastLiquidTransactionMutationVariables,
+} from '@/graphql/mutations/__generated__/broadcastLiquidTransaction.generated';
+import {
+  PayLiquidAddressDocument,
+  PayLiquidAddressMutation,
+  PayLiquidAddressMutationVariables,
+} from '@/graphql/mutations/__generated__/pay.generated';
 import { useGetWalletQuery } from '@/graphql/queries/__generated__/wallet.generated';
+import { useUserInfo } from '@/hooks/user';
+import { useWalletInfo } from '@/hooks/wallet';
+import { cn } from '@/lib/utils';
 import { useKeyStore } from '@/stores/keys';
+import { toWithError } from '@/utils/async';
+import { handleApolloError } from '@/utils/error';
 import { numberWithoutPrecision } from '@/utils/numbers';
 import { ROUTES } from '@/utils/routes';
 import {
@@ -37,13 +50,25 @@ import {
 } from '@/workers/crypto/types';
 
 import { VaultButton } from '../button/VaultButton';
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import { Checkbox } from '../ui/checkbox';
+import { useToast } from '../ui/use-toast';
 
-const formSchema = z.object({
-  destination: z.string().min(1, { message: 'A destination is mandatory' }),
-  assetId: z.string().min(1, { message: 'An asset is mandatory' }),
-  amount: z.string().min(1, { message: 'An amount is mandatory' }),
-  feeRate: z.string().min(1, { message: 'A fee rate is mandatory' }),
-});
+const formSchema = z
+  .object({
+    destination: z.string().min(1, { message: 'A destination is mandatory' }),
+    assetId: z.string().min(1, { message: 'An asset is mandatory' }),
+    amount: z.string(),
+    feeRate: z.string().min(1, { message: 'A fee rate is mandatory' }),
+    sendAllBtc: z.boolean(),
+  })
+  .refine(data => data.sendAllBtc || data.amount, {
+    message: 'An amount is mandatory',
+    path: ['amount'],
+  });
+
+const LBTC_ASSET_ID =
+  '6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d';
 
 export const SendForm: FC<{
   walletId: string;
@@ -51,9 +76,15 @@ export const SendForm: FC<{
   assetId: string | undefined;
 }> = ({ walletId, accountId, assetId }) => {
   const workerRef = useRef<Worker>();
+
+  const client = useApolloClient();
+
+  const { toast } = useToast();
+
   const { push } = useRouter();
 
-  const { data: userData } = useUserQuery();
+  const walletInfo = useWalletInfo();
+  const userInfo = useUserInfo();
 
   const [stateLoading, setStateLoading] = useState(false);
 
@@ -74,51 +105,23 @@ export const SendForm: FC<{
       assetId,
       amount: '',
       feeRate: '0.1',
+      sendAllBtc: false,
     },
   });
 
-  const selectedAsset = form.getValues('assetId');
-
-  const [startSend, { data: sendData, loading: sendLoading }] =
-    useCreateLiquidTransactionMutation({
-      onError: error => console.error('ERRORRR', error),
-    });
-
-  const [broadcast, { loading: broadcastLoading }] =
-    useBroadcastLiquidTransactionMutation({
-      onError: error => console.error('ERRORRR', error),
-      onCompleted: () => push(ROUTES.app.wallet.id(walletId)),
-    });
-
-  const loading =
-    stateLoading || walletLoading || broadcastLoading || sendLoading;
+  const watchAsset = form.watch(['assetId', 'sendAllBtc']);
 
   useEffect(() => {
-    console.log('SEND FOR SIGNING');
-    if (!sendData) return;
-    if (!masterKey) return;
-    if (!userData) return;
-    if (!data?.wallets.find_one.details.protected_mnemonic) return;
-
-    if (workerRef.current) {
-      const message: CryptoWorkerMessage = {
-        type: 'signPset',
-        payload: {
-          wallet_account_id:
-            sendData.wallets.create_liquid_transaction.wallet_account.id,
-          mnemonic: data.wallets.find_one.details.protected_mnemonic,
-          descriptor:
-            sendData.wallets.create_liquid_transaction.wallet_account
-              .descriptor,
-          pset: sendData.wallets.create_liquid_transaction.base_64,
-          masterKey,
-          iv: userData.user.symmetric_key_iv,
-        },
-      };
-
-      workerRef.current.postMessage(message);
+    const [watchedAssetId, watchedSendAll] = watchAsset;
+    if (watchedAssetId !== LBTC_ASSET_ID && !!watchedSendAll) {
+      form.resetField('sendAllBtc');
     }
-  }, [sendData, userData, masterKey, data, accountId]);
+  }, [watchAsset, form]);
+
+  const selectedAsset = form.getValues('assetId');
+  const sendAll = form.getValues('sendAllBtc');
+
+  const loading = stateLoading || walletLoading;
 
   const asset = useMemo(() => {
     if (walletLoading || error) return;
@@ -160,29 +163,45 @@ export const SendForm: FC<{
       new URL('../../workers/crypto/crypto.ts', import.meta.url)
     );
 
-    workerRef.current.onmessage = event => {
+    workerRef.current.onmessage = async event => {
       const message: CryptoWorkerResponse = event.data;
 
       switch (message.type) {
         case 'signPset':
-          console.log('READY FOR BROADCAST', message);
-
-          const currentAccount = data?.wallets.find_one.accounts.find(
-            a => a.id === accountId
+          const [, error] = await toWithError(
+            client.mutate<
+              BroadcastLiquidTransactionMutation,
+              BroadcastLiquidTransactionMutationVariables
+            >({
+              mutation: BroadcastLiquidTransactionDocument,
+              variables: {
+                input: {
+                  wallet_account_id: message.payload.wallet_account_id,
+                  signed_pset: message.payload.signedPset,
+                },
+              },
+            })
           );
 
-          console.log({ currentAccount });
+          if (error) {
+            const messages = handleApolloError(error as ApolloError);
 
-          if (!currentAccount) return;
+            toast({
+              variant: 'destructive',
+              title: 'Error Sending Money',
+              description: messages.join(', '),
+            });
 
-          broadcast({
-            variables: {
-              input: {
-                wallet_account_id: currentAccount.id,
-                signed_pset: message.payload.signedPset,
-              },
-            },
+            setStateLoading(false);
+            return;
+          }
+
+          toast({
+            title: 'Money Sent!',
+            description: `Money has been sent.`,
           });
+
+          push(ROUTES.app.home);
 
           break;
       }
@@ -198,117 +217,227 @@ export const SendForm: FC<{
     return () => {
       if (workerRef.current) workerRef.current.terminate();
     };
-  }, [broadcast, accountId, data]);
+  }, [client, push, toast, walletId]);
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    if (loading) return null;
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    if (loading) return;
 
-    startSend({
-      variables: {
-        input: {
-          wallet_account_id: accountId,
-          fee_rate: Number(values.feeRate) * 1000,
-          recipients: [
-            {
-              address: values.destination,
-              amount: numberWithoutPrecision(
-                values.amount,
-                asset?.asset_info.precision || 0
-              ),
-              asset_id: values.assetId,
-            },
-          ],
+    setStateLoading(true);
+
+    if (values.sendAllBtc && values.assetId !== LBTC_ASSET_ID) {
+      toast({
+        variant: 'destructive',
+        title: 'Error Sending Money',
+        description: '"Send All" is only possible for BTC',
+      });
+
+      setStateLoading(false);
+
+      return;
+    }
+
+    const [result, error] = await toWithError(
+      client.mutate<
+        PayLiquidAddressMutation,
+        PayLiquidAddressMutationVariables
+      >({
+        mutation: PayLiquidAddressDocument,
+        variables: {
+          addressInput: {
+            send_all_lbtc: values.sendAllBtc || undefined,
+            fee_rate: Number(values.feeRate) * 1000,
+            recipients: [
+              {
+                address: values.destination,
+                amount: numberWithoutPrecision(
+                  values.amount,
+                  asset?.asset_info.precision || 0
+                ),
+                asset_id: values.assetId,
+              },
+            ],
+          },
+          payInput: {
+            account_id: accountId,
+          },
         },
+      })
+    );
+
+    if (error) {
+      const messages = handleApolloError(error as ApolloError);
+
+      toast({
+        variant: 'destructive',
+        title: 'Error Sending Money',
+        description: messages.join(', '),
+      });
+
+      setStateLoading(false);
+      return;
+    }
+
+    if (
+      !result.data?.pay.liquid_address ||
+      !walletInfo.protected_mnemonic ||
+      !masterKey ||
+      !userInfo.symmetric_key_iv
+    ) {
+      setStateLoading(false);
+      return;
+    }
+
+    if (!workerRef.current) {
+      setStateLoading(false);
+      return;
+    }
+
+    const message: CryptoWorkerMessage = {
+      type: 'signPset',
+      payload: {
+        wallet_account_id: result.data.pay.liquid_address.wallet_account.id,
+        mnemonic: walletInfo.protected_mnemonic,
+        descriptor: result.data.pay.liquid_address.wallet_account.descriptor,
+        pset: result.data.pay.liquid_address.base_64,
+        masterKey,
+        iv: userInfo.symmetric_key_iv,
       },
-    });
+    };
+
+    workerRef.current.postMessage(message);
   };
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <FormField
-          control={form.control}
-          name="destination"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Destination</FormLabel>
-              <FormControl>
-                <Input placeholder="bc1qxvay4an52gcghxq..." {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <div className="grid grid-cols-2 gap-4">
-          <FormField
-            control={form.control}
-            name="amount"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Amount</FormLabel>
-                <FormControl>
-                  <Input type="number" placeholder="1000" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="assetId"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Asset</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
+    <Card className="w-full max-w-96">
+      <CardHeader>
+        <CardTitle>Send To Address</CardTitle>
+      </CardHeader>{' '}
+      <CardContent>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="destination"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Destination</FormLabel>
                   <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Choose which asset you want to send." />
-                    </SelectTrigger>
+                    <Input
+                      placeholder="bc1qxvay4an52gcghxq..."
+                      autoComplete="off"
+                      {...field}
+                    />
                   </FormControl>
-                  <SelectContent>
-                    {accountAssets.map(a => (
-                      <SelectItem key={a.asset_id} value={a.asset_id}>
-                        {a.asset_info.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-        <FormField
-          control={form.control}
-          name="feeRate"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Fee Rate</FormLabel>
-              <FormControl>
-                <Input type="number" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <div className="flex gap-2">
-          {masterKey ? (
-            <Button type="submit" disabled={loading}>
-              {loading ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : null}
-              Send
-            </Button>
-          ) : (
-            <VaultButton lockedTitle="Unlock to Send" />
-          )}
-        </div>
-      </form>
-    </Form>
+            <div className={cn(sendAll ? '' : 'grid grid-cols-2 gap-4')}>
+              {sendAll ? null : (
+                <FormField
+                  control={form.control}
+                  name="amount"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Amount</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          placeholder="1000"
+                          autoComplete="off"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+              <FormField
+                control={form.control}
+                name="assetId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Asset</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Choose which asset you want to send." />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {accountAssets.map(a => (
+                          <SelectItem
+                            key={a.asset_id}
+                            value={a.asset_id}
+                            onSelect={e => console.log(e)}
+                          >
+                            {a.asset_info.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            {selectedAsset === LBTC_ASSET_ID ? (
+              <FormField
+                control={form.control}
+                name="sendAllBtc"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 py-4">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                    <div className="flex flex-col gap-2">
+                      <FormLabel>Send All BTC</FormLabel>
+
+                      <FormMessage />
+                    </div>
+                  </FormItem>
+                )}
+              />
+            ) : null}
+
+            <FormField
+              control={form.control}
+              name="feeRate"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Fee Rate</FormLabel>
+                  <FormControl>
+                    <Input type="number" autoComplete="off" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="flex items-center justify-center">
+              {masterKey ? (
+                <Button type="submit" disabled={loading} className="w-full">
+                  {loading ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : null}
+                  Send
+                </Button>
+              ) : (
+                <VaultButton lockedTitle="Unlock to Send" />
+              )}
+            </div>
+          </form>
+        </Form>
+      </CardContent>
+    </Card>
   );
 };

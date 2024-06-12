@@ -13,7 +13,7 @@ export default function Page({
       : '';
 
   return (
-    <div className="mt-2">
+    <div className="mt-4 flex justify-center">
       <SendForm
         walletId={params.walletId}
         accountId={params.accountId}
