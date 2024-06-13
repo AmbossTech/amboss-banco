@@ -1,7 +1,10 @@
+import { randomBytes } from '@noble/hashes/utils';
+import * as secp from '@noble/secp256k1';
 import { generateMnemonic } from '@scure/bip39';
 import { wordlist } from '@scure/bip39/wordlists/english';
 import argon2 from 'argon2-browser';
-import { randomBytes } from 'crypto';
+
+import { encrypt, utils } from './noble';
 
 // Same defaults as those in Bitwarden
 export const ARGON_DEFAULTS = {
@@ -28,10 +31,26 @@ export const uint8arrayToUtf8 = (str: Uint8Array): string => {
   return decoder.decode(str);
 };
 
-export const generateNewMnemonic = async (masterKey: string, iv: string) => {
+export const secp256k1GenerateProtectedKeyPair = (masterKey: string) => {
+  const privateKey = secp.utils.randomPrivateKey();
+  const publicKey = secp.getPublicKey(privateKey);
+
+  const privateKeyHex = bufToHex(privateKey);
+
+  const protectedPrivateKey = encrypt(
+    privateKeyHex,
+    utils.hexEncode(masterKey)
+  );
+
+  return {
+    publicKey: bufToHex(publicKey),
+    protectedPrivateKey: protectedPrivateKey,
+  };
+};
+
+export const generateNewMnemonic = (masterKey: string) => {
   const mnemonic = generateMnemonic(wordlist);
-  const mnemonicBuffer = Buffer.from(mnemonic, 'utf-8');
-  const protectedMnemonic = await encryptCipher(mnemonicBuffer, masterKey, iv);
+  const protectedMnemonic = encrypt(mnemonic, utils.hexEncode(masterKey));
 
   return {
     mnemonic,
@@ -39,13 +58,8 @@ export const generateNewMnemonic = async (masterKey: string, iv: string) => {
   };
 };
 
-export const restoreMnemonic = async (
-  mnemonic: string,
-  masterKey: string,
-  iv: string
-) => {
-  const mnemonicBuffer = Buffer.from(mnemonic, 'utf-8');
-  const protectedMnemonic = await encryptCipher(mnemonicBuffer, masterKey, iv);
+export const restoreMnemonic = (mnemonic: string, masterKey: string) => {
+  const protectedMnemonic = encrypt(mnemonic, utils.hexEncode(masterKey));
 
   return {
     mnemonic,
@@ -70,118 +84,13 @@ export const argon2Hash = async (
   return hashedPasswordHash.hashHex;
 };
 
-export const createSymmetricKey = (): {
-  symmetricKey: Buffer;
-  iv: Buffer;
-} => {
-  const symmetricKey = randomBytes(64);
-  const iv = randomBytes(16);
+export const createProtectedSymmetricKey = (masterKey: string): string => {
+  const symmetricKey = Buffer.from(randomBytes(64));
 
-  return { symmetricKey, iv };
-};
-
-export const createProtectedSymmetricKey = async (
-  masterKey: string
-): Promise<{
-  protectedSymmetricKey: string;
-  iv: string;
-}> => {
-  const { symmetricKey, iv } = createSymmetricKey();
-
-  const hexIV = bufToHex(iv);
-
-  const protectedSymmetricKey = await encryptCipher(
-    symmetricKey,
-    masterKey,
-    hexIV
+  const protectedSymmetricKey = encrypt(
+    symmetricKey.toString('hex'),
+    utils.hexEncode(masterKey)
   );
 
-  return {
-    protectedSymmetricKey: bufToHex(protectedSymmetricKey),
-    iv: hexIV,
-  };
-};
-
-export const decryptCipher = async (
-  cipher: ArrayBuffer,
-  masterKey: string,
-  iv: string
-): Promise<ArrayBuffer> => {
-  const importedMasterKey = await crypto.subtle.importKey(
-    'raw', // raw or jwk
-    Buffer.from(masterKey, 'hex'),
-    'AES-CBC',
-    false, // extractable
-    ['decrypt']
-  );
-
-  const decryptedCipher = await crypto.subtle.decrypt(
-    {
-      name: 'AES-CBC',
-      iv: hexToBuf(iv),
-    },
-    importedMasterKey,
-    cipher
-  );
-
-  return decryptedCipher;
-};
-
-export const encryptCipher = async (
-  cipher: ArrayBuffer,
-  masterKey: string,
-  iv: string
-): Promise<ArrayBuffer> => {
-  const importedMasterKey = await crypto.subtle.importKey(
-    'raw', // raw or jwk
-    Buffer.from(masterKey, 'hex'),
-    'AES-CBC',
-    false, // extractable
-    ['encrypt']
-  );
-
-  const encryptedCipher = await crypto.subtle.encrypt(
-    {
-      name: 'AES-CBC',
-      iv: hexToBuf(iv),
-    },
-    importedMasterKey,
-    cipher
-  );
-
-  return encryptedCipher;
-};
-
-export const rsaGenerateKeyPair = async (): Promise<
-  [ArrayBuffer, ArrayBuffer]
-> => {
-  const keyPair = await crypto.subtle.generateKey(
-    {
-      name: 'RSA-OAEP',
-      modulusLength: 2048,
-      publicExponent: new Uint8Array([0x01, 0x00, 0x01]), // 65537
-      hash: 'SHA-1',
-    },
-    true,
-    ['encrypt', 'decrypt']
-  );
-
-  const publicKey = await crypto.subtle.exportKey('spki', keyPair.publicKey);
-  const privateKey = await crypto.subtle.exportKey('pkcs8', keyPair.privateKey);
-
-  return [publicKey, privateKey];
-};
-
-export const rsaGenerateProtectedKeyPair = async (
-  masterKey: string,
-  iv: string
-) => {
-  const [publicKey, privateKey] = await rsaGenerateKeyPair();
-
-  const protectedPrivateKey = await encryptCipher(privateKey, masterKey, iv);
-
-  return {
-    publicKey: bufToHex(publicKey),
-    protectedPrivateKey: bufToHex(protectedPrivateKey),
-  };
+  return protectedSymmetricKey;
 };

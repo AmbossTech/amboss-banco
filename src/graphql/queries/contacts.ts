@@ -10,7 +10,7 @@ export const GetWalletContacts = gql`
           id
           find_many {
             id
-            lightning_address
+            money_address
           }
         }
       }
@@ -32,7 +32,7 @@ export const GetWalletContact = gql`
           id
           find_one(id: $contact_id) {
             id
-            lightning_address
+            money_address
             encryption_pubkey
             lnurl_info {
               id

@@ -15,10 +15,7 @@ import {
 import { useToast } from '@/components/ui/use-toast';
 import { VaultLockedAlert } from '@/components/vault/VaultLockedAlert';
 import { useCreateWalletMutation } from '@/graphql/mutations/__generated__/wallet.generated';
-import {
-  UserDocument,
-  useUserQuery,
-} from '@/graphql/queries/__generated__/user.generated';
+import { UserDocument } from '@/graphql/queries/__generated__/user.generated';
 import { GetAllWalletsDocument } from '@/graphql/queries/__generated__/wallet.generated';
 import { WalletAccountType, WalletType } from '@/graphql/types';
 import { useKeyStore } from '@/stores/keys';
@@ -36,10 +33,6 @@ const NewWalletButton = () => {
   const { push } = useRouter();
 
   const masterKey = useKeyStore(s => s.masterKey);
-
-  const { data, loading: userLoading } = useUserQuery({
-    errorPolicy: 'ignore',
-  });
 
   const [createWallet, { loading: createLoading }] = useCreateWalletMutation({
     onCompleted: () => {
@@ -60,11 +53,11 @@ const NewWalletButton = () => {
 
   const [loading, setLoading] = useState(false);
 
-  const isLoading = loading || userLoading || createLoading;
+  const isLoading = loading || createLoading;
 
   const handleCreate = async () => {
     if (isLoading) return;
-    if (!masterKey || !data?.user.symmetric_key_iv) {
+    if (!masterKey) {
       return;
     }
 
@@ -75,7 +68,6 @@ const NewWalletButton = () => {
         type: 'newWallet',
         payload: {
           masterKey,
-          iv: data.user.symmetric_key_iv,
         },
       };
 

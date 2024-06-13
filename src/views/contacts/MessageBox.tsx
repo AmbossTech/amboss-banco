@@ -171,10 +171,9 @@ export const PayMessageBox = () => {
     }
 
     if (
-      !result.data?.pay.lightning_address ||
+      !result.data?.pay.money_address ||
       !walletInfo.protected_mnemonic ||
-      !masterKey ||
-      !userInfo.symmetric_key_iv
+      !masterKey
     ) {
       setLoading(false);
       return;
@@ -188,12 +187,11 @@ export const PayMessageBox = () => {
     const message: CryptoWorkerMessage = {
       type: 'signPset',
       payload: {
-        wallet_account_id: result.data.pay.lightning_address.wallet_account.id,
+        wallet_account_id: result.data.pay.money_address.wallet_account.id,
         mnemonic: walletInfo.protected_mnemonic,
-        descriptor: result.data.pay.lightning_address.wallet_account.descriptor,
-        pset: result.data.pay.lightning_address.base_64,
+        descriptor: result.data.pay.money_address.wallet_account.descriptor,
+        pset: result.data.pay.money_address.base_64,
         masterKey,
-        iv: userInfo.symmetric_key_iv,
       },
     };
 
@@ -412,7 +410,7 @@ export const SendMessageBox = () => {
           } else {
             const {
               sender_protected_message,
-              receiver_lightning_address,
+              receiver_money_address,
               receiver_protected_message,
             } = message.payload;
 
@@ -420,7 +418,7 @@ export const SendMessageBox = () => {
               variables: {
                 input: {
                   contact_id: currentContact.id,
-                  receiver_lightning_address,
+                  receiver_money_address,
                   receiver_protected_message,
                   sender_protected_message,
                 },
@@ -466,8 +464,8 @@ export const SendMessageBox = () => {
             data.wallets.find_one.secp256k1_key_pair.encryption_pubkey,
           receiver_pubkey:
             data.wallets.find_one.contacts.find_one.encryption_pubkey,
-          receiver_lightning_address:
-            data.wallets.find_one.contacts.find_one.lightning_address,
+          receiver_money_address:
+            data.wallets.find_one.contacts.find_one.money_address,
           msg: message,
         },
       };

@@ -3,7 +3,6 @@ export type CryptoWorkerMessage =
       type: 'newWallet';
       payload: {
         masterKey: string;
-        iv: string;
       };
     }
   | {
@@ -11,7 +10,6 @@ export type CryptoWorkerMessage =
       payload: {
         mnemonic: string;
         masterKey: string;
-        iv: string;
       };
     }
   | {
@@ -21,7 +19,6 @@ export type CryptoWorkerMessage =
         mnemonic: string;
         descriptor: string;
         masterKey: string;
-        iv: string;
         pset: string;
       };
     }
@@ -30,7 +27,6 @@ export type CryptoWorkerMessage =
       payload: {
         protectedMnemonic: string;
         masterKey: string;
-        iv: string;
       };
     }
   | {
@@ -38,7 +34,7 @@ export type CryptoWorkerMessage =
       payload: {
         sender_pubkey: string;
         receiver_pubkey: string;
-        receiver_lightning_address: string;
+        receiver_money_address: string;
         msg: string;
       };
     }
@@ -47,7 +43,6 @@ export type CryptoWorkerMessage =
       payload: {
         protectedPrivateKey: string;
         masterKey: string;
-        iv: string;
         messages: {
           id: string;
           contact_is_sender: boolean;
@@ -84,7 +79,7 @@ export type CryptoWorkerResponse =
   | {
       type: 'eciesEncrypt';
       payload: {
-        receiver_lightning_address: string;
+        receiver_money_address: string;
         sender_protected_message: string;
         receiver_protected_message: string;
       };

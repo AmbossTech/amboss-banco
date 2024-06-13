@@ -6,7 +6,7 @@ export const PayLightningAddress = gql`
     $payInput: PayInput!
   ) {
     pay(input: $payInput) {
-      lightning_address(input: $addressInput) {
+      money_address(input: $addressInput) {
         wallet_account {
           id
           descriptor

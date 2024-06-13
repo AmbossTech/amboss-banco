@@ -16,7 +16,6 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useUserQuery } from '@/graphql/queries/__generated__/user.generated';
 import { useGetWalletDetailsQuery } from '@/graphql/queries/__generated__/wallet.generated';
 import { useKeyStore } from '@/stores/keys';
 import {
@@ -38,12 +37,6 @@ export const WalletSettings: FC<{ walletId: string }> = ({ walletId }) => {
     variables: { id: walletId },
     onError: err => console.log('ERROR', err),
   });
-
-  const { data: userData, loading: userLoading } = useUserQuery({
-    onError: err => console.log('ERROR', err),
-  });
-
-  const loading = stateLoading || walletLoading || userLoading;
 
   useEffect(() => {
     if (!data?.wallets.find_one.details.protected_mnemonic) return;
@@ -79,7 +72,6 @@ export const WalletSettings: FC<{ walletId: string }> = ({ walletId }) => {
 
   const handleDecrypt = () => {
     if (!masterKey) return;
-    if (!userData?.user.symmetric_key_iv) return;
     if (!data?.wallets.find_one.details.protected_mnemonic) return;
 
     setLoading(true);
@@ -90,7 +82,6 @@ export const WalletSettings: FC<{ walletId: string }> = ({ walletId }) => {
         payload: {
           protectedMnemonic: data.wallets.find_one.details.protected_mnemonic,
           masterKey,
-          iv: userData.user.symmetric_key_iv,
         },
       };
 
@@ -100,29 +91,30 @@ export const WalletSettings: FC<{ walletId: string }> = ({ walletId }) => {
 
   const [copiedText, copy] = useCopyToClipboard();
 
+  const loading = stateLoading || walletLoading;
+
   return (
     <div className="flex flex-col gap-4">
       <Card>
         <CardHeader>
-          <CardTitle>Lightning Address</CardTitle>
+          <CardTitle>Money Address</CardTitle>
           <CardDescription>
-            This is the lightning address associated with this wallet.
+            This is your money address. You can share this with other users to
+            receive money.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div>
-            <Label htmlFor="protectedMnemonic">Lightning Address</Label>
+            <Label htmlFor="address">Money Address</Label>
             <div className="flex gap-2">
               <Input
-                id="protectedMnemonic"
+                id="address"
                 readOnly
-                defaultValue={data?.wallets.find_one.lightning_address || ''}
+                defaultValue={data?.wallets.find_one.money_address || ''}
               />
               <Button
-                onClick={() =>
-                  copy(data?.wallets.find_one.lightning_address || '')
-                }
-                disabled={!data?.wallets.find_one.lightning_address}
+                onClick={() => copy(data?.wallets.find_one.money_address || '')}
+                disabled={!data?.wallets.find_one.money_address}
               >
                 {copiedText ? 'Copied' : 'Copy'}
                 {copiedText ? (

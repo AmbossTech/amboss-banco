@@ -24,7 +24,7 @@ export type GetWalletContactsQuery = {
         find_many: Array<{
           __typename?: 'SimpleWalletContact';
           id: string;
-          lightning_address: string;
+          money_address: string;
         }>;
       };
     };
@@ -55,7 +55,7 @@ export type GetWalletContactQuery = {
         find_one: {
           __typename?: 'WalletContact';
           id: string;
-          lightning_address: string;
+          money_address: string;
           encryption_pubkey?: string | null;
           lnurl_info?: {
             __typename?: 'LnUrlInfo';
@@ -117,7 +117,7 @@ export const GetWalletContactsDocument = gql`
           id
           find_many {
             id
-            lightning_address
+            money_address
           }
         }
       }
@@ -208,7 +208,7 @@ export const GetWalletContactDocument = gql`
           id
           find_one(id: $contact_id) {
             id
-            lightning_address
+            money_address
             encryption_pubkey
             lnurl_info {
               id

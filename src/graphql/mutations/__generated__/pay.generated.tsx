@@ -15,7 +15,7 @@ export type PayLightningAddressMutation = {
   __typename?: 'Mutation';
   pay: {
     __typename?: 'PayMutations';
-    lightning_address: {
+    money_address: {
       __typename?: 'CreateLiquidTransaction';
       base_64: string;
       wallet_account: {
@@ -75,7 +75,7 @@ export const PayLightningAddressDocument = gql`
     $payInput: PayInput!
   ) {
     pay(input: $payInput) {
-      lightning_address(input: $addressInput) {
+      money_address(input: $addressInput) {
         wallet_account {
           id
           descriptor

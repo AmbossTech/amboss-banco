@@ -23,7 +23,6 @@ export type CreateAccountResult = {
   email: string;
   master_password_hash: string;
   password_hint: string | undefined;
-  symmetric_key_iv: string;
   protected_symmetric_key: string;
   secp256k1_key_pair: {
     public_key: string;

@@ -29,8 +29,8 @@ import { GetWalletContactsDocument } from '@/graphql/queries/__generated__/conta
 import { handleApolloError } from '@/utils/error';
 
 const formSchema = z.object({
-  lightning_address: z.string().min(1, {
-    message: 'A lightning address is required to create a new contact.',
+  money_address: z.string().min(1, {
+    message: 'A money address is required to create a new contact.',
   }),
   // .email('This is not a valid email.'),
 });
@@ -41,7 +41,7 @@ export const AddContact: FC<{ walletId: string }> = ({ walletId }) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      lightning_address: '',
+      money_address: '',
     },
   });
 
@@ -72,7 +72,7 @@ export const AddContact: FC<{ walletId: string }> = ({ walletId }) => {
       variables: {
         input: {
           wallet_id: walletId,
-          lightning_address: formData.lightning_address,
+          money_address: formData.money_address,
         },
       },
     });
@@ -94,13 +94,13 @@ export const AddContact: FC<{ walletId: string }> = ({ walletId }) => {
         >
           <FormField
             control={form.control}
-            name="lightning_address"
+            name="money_address"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Lightning Address</FormLabel>
+                <FormLabel>Money Address</FormLabel>
                 <FormControl>
                   <Input
-                    type="lightning_address"
+                    type="money_address"
                     placeholder="satoshi@nakamoto.com"
                     autoComplete="off"
                     {...field}
@@ -108,7 +108,7 @@ export const AddContact: FC<{ walletId: string }> = ({ walletId }) => {
                 </FormControl>
                 <FormMessage />
                 <FormDescription>
-                  Input the lightning address from the new contact.
+                  Input the money address from the new contact.
                 </FormDescription>
               </FormItem>
             )}

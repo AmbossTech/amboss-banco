@@ -36,7 +36,7 @@ const ContactCard: FC<{ contact: ContactType; cbk?: () => void }> = ({
   const currentContact = useContactStore(s => s.currentContact);
   const setContact = useContactStore(s => s.setCurrentContact);
 
-  const [user, domain] = contact.lightning_address.split('@');
+  const [user, domain] = contact.money_address.split('@');
 
   return (
     <button
@@ -49,7 +49,7 @@ const ContactCard: FC<{ contact: ContactType; cbk?: () => void }> = ({
           id: contact.id,
           user,
           domain,
-          address: contact.lightning_address,
+          address: contact.money_address,
         });
 
         cbk?.();
@@ -80,12 +80,11 @@ export const Contacts = () => {
     if (!!currentContact) return;
     if (!data?.wallets.find_one.contacts.find_many.length) return;
 
-    const { id, lightning_address } =
-      data.wallets.find_one.contacts.find_many[0];
+    const { id, money_address } = data.wallets.find_one.contacts.find_many[0];
 
-    const [user, domain] = lightning_address.split('@');
+    const [user, domain] = money_address.split('@');
 
-    setContact({ id, user, domain, address: lightning_address });
+    setContact({ id, user, domain, address: money_address });
   });
 
   const contacts = data?.wallets.find_one.contacts.find_many || [];

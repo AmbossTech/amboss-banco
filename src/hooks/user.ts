@@ -63,6 +63,5 @@ export const useUserInfo = () => {
 
   return {
     loading,
-    symmetric_key_iv: data.user.symmetric_key_iv,
   };
 };

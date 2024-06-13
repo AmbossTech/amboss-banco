@@ -72,7 +72,7 @@ export type CreateContact = {
 };
 
 export type CreateContactInput = {
-  lightning_address: Scalars['String']['input'];
+  money_address: Scalars['String']['input'];
   wallet_id: Scalars['String']['input'];
 };
 
@@ -236,13 +236,9 @@ export type PayLnInvoiceInput = {
 
 export type PayMutations = {
   __typename?: 'PayMutations';
-  lightning_address: CreateLiquidTransaction;
   lightning_invoice: CreateLiquidTransaction;
   liquid_address: CreateLiquidTransaction;
-};
-
-export type PayMutationsLightning_AddressArgs = {
-  input: PayLnAddressInput;
+  money_address: CreateLiquidTransaction;
 };
 
 export type PayMutationsLightning_InvoiceArgs = {
@@ -251,6 +247,10 @@ export type PayMutationsLightning_InvoiceArgs = {
 
 export type PayMutationsLiquid_AddressArgs = {
   input: PayLiquidAddressInput;
+};
+
+export type PayMutationsMoney_AddressArgs = {
+  input: PayLnAddressInput;
 };
 
 export type Query = {
@@ -290,7 +290,7 @@ export type SendMessage = {
 
 export type SendMessageInput = {
   contact_id: Scalars['String']['input'];
-  receiver_lightning_address: Scalars['String']['input'];
+  receiver_money_address: Scalars['String']['input'];
   receiver_protected_message: Scalars['String']['input'];
   sender_protected_message: Scalars['String']['input'];
 };
@@ -301,7 +301,6 @@ export type SignUpInput = {
   password_hint?: InputMaybe<Scalars['String']['input']>;
   protected_symmetric_key: Scalars['String']['input'];
   secp256k1_key_pair: Secp256k1KeyPairInput;
-  symmetric_key_iv: Scalars['String']['input'];
 };
 
 export type SimpleWallet = {
@@ -321,7 +320,7 @@ export type SimpleWalletAccount = {
 export type SimpleWalletContact = {
   __typename?: 'SimpleWalletContact';
   id: Scalars['String']['output'];
-  lightning_address: Scalars['String']['output'];
+  money_address: Scalars['String']['output'];
 };
 
 export type User = {
@@ -329,7 +328,6 @@ export type User = {
   default_wallet_id?: Maybe<Scalars['String']['output']>;
   email: Scalars['String']['output'];
   id: Scalars['String']['output'];
-  symmetric_key_iv: Scalars['String']['output'];
 };
 
 export type Wallet = {
@@ -338,7 +336,7 @@ export type Wallet = {
   contacts: WalletContacts;
   details: WalletDetails;
   id: Scalars['String']['output'];
-  lightning_address?: Maybe<Scalars['String']['output']>;
+  money_address?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
   secp256k1_key_pair: Secp256k1KeyPair;
 };
@@ -360,9 +358,9 @@ export type WalletContact = {
   __typename?: 'WalletContact';
   encryption_pubkey?: Maybe<Scalars['String']['output']>;
   id: Scalars['String']['output'];
-  lightning_address: Scalars['String']['output'];
   lnurl_info?: Maybe<LnUrlInfo>;
   messages: Array<ContactMessage>;
+  money_address: Scalars['String']['output'];
 };
 
 export type WalletContacts = {

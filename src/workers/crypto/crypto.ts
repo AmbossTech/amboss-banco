@@ -1,4 +1,3 @@
-import init, * as ecies from 'ecies-wasm';
 import {
   Mnemonic,
   Network,
@@ -10,42 +9,13 @@ import {
 
 import { toWithError } from '@/utils/async';
 import {
-  bufToHex,
-  bufToUTF8,
-  decryptCipher,
-  encryptCipher,
   generateNewMnemonic,
-  hexToBuf,
   restoreMnemonic,
+  secp256k1GenerateProtectedKeyPair,
 } from '@/utils/crypto';
+import { decrypt, utils } from '@/utils/noble';
 
 import { CryptoWorkerMessage, CryptoWorkerResponse } from './types';
-
-init();
-
-async function secp256k1GenerateProtectedKeyPair(
-  masterKey: string,
-  iv: string
-) {
-  const [privateKey, publicKey] = ecies.generateKeypair();
-
-  const privateKeyHex = bufToHex(privateKey);
-
-  const protectedPrivateKey = await encryptCipher(
-    hexToBuf(privateKeyHex),
-    masterKey,
-    iv
-  );
-
-  return {
-    publicKey: bufToHex(publicKey),
-    protectedPrivateKey: bufToHex(protectedPrivateKey),
-  };
-}
-
-const eciesEncrypt = (pubkey: string, msg: string) => {
-  return ecies.encrypt(hexToBuf(pubkey), Buffer.from(msg));
-};
 
 const generateLiquidDescriptor = async (mnemonic: string) => {
   const network = Network.mainnet();
@@ -78,21 +48,18 @@ self.onmessage = async e => {
 
   switch (message.type) {
     case 'newWallet': {
-      const { masterKey, iv } = message.payload;
-      const { mnemonic, protectedMnemonic } = await generateNewMnemonic(
-        masterKey,
-        iv
-      );
+      const { masterKey } = message.payload;
+      const { mnemonic, protectedMnemonic } = generateNewMnemonic(masterKey);
 
       const { publicKey, protectedPrivateKey } =
-        await secp256k1GenerateProtectedKeyPair(masterKey, iv);
+        secp256k1GenerateProtectedKeyPair(masterKey);
 
       const liquidDescriptor = await generateLiquidDescriptor(mnemonic);
 
       const response: CryptoWorkerResponse = {
         type: 'newWallet',
         payload: {
-          protectedMnemonic: bufToHex(protectedMnemonic),
+          protectedMnemonic: protectedMnemonic,
           liquidDescriptor,
           secp256k1_key_pair: {
             public_key: publicKey,
@@ -107,16 +74,15 @@ self.onmessage = async e => {
     }
 
     case 'restoreWallet': {
-      const { masterKey, iv } = message.payload;
+      const { masterKey } = message.payload;
 
-      const { mnemonic, protectedMnemonic } = await restoreMnemonic(
+      const { mnemonic, protectedMnemonic } = restoreMnemonic(
         message.payload.mnemonic,
-        masterKey,
-        iv
+        masterKey
       );
 
       const { publicKey, protectedPrivateKey } =
-        await secp256k1GenerateProtectedKeyPair(masterKey, iv);
+        secp256k1GenerateProtectedKeyPair(masterKey);
 
       const [liquidDescriptor, error] = await toWithError(
         generateLiquidDescriptor(mnemonic)
@@ -128,7 +94,7 @@ self.onmessage = async e => {
         const response: CryptoWorkerResponse = {
           type: 'newWallet',
           payload: {
-            protectedMnemonic: bufToHex(protectedMnemonic),
+            protectedMnemonic: protectedMnemonic,
             liquidDescriptor,
             secp256k1_key_pair: {
               public_key: publicKey,
@@ -144,13 +110,12 @@ self.onmessage = async e => {
     }
 
     case 'signPset': {
-      const { descriptor, masterKey, iv, pset, wallet_account_id } =
+      const { descriptor, masterKey, pset, wallet_account_id } =
         message.payload;
 
-      const unprotectedMnemonic = await decryptCipher(
-        Buffer.from(message.payload.mnemonic, 'hex'),
-        masterKey,
-        iv
+      const unprotectedMnemonic = decrypt(
+        message.payload.mnemonic,
+        utils.hexEncode(masterKey)
       );
 
       const signedPset = signPset(
@@ -173,12 +138,11 @@ self.onmessage = async e => {
     }
 
     case 'decryptMnemonic': {
-      const { protectedMnemonic, masterKey, iv } = message.payload;
+      const { protectedMnemonic, masterKey } = message.payload;
 
-      const unprotectedMnemonic = await decryptCipher(
-        Buffer.from(protectedMnemonic, 'hex'),
-        masterKey,
-        iv
+      const unprotectedMnemonic = decrypt(
+        protectedMnemonic,
+        utils.hexEncode(masterKey)
       );
 
       const response: CryptoWorkerResponse = {
@@ -194,66 +158,66 @@ self.onmessage = async e => {
     }
 
     case 'eciesEncrypt': {
-      const {
-        sender_pubkey,
-        receiver_pubkey,
-        receiver_lightning_address,
-        msg,
-      } = message.payload;
+      // const {
+      //   sender_pubkey,
+      //   receiver_pubkey,
+      //   receiver_lightning_address,
+      //   msg,
+      // } = message.payload;
 
-      const sender_protected_message = eciesEncrypt(sender_pubkey, msg);
-      const receiver_protected_message = eciesEncrypt(receiver_pubkey, msg);
+      // const sender_protected_message = eciesEncrypt(sender_pubkey, msg);
+      // const receiver_protected_message = eciesEncrypt(receiver_pubkey, msg);
 
-      const response: CryptoWorkerResponse = {
-        type: 'eciesEncrypt',
-        payload: {
-          receiver_lightning_address,
-          receiver_protected_message: bufToHex(receiver_protected_message),
-          sender_protected_message: bufToHex(sender_protected_message),
-        },
-      };
+      // const response: CryptoWorkerResponse = {
+      //   type: 'eciesEncrypt',
+      //   payload: {
+      //     receiver_lightning_address,
+      //     receiver_protected_message: bufToHex(receiver_protected_message),
+      //     sender_protected_message: bufToHex(sender_protected_message),
+      //   },
+      // };
 
-      self.postMessage(response);
+      // self.postMessage(response);
 
       break;
     }
 
     case 'decryptMessages': {
-      const { iv, masterKey, messages } = message.payload;
+      // const { iv, masterKey, messages } = message.payload;
 
-      const protectedPrivateKeyPayload = message.payload.protectedPrivateKey;
+      // const protectedPrivateKeyPayload = message.payload.protectedPrivateKey;
 
-      const decryptedPrivateKeyPayload = await decryptCipher(
-        Buffer.from(protectedPrivateKeyPayload, 'hex'),
-        masterKey,
-        iv
-      );
+      // const decryptedPrivateKeyPayload = await decryptCipher(
+      //   Buffer.from(protectedPrivateKeyPayload, 'hex'),
+      //   masterKey,
+      //   iv
+      // );
 
-      const decryptedPrivateKeyPayloadHex = bufToHex(
-        decryptedPrivateKeyPayload
-      );
+      // const decryptedPrivateKeyPayloadHex = bufToHex(
+      //   decryptedPrivateKeyPayload
+      // );
 
-      const unprotectedMessages = messages.map(m => {
-        try {
-          const decrypted = ecies.decrypt(
-            hexToBuf(decryptedPrivateKeyPayloadHex),
-            hexToBuf(m.protected_message)
-          );
+      // const unprotectedMessages = messages.map(m => {
+      //   try {
+      //     const decrypted = ecies.decrypt(
+      //       hexToBuf(decryptedPrivateKeyPayloadHex),
+      //       hexToBuf(m.protected_message)
+      //     );
 
-          const message = bufToUTF8(decrypted);
+      //     const message = bufToUTF8(decrypted);
 
-          return { ...m, message };
-        } catch (error) {
-          return { ...m, message: 'Error decrypting message.' };
-        }
-      });
+      //     return { ...m, message };
+      //   } catch (error) {
+      //     return { ...m, message: 'Error decrypting message.' };
+      //   }
+      // });
 
-      const response: CryptoWorkerResponse = {
-        type: 'decryptMessages',
-        payload: unprotectedMessages,
-      };
+      // const response: CryptoWorkerResponse = {
+      //   type: 'decryptMessages',
+      //   payload: unprotectedMessages,
+      // };
 
-      self.postMessage(response);
+      // self.postMessage(response);
 
       break;
     }

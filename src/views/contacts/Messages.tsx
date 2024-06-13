@@ -3,7 +3,6 @@ import { useLocalStorage } from 'usehooks-ts';
 
 import { Badge } from '@/components/ui/badge';
 import { useGetWalletContactMessagesQuery } from '@/graphql/queries/__generated__/contacts.generated';
-import { useUserQuery } from '@/graphql/queries/__generated__/user.generated';
 import { cn } from '@/lib/utils';
 import { useContactStore } from '@/stores/contacts';
 import { useKeyStore } from '@/stores/keys';
@@ -34,10 +33,6 @@ export const Messages = () => {
 
   const currentContact = useContactStore(s => s.currentContact);
 
-  const { data: userData, loading: userLoading } = useUserQuery({
-    onError: err => console.log('ERROR', err),
-  });
-
   const { data, loading, error } = useGetWalletContactMessagesQuery({
     variables: { id: value, contact_id: currentContact?.id || '' },
     skip: !currentContact?.id,
@@ -58,7 +53,6 @@ export const Messages = () => {
     if (!masterKey) return;
     if (!workerLoaded) return;
     if (loading || error) return;
-    if (!userData?.user.symmetric_key_iv || userLoading) return;
     if (!data?.wallets.find_one.contacts.find_one.messages.length) return;
 
     const { secp256k1_key_pair, contacts } = data.wallets.find_one;
@@ -68,7 +62,6 @@ export const Messages = () => {
         type: 'decryptMessages',
         payload: {
           masterKey,
-          iv: userData.user.symmetric_key_iv,
           messages: contacts.find_one.messages,
           protectedPrivateKey:
             secp256k1_key_pair.protected_encryption_private_key,
@@ -77,7 +70,7 @@ export const Messages = () => {
 
       workerRef.current.postMessage(workerMessage);
     }
-  }, [loading, error, data, workerLoaded, userData, masterKey, userLoading]);
+  }, [loading, error, data, workerLoaded, masterKey]);
 
   useEffect(() => {
     workerRef.current = new Worker(

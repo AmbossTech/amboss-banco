@@ -1,10 +1,7 @@
-import init, * as ecies from 'ecies-wasm';
-
 import {
   argon2Hash,
-  bufToHex,
   createProtectedSymmetricKey,
-  encryptCipher,
+  secp256k1GenerateProtectedKeyPair,
 } from '@/utils/crypto';
 
 import {
@@ -14,22 +11,6 @@ import {
   WorkerResponse,
 } from './types';
 
-init();
-
-async function secp256k1GenerateProtectedKeyPair(
-  masterKey: string,
-  iv: string
-) {
-  const [privateKey, publicKey] = ecies.generateKeypair();
-
-  const protectedPrivateKey = await encryptCipher(privateKey, masterKey, iv);
-
-  return {
-    publicKey: bufToHex(publicKey),
-    protectedPrivateKey: bufToHex(protectedPrivateKey),
-  };
-}
-
 async function generateAccount(
   email: string,
   password: string,
@@ -38,17 +19,15 @@ async function generateAccount(
   const masterKey = await argon2Hash(password, email);
   const masterPasswordHash = await argon2Hash(masterKey, password);
 
-  const { protectedSymmetricKey, iv } =
-    await createProtectedSymmetricKey(masterKey);
+  const protectedSymmetricKey = createProtectedSymmetricKey(masterKey);
 
   const { publicKey, protectedPrivateKey } =
-    await secp256k1GenerateProtectedKeyPair(masterKey, iv);
+    secp256k1GenerateProtectedKeyPair(masterKey);
 
   return {
     email,
     master_password_hash: masterPasswordHash,
     password_hint: password_hint || undefined,
-    symmetric_key_iv: iv,
     protected_symmetric_key: protectedSymmetricKey,
     secp256k1_key_pair: {
       public_key: publicKey,

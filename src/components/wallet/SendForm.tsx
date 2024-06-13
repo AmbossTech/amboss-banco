@@ -36,7 +36,6 @@ import {
   PayLiquidAddressMutationVariables,
 } from '@/graphql/mutations/__generated__/pay.generated';
 import { useGetWalletQuery } from '@/graphql/queries/__generated__/wallet.generated';
-import { useUserInfo } from '@/hooks/user';
 import { useWalletInfo } from '@/hooks/wallet';
 import { cn } from '@/lib/utils';
 import { useKeyStore } from '@/stores/keys';
@@ -84,7 +83,6 @@ export const SendForm: FC<{
   const { push } = useRouter();
 
   const walletInfo = useWalletInfo();
-  const userInfo = useUserInfo();
 
   const [stateLoading, setStateLoading] = useState(false);
 
@@ -280,8 +278,7 @@ export const SendForm: FC<{
     if (
       !result.data?.pay.liquid_address ||
       !walletInfo.protected_mnemonic ||
-      !masterKey ||
-      !userInfo.symmetric_key_iv
+      !masterKey
     ) {
       setStateLoading(false);
       return;
@@ -300,7 +297,6 @@ export const SendForm: FC<{
         descriptor: result.data.pay.liquid_address.wallet_account.descriptor,
         pset: result.data.pay.liquid_address.base_64,
         masterKey,
-        iv: userInfo.symmetric_key_iv,
       },
     };
 
