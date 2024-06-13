@@ -1,3 +1,5 @@
+import { hexToBytes } from '@noble/hashes/utils';
+import { getPublicKey } from '@noble/secp256k1';
 import {
   Mnemonic,
   Network,
@@ -6,14 +8,17 @@ import {
   Wollet,
   WolletDescriptor,
 } from 'lwk_wasm';
+import { nip44 } from 'nostr-tools';
 
 import { toWithError } from '@/utils/async';
 import {
+  bufToHex,
   generateNewMnemonic,
+  hexToUint8Array,
   restoreMnemonic,
   secp256k1GenerateProtectedKeyPair,
 } from '@/utils/crypto';
-import { decrypt, utils } from '@/utils/noble';
+import { decryptMessage, encryptMessage } from '@/utils/nostr';
 
 import { CryptoWorkerMessage, CryptoWorkerResponse } from './types';
 
@@ -113,9 +118,9 @@ self.onmessage = async e => {
       const { descriptor, masterKey, pset, wallet_account_id } =
         message.payload;
 
-      const unprotectedMnemonic = decrypt(
+      const unprotectedMnemonic = nip44.v2.decrypt(
         message.payload.mnemonic,
-        utils.hexEncode(masterKey)
+        hexToBytes(masterKey)
       );
 
       const signedPset = signPset(
@@ -140,9 +145,9 @@ self.onmessage = async e => {
     case 'decryptMnemonic': {
       const { protectedMnemonic, masterKey } = message.payload;
 
-      const unprotectedMnemonic = decrypt(
+      const unprotectedMnemonic = nip44.v2.decrypt(
         protectedMnemonic,
-        utils.hexEncode(masterKey)
+        hexToBytes(masterKey)
       );
 
       const response: CryptoWorkerResponse = {
@@ -157,67 +162,77 @@ self.onmessage = async e => {
       break;
     }
 
-    case 'eciesEncrypt': {
-      // const {
-      //   sender_pubkey,
-      //   receiver_pubkey,
-      //   receiver_lightning_address,
-      //   msg,
-      // } = message.payload;
+    case 'encryptMessage': {
+      const {
+        protectedPrivateKey,
+        masterKey,
+        receiver_money_address,
+        receiver_pubkey,
+        msg,
+      } = message.payload;
 
-      // const sender_protected_message = eciesEncrypt(sender_pubkey, msg);
-      // const receiver_protected_message = eciesEncrypt(receiver_pubkey, msg);
+      const unprotectedPrivateKey = nip44.v2.decrypt(
+        protectedPrivateKey,
+        hexToBytes(masterKey)
+      );
 
-      // const response: CryptoWorkerResponse = {
-      //   type: 'eciesEncrypt',
-      //   payload: {
-      //     receiver_lightning_address,
-      //     receiver_protected_message: bufToHex(receiver_protected_message),
-      //     sender_protected_message: bufToHex(sender_protected_message),
-      //   },
-      // };
+      const publicKey = getPublicKey(unprotectedPrivateKey).subarray(1, 33);
 
-      // self.postMessage(response);
+      const receiver_payload = encryptMessage(
+        msg,
+        hexToUint8Array(unprotectedPrivateKey),
+        receiver_pubkey.substring(2)
+      );
+
+      const sender_payload = encryptMessage(
+        msg,
+        hexToUint8Array(unprotectedPrivateKey),
+        bufToHex(publicKey)
+      );
+
+      const response: CryptoWorkerResponse = {
+        type: 'encryptMessage',
+        payload: {
+          receiver_money_address,
+          receiver_payload: JSON.stringify(receiver_payload),
+          sender_payload: JSON.stringify(sender_payload),
+        },
+      };
+
+      self.postMessage(response);
 
       break;
     }
 
     case 'decryptMessages': {
-      // const { iv, masterKey, messages } = message.payload;
+      const { protectedPrivateKey, masterKey, messages } = message.payload;
 
-      // const protectedPrivateKeyPayload = message.payload.protectedPrivateKey;
+      const unprotectedPrivateKey = nip44.v2.decrypt(
+        protectedPrivateKey,
+        hexToBytes(masterKey)
+      );
 
-      // const decryptedPrivateKeyPayload = await decryptCipher(
-      //   Buffer.from(protectedPrivateKeyPayload, 'hex'),
-      //   masterKey,
-      //   iv
-      // );
+      const unprotectedMessages = messages.map(m => {
+        try {
+          const event = JSON.parse(m.payload);
 
-      // const decryptedPrivateKeyPayloadHex = bufToHex(
-      //   decryptedPrivateKeyPayload
-      // );
+          const message = decryptMessage(
+            event,
+            hexToUint8Array(unprotectedPrivateKey)
+          );
 
-      // const unprotectedMessages = messages.map(m => {
-      //   try {
-      //     const decrypted = ecies.decrypt(
-      //       hexToBuf(decryptedPrivateKeyPayloadHex),
-      //       hexToBuf(m.protected_message)
-      //     );
+          return { ...m, message };
+        } catch (error) {
+          return { ...m, message: 'Error decrypting message.' };
+        }
+      });
 
-      //     const message = bufToUTF8(decrypted);
+      const response: CryptoWorkerResponse = {
+        type: 'decryptMessages',
+        payload: unprotectedMessages,
+      };
 
-      //     return { ...m, message };
-      //   } catch (error) {
-      //     return { ...m, message: 'Error decrypting message.' };
-      //   }
-      // });
-
-      // const response: CryptoWorkerResponse = {
-      //   type: 'decryptMessages',
-      //   payload: unprotectedMessages,
-      // };
-
-      // self.postMessage(response);
+      self.postMessage(response);
 
       break;
     }

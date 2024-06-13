@@ -45,7 +45,7 @@ export const Messages = () => {
     return data.wallets.find_one.contacts.find_one.messages.map(m => ({
       id: m.id,
       contact_is_sender: m.contact_is_sender,
-      message: m.protected_message,
+      message: m.payload,
     }));
   }, [unecryptedMessage, data]);
 
@@ -113,7 +113,7 @@ export const Messages = () => {
           <div
             key={m.id}
             className={cn(
-              'w-2/3 text-wrap break-words rounded p-4',
+              'w-2/3 text-wrap break-words rounded p-4 text-sm',
               m.contact_is_sender ? 'self-start' : 'self-end',
               m.contact_is_sender
                 ? 'bg-purple-100 dark:bg-purple-700'

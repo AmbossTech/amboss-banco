@@ -30,9 +30,10 @@ export type CryptoWorkerMessage =
       };
     }
   | {
-      type: 'eciesEncrypt';
+      type: 'encryptMessage';
       payload: {
-        sender_pubkey: string;
+        protectedPrivateKey: string;
+        masterKey: string;
         receiver_pubkey: string;
         receiver_money_address: string;
         msg: string;
@@ -46,7 +47,7 @@ export type CryptoWorkerMessage =
         messages: {
           id: string;
           contact_is_sender: boolean;
-          protected_message: string;
+          payload: string;
         }[];
       };
     };
@@ -77,11 +78,11 @@ export type CryptoWorkerResponse =
       };
     }
   | {
-      type: 'eciesEncrypt';
+      type: 'encryptMessage';
       payload: {
         receiver_money_address: string;
-        sender_protected_message: string;
-        receiver_protected_message: string;
+        sender_payload: string;
+        receiver_payload: string;
       };
     }
   | {

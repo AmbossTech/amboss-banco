@@ -1,10 +1,9 @@
-import { randomBytes } from '@noble/hashes/utils';
-import * as secp from '@noble/secp256k1';
+import { hexToBytes, randomBytes } from '@noble/hashes/utils';
+import { getPublicKey, utils } from '@noble/secp256k1';
 import { generateMnemonic } from '@scure/bip39';
 import { wordlist } from '@scure/bip39/wordlists/english';
 import argon2 from 'argon2-browser';
-
-import { encrypt, utils } from './noble';
+import { nip44 } from 'nostr-tools';
 
 // Same defaults as those in Bitwarden
 export const ARGON_DEFAULTS = {
@@ -14,9 +13,8 @@ export const ARGON_DEFAULTS = {
   parallelism: 4,
 };
 
-export const isASCII = (str: string) => {
-  return /^[\x00-\x7F]*$/.test(str);
-};
+export const hexToUint8Array = (str: string): Uint8Array =>
+  new Uint8Array(Buffer.from(str, 'hex'));
 
 export const bufToHex = (buf: Buffer | ArrayBuffer): string =>
   Buffer.from(buf).toString('hex');
@@ -32,14 +30,14 @@ export const uint8arrayToUtf8 = (str: Uint8Array): string => {
 };
 
 export const secp256k1GenerateProtectedKeyPair = (masterKey: string) => {
-  const privateKey = secp.utils.randomPrivateKey();
-  const publicKey = secp.getPublicKey(privateKey);
+  const privateKey = utils.randomPrivateKey();
+  const publicKey = getPublicKey(privateKey);
 
   const privateKeyHex = bufToHex(privateKey);
 
-  const protectedPrivateKey = encrypt(
+  const protectedPrivateKey = nip44.v2.encrypt(
     privateKeyHex,
-    utils.hexEncode(masterKey)
+    hexToBytes(masterKey)
   );
 
   return {
@@ -50,7 +48,7 @@ export const secp256k1GenerateProtectedKeyPair = (masterKey: string) => {
 
 export const generateNewMnemonic = (masterKey: string) => {
   const mnemonic = generateMnemonic(wordlist);
-  const protectedMnemonic = encrypt(mnemonic, utils.hexEncode(masterKey));
+  const protectedMnemonic = nip44.v2.encrypt(mnemonic, hexToBytes(masterKey));
 
   return {
     mnemonic,
@@ -59,7 +57,7 @@ export const generateNewMnemonic = (masterKey: string) => {
 };
 
 export const restoreMnemonic = (mnemonic: string, masterKey: string) => {
-  const protectedMnemonic = encrypt(mnemonic, utils.hexEncode(masterKey));
+  const protectedMnemonic = nip44.v2.encrypt(mnemonic, hexToBytes(masterKey));
 
   return {
     mnemonic,
@@ -87,9 +85,9 @@ export const argon2Hash = async (
 export const createProtectedSymmetricKey = (masterKey: string): string => {
   const symmetricKey = Buffer.from(randomBytes(64));
 
-  const protectedSymmetricKey = encrypt(
+  const protectedSymmetricKey = nip44.v2.encrypt(
     symmetricKey.toString('hex'),
-    utils.hexEncode(masterKey)
+    hexToBytes(masterKey)
   );
 
   return protectedSymmetricKey;

@@ -48,6 +48,7 @@ export type GetWalletContactQuery = {
         __typename?: 'Secp256k1KeyPair';
         id: string;
         encryption_pubkey: string;
+        protected_encryption_private_key: string;
       };
       contacts: {
         __typename?: 'WalletContacts';
@@ -99,7 +100,7 @@ export type GetWalletContactMessagesQuery = {
             __typename?: 'ContactMessage';
             id: string;
             contact_is_sender: boolean;
-            protected_message: string;
+            payload: string;
           }>;
         };
       };
@@ -203,6 +204,7 @@ export const GetWalletContactDocument = gql`
         secp256k1_key_pair {
           id
           encryption_pubkey
+          protected_encryption_private_key
         }
         contacts {
           id
@@ -311,7 +313,7 @@ export const GetWalletContactMessagesDocument = gql`
             messages {
               id
               contact_is_sender
-              protected_message
+              payload
             }
           }
         }

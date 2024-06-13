@@ -43,7 +43,7 @@ export type ContactMessage = {
   __typename?: 'ContactMessage';
   contact_is_sender: Scalars['Boolean']['output'];
   id: Scalars['String']['output'];
-  protected_message: Scalars['String']['output'];
+  payload: Scalars['String']['output'];
 };
 
 export type ContactMutations = {
@@ -291,8 +291,8 @@ export type SendMessage = {
 export type SendMessageInput = {
   contact_id: Scalars['String']['input'];
   receiver_money_address: Scalars['String']['input'];
-  receiver_protected_message: Scalars['String']['input'];
-  sender_protected_message: Scalars['String']['input'];
+  receiver_payload: Scalars['String']['input'];
+  sender_payload: Scalars['String']['input'];
 };
 
 export type SignUpInput = {

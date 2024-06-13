@@ -27,6 +27,7 @@ export const GetWalletContact = gql`
         secp256k1_key_pair {
           id
           encryption_pubkey
+          protected_encryption_private_key
         }
         contacts {
           id
@@ -65,7 +66,7 @@ export const GetWalletContactMessages = gql`
             messages {
               id
               contact_is_sender
-              protected_message
+              payload
             }
           }
         }

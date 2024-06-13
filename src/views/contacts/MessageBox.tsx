@@ -4,12 +4,12 @@ import { ApolloError, useApolloClient } from '@apollo/client';
 import Big from 'big.js';
 import {
   CornerDownLeft,
+  DollarSign,
   HandCoins,
   Loader2,
-  Mic,
-  Paperclip,
+  Mail,
 } from 'lucide-react';
-import { ChangeEvent, useEffect, useMemo, useRef, useState } from 'react';
+import { ChangeEvent, FC, useEffect, useMemo, useRef, useState } from 'react';
 import { useLocalStorage } from 'usehooks-ts';
 
 import { VaultButton } from '@/components/button/VaultButton';
@@ -51,7 +51,7 @@ import {
   CryptoWorkerResponse,
 } from '@/workers/crypto/types';
 
-export const PayMessageBox = () => {
+export const PayMessageBox: FC<{ cbk: (type: string) => void }> = ({ cbk }) => {
   const workerRef = useRef<Worker>();
 
   const client = useApolloClient();
@@ -295,24 +295,21 @@ export const PayMessageBox = () => {
           className="min-h-12 resize-none border-0 p-3 shadow-none focus-visible:ring-0"
         />
         <div className="flex items-center p-3 pt-0">
-          {/* <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" type="button">
-                <Paperclip className="size-4" />
-                <span className="sr-only">Attach file</span>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="top">Attach File</TooltipContent>
-          </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" type="button">
-                <Mic className="size-4" />
-                <span className="sr-only">Use Microphone</span>
+              <Button
+                variant="ghost"
+                size="icon"
+                type="button"
+                onClick={() => cbk('message')}
+              >
+                <Mail className="size-4" />
+                <span className="sr-only">Send Message</span>
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="top">Use Microphone</TooltipContent>
-          </Tooltip> */}
+            <TooltipContent side="top">Send Message</TooltipContent>
+          </Tooltip>
+
           {masterKey ? (
             <Button
               type="submit"
@@ -340,10 +337,14 @@ export const PayMessageBox = () => {
   );
 };
 
-export const SendMessageBox = () => {
+export const SendMessageBox: FC<{ cbk: (type: string) => void }> = ({
+  cbk,
+}) => {
   const workerRef = useRef<Worker>();
 
   const { toast } = useToast();
+
+  const masterKey = useKeyStore(s => s.masterKey);
 
   const [message, setMessage] = useState<string>('');
   const [formLoading, setFormLoading] = useState<boolean>(false);
@@ -389,8 +390,6 @@ export const SendMessageBox = () => {
     },
   });
 
-  console.log(data);
-
   useEffect(() => {
     workerRef.current = new Worker(
       new URL('../../workers/crypto/crypto.ts', import.meta.url)
@@ -400,7 +399,7 @@ export const SendMessageBox = () => {
       const message: CryptoWorkerResponse = event.data;
 
       switch (message.type) {
-        case 'eciesEncrypt':
+        case 'encryptMessage':
           if (!currentContact?.id) {
             toast({
               variant: 'destructive',
@@ -408,19 +407,16 @@ export const SendMessageBox = () => {
               description: 'Select a contact to send them a message',
             });
           } else {
-            const {
-              sender_protected_message,
-              receiver_money_address,
-              receiver_protected_message,
-            } = message.payload;
+            const { sender_payload, receiver_money_address, receiver_payload } =
+              message.payload;
 
             sendMessage({
               variables: {
                 input: {
                   contact_id: currentContact.id,
                   receiver_money_address,
-                  receiver_protected_message,
-                  sender_protected_message,
+                  receiver_payload,
+                  sender_payload,
                 },
               },
             });
@@ -454,14 +450,18 @@ export const SendMessageBox = () => {
       return;
     }
 
+    if (!masterKey) return;
+
     if (workerRef.current) {
       setFormLoading(true);
 
       const workerMessage: CryptoWorkerMessage = {
-        type: 'eciesEncrypt',
+        type: 'encryptMessage',
         payload: {
-          sender_pubkey:
-            data.wallets.find_one.secp256k1_key_pair.encryption_pubkey,
+          protectedPrivateKey:
+            data.wallets.find_one.secp256k1_key_pair
+              .protected_encryption_private_key,
+          masterKey,
           receiver_pubkey:
             data.wallets.find_one.contacts.find_one.encryption_pubkey,
           receiver_money_address:
@@ -475,10 +475,6 @@ export const SendMessageBox = () => {
   };
 
   const isLoading = loading || formLoading || sendMessageLoading;
-
-  if (isLoading) {
-    return null;
-  }
 
   return (
     <form
@@ -498,45 +494,53 @@ export const SendMessageBox = () => {
       <div className="flex items-center p-3 pt-0">
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button variant="ghost" size="icon" type="button">
-              <Paperclip className="size-4" />
-              <span className="sr-only">Attach file</span>
+            <Button
+              variant="ghost"
+              size="icon"
+              type="button"
+              onClick={() => cbk('pay')}
+            >
+              <DollarSign className="size-4" />
+              <span className="sr-only">Send Money</span>
             </Button>
           </TooltipTrigger>
-          <TooltipContent side="top">Attach File</TooltipContent>
+          <TooltipContent side="top">Send Money</TooltipContent>
         </Tooltip>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button variant="ghost" size="icon" type="button">
-              <Mic className="size-4" />
-              <span className="sr-only">Use Microphone</span>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent side="top">Use Microphone</TooltipContent>
-        </Tooltip>
-        <Button
-          type="submit"
-          disabled={isLoading}
-          size="sm"
-          className="ml-auto gap-1.5"
-        >
-          Send Message
-          {isLoading ? (
-            <Loader2 className="size-3.5 animate-spin" />
-          ) : (
-            <CornerDownLeft className="size-3.5" />
-          )}
-        </Button>
+
+        {masterKey ? (
+          <Button
+            type="submit"
+            disabled={isLoading}
+            size="sm"
+            className="ml-auto gap-1.5"
+          >
+            Send Message
+            {isLoading ? (
+              <Loader2 className="size-3.5 animate-spin" />
+            ) : (
+              <CornerDownLeft className="size-3.5" />
+            )}
+          </Button>
+        ) : (
+          <VaultButton
+            lockedTitle="Unlock to Send Message"
+            size="sm"
+            className="ml-auto gap-1.5"
+          />
+        )}
       </div>
     </form>
   );
 };
 
 export const ContactMessageBox = () => {
-  return (
-    <>
-      <PayMessageBox />
-      {/* <SendMessageBox /> */}
-    </>
-  );
+  const [boxType, setBoxType] = useState<string>('message');
+
+  switch (boxType) {
+    case 'pay':
+      return <PayMessageBox cbk={type => setBoxType(type)} />;
+
+    default:
+      return <SendMessageBox cbk={type => setBoxType(type)} />;
+  }
 };
