@@ -120,7 +120,9 @@ export const Messages = () => {
                 : 'bg-purple-200 dark:bg-purple-950'
             )}
           >
-            {m.message}
+            {m.message.substring(0, 1) === '{'
+              ? 'Encrypted message'
+              : m.message}
           </div>
         ))}
       </div>

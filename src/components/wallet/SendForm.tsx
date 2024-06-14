@@ -350,6 +350,7 @@ export const SendForm: FC<{
                   )}
                 />
               )}
+
               <FormField
                 control={form.control}
                 name="assetId"
@@ -367,11 +368,7 @@ export const SendForm: FC<{
                       </FormControl>
                       <SelectContent>
                         {accountAssets.map(a => (
-                          <SelectItem
-                            key={a.asset_id}
-                            value={a.asset_id}
-                            onSelect={e => console.log(e)}
-                          >
+                          <SelectItem key={a.asset_id} value={a.asset_id}>
                             {a.asset_info.name}
                           </SelectItem>
                         ))}

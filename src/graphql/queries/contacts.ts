@@ -35,12 +35,16 @@ export const GetWalletContact = gql`
             id
             money_address
             encryption_pubkey
-            lnurl_info {
+            payment_options {
               id
+              code
+              name
+              network
+              symbol
               min_sendable
               max_sendable
-              variable_fee_percentage
               fixed_fee
+              variable_fee_percentage
             }
           }
         }

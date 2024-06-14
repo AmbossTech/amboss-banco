@@ -160,12 +160,16 @@ export type LiquidTransaction = {
   unblinded_url: Scalars['String']['output'];
 };
 
-export type LnUrlInfo = {
-  __typename?: 'LnUrlInfo';
+export type LnUrlCurrency = {
+  __typename?: 'LnUrlCurrency';
+  code: Scalars['String']['output'];
   fixed_fee: Scalars['String']['output'];
   id: Scalars['String']['output'];
-  max_sendable: Scalars['String']['output'];
-  min_sendable: Scalars['String']['output'];
+  max_sendable?: Maybe<Scalars['String']['output']>;
+  min_sendable?: Maybe<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
+  network: Scalars['String']['output'];
+  symbol: Scalars['String']['output'];
   variable_fee_percentage: Scalars['String']['output'];
 };
 
@@ -358,9 +362,9 @@ export type WalletContact = {
   __typename?: 'WalletContact';
   encryption_pubkey?: Maybe<Scalars['String']['output']>;
   id: Scalars['String']['output'];
-  lnurl_info?: Maybe<LnUrlInfo>;
   messages: Array<ContactMessage>;
   money_address: Scalars['String']['output'];
+  payment_options?: Maybe<Array<LnUrlCurrency>>;
 };
 
 export type WalletContacts = {

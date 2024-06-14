@@ -58,14 +58,18 @@ export type GetWalletContactQuery = {
           id: string;
           money_address: string;
           encryption_pubkey?: string | null;
-          lnurl_info?: {
-            __typename?: 'LnUrlInfo';
+          payment_options?: Array<{
+            __typename?: 'LnUrlCurrency';
             id: string;
-            min_sendable: string;
-            max_sendable: string;
-            variable_fee_percentage: string;
+            code: string;
+            name: string;
+            network: string;
+            symbol: string;
+            min_sendable?: string | null;
+            max_sendable?: string | null;
             fixed_fee: string;
-          } | null;
+            variable_fee_percentage: string;
+          }> | null;
         };
       };
     };
@@ -212,12 +216,16 @@ export const GetWalletContactDocument = gql`
             id
             money_address
             encryption_pubkey
-            lnurl_info {
+            payment_options {
               id
+              code
+              name
+              network
+              symbol
               min_sendable
               max_sendable
-              variable_fee_percentage
               fixed_fee
+              variable_fee_percentage
             }
           }
         }
