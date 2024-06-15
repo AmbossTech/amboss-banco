@@ -147,7 +147,12 @@ export const PayMessageBox: FC<{
           },
           addressInput: {
             address: currentContact.address,
-            amount: inputValue.number,
+            amount: inputValue.number * 10 ** currentPaymentOption.decimals,
+            payment_option: {
+              code: currentPaymentOption.code,
+              chain: currentPaymentOption.chain,
+              network: currentPaymentOption.network,
+            },
           },
         },
       })
@@ -301,11 +306,13 @@ export const PayMessageBox: FC<{
                 const {
                   id,
                   code,
+                  chain,
                   name,
                   network,
                   symbol,
                   max_sendable,
                   min_sendable,
+                  decimals,
                   fixed_fee,
                   variable_fee_percentage,
                 } = paymentOption;
@@ -313,11 +320,13 @@ export const PayMessageBox: FC<{
                 setCurrentPaymentOption({
                   id,
                   code,
+                  chain,
                   name,
                   network,
                   symbol,
                   min_sendable: min_sendable ? Number(min_sendable) : null,
                   max_sendable: max_sendable ? Number(max_sendable) : null,
+                  decimals,
                   fixed_fee: Number(fixed_fee),
                   variable_fee_percentage: Number(variable_fee_percentage),
                 });

@@ -160,15 +160,23 @@ export type LiquidTransaction = {
   unblinded_url: Scalars['String']['output'];
 };
 
+export type LnAddressPaymentOption = {
+  chain: Scalars['String']['input'];
+  code: Scalars['String']['input'];
+  network: Scalars['String']['input'];
+};
+
 export type LnUrlCurrency = {
   __typename?: 'LnUrlCurrency';
-  code: Scalars['String']['output'];
+  chain: PaymentOptionChain;
+  code: PaymentOptionCode;
+  decimals: Scalars['Float']['output'];
   fixed_fee: Scalars['String']['output'];
   id: Scalars['String']['output'];
   max_sendable?: Maybe<Scalars['String']['output']>;
   min_sendable?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
-  network: Scalars['String']['output'];
+  network: PaymentOptionNetwork;
   symbol: Scalars['String']['output'];
   variable_fee_percentage: Scalars['String']['output'];
 };
@@ -232,6 +240,7 @@ export type PayLiquidAddressInput = {
 export type PayLnAddressInput = {
   address: Scalars['String']['input'];
   amount: Scalars['Float']['input'];
+  payment_option?: InputMaybe<LnAddressPaymentOption>;
 };
 
 export type PayLnInvoiceInput = {
@@ -256,6 +265,21 @@ export type PayMutationsLiquid_AddressArgs = {
 export type PayMutationsMoney_AddressArgs = {
   input: PayLnAddressInput;
 };
+
+export enum PaymentOptionChain {
+  Btc = 'BTC',
+  Liquid = 'LIQUID',
+}
+
+export enum PaymentOptionCode {
+  Btc = 'BTC',
+  Lightning = 'LIGHTNING',
+  Usdt = 'USDT',
+}
+
+export enum PaymentOptionNetwork {
+  Mainnet = 'MAINNET',
+}
 
 export type Query = {
   __typename?: 'Query';

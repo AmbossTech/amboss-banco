@@ -20,11 +20,13 @@ export const useContactStore = create<ContactState>()(set => ({
 export type PaymentOption = {
   id: string;
   code: string;
-  name: string;
+  chain: string;
   network: string;
+  name: string;
   symbol: string;
   max_sendable: number | null;
   min_sendable: number | null;
+  decimals: number;
   fixed_fee: number;
   variable_fee_percentage: number;
 };

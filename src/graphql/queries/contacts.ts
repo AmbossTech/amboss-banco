@@ -38,11 +38,13 @@ export const GetWalletContact = gql`
             payment_options {
               id
               code
+              chain
               name
               network
               symbol
               min_sendable
               max_sendable
+              decimals
               fixed_fee
               variable_fee_percentage
             }

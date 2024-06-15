@@ -61,12 +61,14 @@ export type GetWalletContactQuery = {
           payment_options?: Array<{
             __typename?: 'LnUrlCurrency';
             id: string;
-            code: string;
+            code: Types.PaymentOptionCode;
+            chain: Types.PaymentOptionChain;
             name: string;
-            network: string;
+            network: Types.PaymentOptionNetwork;
             symbol: string;
             min_sendable?: string | null;
             max_sendable?: string | null;
+            decimals: number;
             fixed_fee: string;
             variable_fee_percentage: string;
           }> | null;
@@ -219,11 +221,13 @@ export const GetWalletContactDocument = gql`
             payment_options {
               id
               code
+              chain
               name
               network
               symbol
               min_sendable
               max_sendable
+              decimals
               fixed_fee
               variable_fee_percentage
             }
