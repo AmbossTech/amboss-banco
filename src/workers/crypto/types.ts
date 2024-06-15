@@ -32,11 +32,13 @@ export type CryptoWorkerMessage =
   | {
       type: 'encryptMessage';
       payload: {
+        contact_id: string;
         protectedPrivateKey: string;
         masterKey: string;
         receiver_pubkey: string;
         receiver_money_address: string;
-        msg: string;
+        sender_message: string;
+        receiver_message: string;
       };
     }
   | {
@@ -80,6 +82,7 @@ export type CryptoWorkerResponse =
   | {
       type: 'encryptMessage';
       payload: {
+        contact_id: string;
         receiver_money_address: string;
         sender_payload: string;
         receiver_payload: string;

@@ -1,7 +1,7 @@
 'use client';
 
 import { CornerDownLeft, Loader2 } from 'lucide-react';
-import { FC, ReactNode, useEffect, useRef, useState } from 'react';
+import { FC, ReactNode, useCallback, useState } from 'react';
 import { useLocalStorage } from 'usehooks-ts';
 
 import { VaultButton } from '@/components/button/VaultButton';
@@ -9,58 +9,29 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
-import { useSendMessageMutation } from '@/graphql/mutations/__generated__/contact.generated';
-import {
-  GetWalletContactMessagesDocument,
-  useGetWalletContactQuery,
-} from '@/graphql/queries/__generated__/contacts.generated';
+import { useGetWalletContactQuery } from '@/graphql/queries/__generated__/contacts.generated';
+import { useSendMessage } from '@/hooks/message';
 import { useContactStore } from '@/stores/contacts';
 import { useKeyStore } from '@/stores/keys';
 import { LOCALSTORAGE_KEYS } from '@/utils/constants';
 import { handleApolloError } from '@/utils/error';
-import {
-  CryptoWorkerMessage,
-  CryptoWorkerResponse,
-} from '@/workers/crypto/types';
 
 export const SendMessageBox: FC<{ iconOptions?: ReactNode }> = ({
   iconOptions,
 }) => {
-  const workerRef = useRef<Worker>();
+  const [message, setMessage] = useState<string>('');
+
+  const cbk = useCallback(() => setMessage(''), []);
+
+  const { sendMessage, loading: sendLoading } = useSendMessage(cbk);
 
   const { toast } = useToast();
 
   const masterKey = useKeyStore(s => s.masterKey);
 
-  const [message, setMessage] = useState<string>('');
-  const [formLoading, setFormLoading] = useState<boolean>(false);
-
   const currentContact = useContactStore(s => s.currentContact);
 
   const [value] = useLocalStorage(LOCALSTORAGE_KEYS.currentWalletId, '');
-
-  const [sendMessage, { loading: sendMessageLoading }] = useSendMessageMutation(
-    {
-      onCompleted: () => {
-        setMessage('');
-      },
-      onError: err => {
-        const messages = handleApolloError(err);
-
-        toast({
-          variant: 'destructive',
-          title: 'Error Sending Message',
-          description: messages.join(', '),
-        });
-      },
-      refetchQueries: [
-        {
-          query: GetWalletContactMessagesDocument,
-          variables: { id: value, contact_id: currentContact?.id || '' },
-        },
-      ],
-    }
-  );
 
   const { data, loading } = useGetWalletContactQuery({
     variables: { id: value, contact_id: currentContact?.id || '' },
@@ -76,55 +47,10 @@ export const SendMessageBox: FC<{ iconOptions?: ReactNode }> = ({
     },
   });
 
-  useEffect(() => {
-    workerRef.current = new Worker(
-      new URL('../../../workers/crypto/crypto.ts', import.meta.url)
-    );
-
-    workerRef.current.onmessage = event => {
-      const message: CryptoWorkerResponse = event.data;
-
-      switch (message.type) {
-        case 'encryptMessage':
-          if (!currentContact?.id) {
-            toast({
-              variant: 'destructive',
-              title: 'No Contact Selected',
-              description: 'Select a contact to send them a message',
-            });
-          } else {
-            const { sender_payload, receiver_money_address, receiver_payload } =
-              message.payload;
-
-            sendMessage({
-              variables: {
-                input: {
-                  contact_id: currentContact.id,
-                  receiver_money_address,
-                  receiver_payload,
-                  sender_payload,
-                },
-              },
-            });
-          }
-          break;
-      }
-
-      setFormLoading(false);
-    };
-
-    workerRef.current.onerror = error => {
-      console.error('Worker error:', error);
-      setFormLoading(false);
-    };
-
-    return () => {
-      if (workerRef.current) workerRef.current.terminate();
-    };
-  }, [sendMessage, currentContact, toast]);
-
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    if (sendLoading) return;
 
     if (!data?.wallets.find_one.contacts.find_one.encryption_pubkey) {
       toast({
@@ -136,31 +62,42 @@ export const SendMessageBox: FC<{ iconOptions?: ReactNode }> = ({
       return;
     }
 
-    if (!masterKey) return;
+    if (!masterKey) {
+      toast({
+        variant: 'destructive',
+        title: 'Vault Locked',
+        description: 'Unlock your vault to send a message',
+      });
 
-    if (workerRef.current) {
-      setFormLoading(true);
-
-      const workerMessage: CryptoWorkerMessage = {
-        type: 'encryptMessage',
-        payload: {
-          protectedPrivateKey:
-            data.wallets.find_one.secp256k1_key_pair
-              .protected_encryption_private_key,
-          masterKey,
-          receiver_pubkey:
-            data.wallets.find_one.contacts.find_one.encryption_pubkey,
-          receiver_money_address:
-            data.wallets.find_one.contacts.find_one.money_address,
-          msg: message,
-        },
-      };
-
-      workerRef.current.postMessage(workerMessage);
+      return;
     }
+
+    if (!currentContact?.id) {
+      toast({
+        variant: 'destructive',
+        title: 'No Contact Selected',
+        description: 'Select a contact to send them a message',
+      });
+
+      return;
+    }
+
+    sendMessage({
+      contact_id: currentContact.id,
+      protectedPrivateKey:
+        data.wallets.find_one.secp256k1_key_pair
+          .protected_encryption_private_key,
+      masterKey,
+      receiver_pubkey:
+        data.wallets.find_one.contacts.find_one.encryption_pubkey,
+      receiver_money_address:
+        data.wallets.find_one.contacts.find_one.money_address,
+      sender_message: message,
+      receiver_message: message,
+    });
   };
 
-  const isLoading = loading || formLoading || sendMessageLoading;
+  const isLoading = loading || sendLoading;
 
   return (
     <form

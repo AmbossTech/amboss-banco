@@ -313,8 +313,8 @@ export type SendMessage = {
 export type SendMessageInput = {
   contact_id: Scalars['String']['input'];
   receiver_money_address: Scalars['String']['input'];
-  receiver_payload: Scalars['String']['input'];
-  sender_payload: Scalars['String']['input'];
+  receiver_payload?: InputMaybe<Scalars['String']['input']>;
+  sender_payload?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type SignUpInput = {
