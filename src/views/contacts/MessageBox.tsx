@@ -33,9 +33,8 @@ export const ContactMessageBox = () => {
 
     const {
       id,
-      code,
-      chain,
       name,
+      code,
       network,
       symbol,
       max_sendable,
@@ -47,9 +46,8 @@ export const ContactMessageBox = () => {
 
     setCurrentPaymentOption({
       id,
-      code,
-      chain,
       name,
+      code,
       network,
       symbol,
       min_sendable: min_sendable ? Number(min_sendable) : null,

@@ -37,9 +37,8 @@ export const GetWalletContact = gql`
             encryption_pubkey
             payment_options {
               id
-              code
-              chain
               name
+              code
               network
               symbol
               min_sendable

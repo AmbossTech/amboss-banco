@@ -150,7 +150,6 @@ export const PayMessageBox: FC<{
             amount: inputValue.number * 10 ** currentPaymentOption.decimals,
             payment_option: {
               code: currentPaymentOption.code,
-              chain: currentPaymentOption.chain,
               network: currentPaymentOption.network,
             },
           },
@@ -306,7 +305,6 @@ export const PayMessageBox: FC<{
                 const {
                   id,
                   code,
-                  chain,
                   name,
                   network,
                   symbol,
@@ -319,9 +317,8 @@ export const PayMessageBox: FC<{
 
                 setCurrentPaymentOption({
                   id,
-                  code,
-                  chain,
                   name,
+                  code,
                   network,
                   symbol,
                   min_sendable: min_sendable ? Number(min_sendable) : null,
