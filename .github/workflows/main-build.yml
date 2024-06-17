@@ -1,0 +1,74 @@
+name: Docker build and push to repository
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  main_build_image:
+    runs-on: ubuntu-latest
+    outputs:
+      shortref: ${{ steps.prep.outputs.shortref }}
+      tags: ${{ steps.prep.outputs.tags }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.ECR_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.ECR_SECRET_KEY }}
+          aws-region: us-west-2
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+        with:
+          registry-type: public
+
+      - name: Prepare
+        id: prep
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr-public.outputs.registry }}
+          ECR_REGISTRY_ALIAS: d6h3d6x3
+          ECR_REPOSITORY: amboss-banco
+        run: |
+          DOCKER_IMAGE=$ECR_REGISTRY/$ECR_REGISTRY_ALIAS/$ECR_REPOSITORY
+          SHORTREF=${GITHUB_SHA::8}
+
+          TAGS="${DOCKER_IMAGE}:${SHORTREF}"
+
+          # Set output parameters.
+          echo "shortref=${SHORTREF}" >> $GITHUB_OUTPUT
+          echo "tags=${TAGS}" >> $GITHUB_OUTPUT
+
+      - name: Check Image
+        id: image_check
+        env:
+          ECR_TAG: ${{ steps.prep.outputs.tags }}
+        run: docker manifest inspect $ECR_TAG && echo "imageExists=true" >> $GITHUB_OUTPUT || echo "imageExists=false" >> $GITHUB_OUTPUT
+
+      - name: Setup Docker Buildx Driver
+        id: docker_driver_setup
+        if: ${{ steps.image_check.outputs.imageExists == 'false' }}
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build, tag, and push image to Amazon ECR
+        id: docker_build
+        if: ${{ steps.image_check.outputs.imageExists == 'false' }}
+        uses: docker/build-push-action@v5
+        with:
+          context: ./
+          file: ./Dockerfile
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.prep.outputs.tags }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build Outputs
+        if: ${{ steps.image_check.outputs.imageExists == 'false' }}
+        run: |
+          echo "Image ID: ${{ steps.docker_build.outputs.imageid }}"
+          echo "Image Digest: ${{ steps.docker_build.outputs.digest }}"
