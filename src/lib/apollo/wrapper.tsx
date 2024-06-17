@@ -13,7 +13,6 @@ import {
   RefreshTokenDocument,
   RefreshTokenMutation,
 } from '@/graphql/mutations/__generated__/refreshToken.generated';
-import { ROUTES } from '@/utils/routes';
 
 import { promiseToObservable } from './utils';
 
