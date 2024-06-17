@@ -1,10 +1,10 @@
 'use client';
 
-// import { redirect } from 'next/navigation';
+import { redirect } from 'next/navigation';
 
 import { AppLayout } from '@/components/layout/AppLayout';
 import { useUserQuery } from '@/graphql/queries/__generated__/user.generated';
-// import { ROUTES } from '@/utils/routes';
+import { ROUTES } from '@/utils/routes';
 
 export default function Layout({
   children,
@@ -18,8 +18,7 @@ export default function Layout({
   }
 
   if (error || !data?.user.id) {
-    // redirect(ROUTES.login);
-    return null;
+    redirect(ROUTES.login);
   }
 
   return <AppLayout>{children}</AppLayout>;
