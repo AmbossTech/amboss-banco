@@ -74,13 +74,18 @@ const makeClient = (
               if (ssrMode) return;
 
               if (!refreshToken) {
-                window.location.href = ROUTES.home;
+                console.log('NO REFRESH TOKEN', { accessToken, refreshToken });
+                // window.location.href = ROUTES.home;
                 return;
               }
 
               return promiseToObservable(
                 refreshTokens(accessToken, refreshToken).catch(() => {
-                  window.location.href = ROUTES.home;
+                  console.log('REFRESHTOKENS ERROR', {
+                    accessToken,
+                    refreshToken,
+                  });
+                  // window.location.href = ROUTES.home;
                 })
               ).flatMap(accessToken => {
                 const oldHeaders = operation.getContext().headers;
