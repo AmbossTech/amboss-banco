@@ -27,6 +27,9 @@ export default function RootLayout({
   const accessToken = cookieStore.get('amboss_banco_access_token')?.value;
   const refreshToken = cookieStore.get('amboss_banco_refresh_token')?.value;
 
+  console.log({ accessToken, refreshToken });
+  console.log(cookieStore.getAll());
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={font.className}>
