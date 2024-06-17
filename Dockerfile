@@ -50,6 +50,12 @@ USER nextjs
 
 EXPOSE 3000
 
+# Install AWSCLI
+RUN apk add --no-cache python3 py3-pip
+RUN pip3 install --upgrade pip --break-system-packages
+RUN pip3 install --no-cache-dir awscli --break-system-packages
+RUN rm -rf /var/cache/apk/*
+
 ENV PORT 3000
 ENV HOSTNAME 0.0.0.0
 

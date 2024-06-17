@@ -1,14 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'standalone',
-  async rewrites() {
-    return [
-      {
-        source: '/api/graphql',
-        destination: 'http://localhost:5000/api/graphql',
-      },
-    ];
-  },
+  // async rewrites() {
+  //   return [
+  //     {
+  //       source: '/api/graphql',
+  //       destination: 'http://localhost:5000/api/graphql',
+  //     },
+  //   ];
+  // },
   webpack: (config, { isServer, webpack }) => {
     const wasmRegex = /argon2.*\.wasm$/;
 
