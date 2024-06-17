@@ -6,7 +6,7 @@ export const { getClient } = registerApolloClient(() => {
     cache: new InMemoryCache(),
     link: new HttpLink({
       // this needs to be an absolute url, as relative urls cannot be used in SSR
-      uri: 'https://mibanco.app/api/graphql',
+      uri: 'https://api.mibanco.app/api/graphql',
       // uri: 'http://localhost:3000/api/graphql',
       credentials: 'include',
       // credentials: 'same-origin',
