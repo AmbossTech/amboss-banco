@@ -227,6 +227,11 @@ export function SignUpForm() {
                     />
                   </FormControl>
                   <FormMessage />
+                  <FormDescription>
+                    <strong>Important: </strong>
+                    The password hint will be stored in clear text on the
+                    server.
+                  </FormDescription>
                 </FormItem>
               )}
             />

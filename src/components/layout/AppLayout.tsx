@@ -4,7 +4,6 @@ import {
   Menu,
   MessageCircle,
   Settings,
-  Wallet,
 } from 'lucide-react';
 import Link from 'next/link';
 import { FC, ReactNode } from 'react';
@@ -31,7 +30,7 @@ export const AppLayout: FC<{ children: ReactNode }> = ({ children }) => {
   return (
     <TooltipProvider>
       <div className="grid h-screen w-full md:pl-[53px]">
-        <aside className="inset-y fixed  left-0 z-20 hidden h-full flex-col border-r md:flex">
+        <aside className="inset-y fixed left-0 z-20 hidden h-full flex-col border-r md:flex">
           <div className="border-b p-2">
             <Button asChild variant="ghost" size="icon" aria-label="Home">
               <Link href={ROUTES.app.home}>
@@ -97,8 +96,17 @@ export const AppLayout: FC<{ children: ReactNode }> = ({ children }) => {
                     href={ROUTES.app.home}
                     className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
                   >
-                    <Wallet className="h-5 w-5" />
-                    Wallets
+                    <Landmark className="h-5 w-5" />
+                    Home
+                  </Link>
+                </nav>
+                <nav className="grid gap-2 font-medium">
+                  <Link
+                    href={ROUTES.app.contacts.home}
+                    className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
+                  >
+                    <MessageCircle className="h-5 w-5" />
+                    Chat
                   </Link>
                 </nav>
                 <div className="mt-auto">
