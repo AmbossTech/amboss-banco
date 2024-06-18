@@ -5,7 +5,7 @@ export function middleware(request: NextRequest) {
   if (request.nextUrl.pathname.startsWith('/api/graphql')) {
     return NextResponse.rewrite(
       new URL(
-        `${process.env.SERVER_URL}/api/graphql` ||
+        `${process.env.SERVER_URL}${request.nextUrl.pathname}` ||
           'http://localhost:5000/api/graphql'
       )
     );
@@ -13,7 +13,7 @@ export function middleware(request: NextRequest) {
   if (request.nextUrl.pathname.startsWith('/.well-known')) {
     return NextResponse.rewrite(
       new URL(
-        `${process.env.SERVER_URL}/.well-known` ||
+        `${process.env.SERVER_URL}${request.nextUrl.pathname}` ||
           'http://localhost:5000/.well-known'
       )
     );
@@ -21,7 +21,8 @@ export function middleware(request: NextRequest) {
   if (request.nextUrl.pathname.startsWith('/lnurlp')) {
     return NextResponse.rewrite(
       new URL(
-        `${process.env.SERVER_URL}/lnurlp` || 'http://localhost:5000/lnurlp'
+        `${process.env.SERVER_URL}${request.nextUrl.pathname}` ||
+          'http://localhost:5000/lnurlp'
       )
     );
   }
