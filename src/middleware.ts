@@ -13,7 +13,7 @@ export function middleware(request: NextRequest) {
   if (request.nextUrl.pathname.startsWith('/.well-known')) {
     return NextResponse.rewrite(
       new URL(
-        `${process.env.SERVER_URL}${request.nextUrl.pathname}` ||
+        `${process.env.SERVER_URL}${request.nextUrl.pathname}${request.nextUrl.search}` ||
           'http://localhost:5000/.well-known'
       )
     );
@@ -21,7 +21,7 @@ export function middleware(request: NextRequest) {
   if (request.nextUrl.pathname.startsWith('/lnurlp')) {
     return NextResponse.rewrite(
       new URL(
-        `${process.env.SERVER_URL}${request.nextUrl.pathname}` ||
+        `${process.env.SERVER_URL}${request.nextUrl.pathname}${request.nextUrl.search}` ||
           'http://localhost:5000/lnurlp'
       )
     );
