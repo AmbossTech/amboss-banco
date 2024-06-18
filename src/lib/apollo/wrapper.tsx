@@ -4,10 +4,10 @@ import { from, GraphQLRequest, HttpLink } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 import { onError } from '@apollo/client/link/error';
 import {
+  ApolloClient,
   ApolloNextAppProvider,
-  NextSSRApolloClient,
-  NextSSRInMemoryCache,
-} from '@apollo/experimental-nextjs-app-support/ssr';
+  InMemoryCache,
+} from '@apollo/experimental-nextjs-app-support';
 
 import {
   RefreshTokenDocument,
@@ -30,10 +30,12 @@ const returnTokenDependingOnOperation = (
 };
 
 const refreshTokens = async (
+  serverUrl: string,
   accessToken: string = '',
   refreshToken: string = ''
 ) => {
   const result = await makeClient(
+    serverUrl,
     accessToken,
     refreshToken
   ).mutate<RefreshTokenMutation>({
@@ -44,6 +46,7 @@ const refreshTokens = async (
 };
 
 const makeClient = (
+  serverUrl: string,
   accessToken: string | undefined,
   refreshToken: string | undefined
 ) => {
@@ -79,9 +82,11 @@ const makeClient = (
               }
 
               return promiseToObservable(
-                refreshTokens(accessToken, refreshToken).catch(() => {
-                  window.location.href = ROUTES.home;
-                })
+                refreshTokens(serverUrl, accessToken, refreshToken).catch(
+                  () => {
+                    window.location.href = ROUTES.home;
+                  }
+                )
               ).flatMap(accessToken => {
                 const oldHeaders = operation.getContext().headers;
 
@@ -107,8 +112,8 @@ const makeClient = (
 
   const httpLink = new HttpLink({
     // this needs to be an absolute url, as relative urls cannot be used in SSR
-    uri: 'https://api.mibanco.app/api/graphql',
-    // uri: 'http://localhost:3000/api/graphql',
+    // uri: 'https://api.mibanco.app/api/graphql',
+    uri: serverUrl, //'http://localhost:3000/api/graphql',
     credentials: 'include',
     // credentials: 'same-origin',
     // you can disable result caching here if you want to
@@ -122,24 +127,26 @@ const makeClient = (
 
   const link = from([authLink, errorLink, httpLink]);
 
-  return new NextSSRApolloClient({
-    cache: new NextSSRInMemoryCache(),
+  return new ApolloClient({
+    cache: new InMemoryCache(),
     link,
     connectToDevTools: true,
   });
 };
 
 export function ApolloWrapper({
+  serverUrl,
   accessToken,
   refreshToken,
   children,
 }: React.PropsWithChildren<{
+  serverUrl: string;
   accessToken: string | undefined;
   refreshToken: string | undefined;
 }>) {
   return (
     <ApolloNextAppProvider
-      makeClient={() => makeClient(accessToken, refreshToken)}
+      makeClient={() => makeClient(serverUrl, accessToken, refreshToken)}
     >
       {children}
     </ApolloNextAppProvider>

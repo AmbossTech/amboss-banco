@@ -24,6 +24,8 @@ export default function RootLayout({
 }>) {
   const cookieStore = cookies();
 
+  const serverUrl = `${process.env.URL}/api/graphql`;
+
   const accessToken = cookieStore.get('amboss_banco_access_token')?.value;
   const refreshToken = cookieStore.get('amboss_banco_refresh_token')?.value;
 
@@ -36,7 +38,11 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <ApolloWrapper accessToken={accessToken} refreshToken={refreshToken}>
+          <ApolloWrapper
+            serverUrl={serverUrl}
+            accessToken={accessToken}
+            refreshToken={refreshToken}
+          >
             {children}
             <Toaster />
           </ApolloWrapper>
