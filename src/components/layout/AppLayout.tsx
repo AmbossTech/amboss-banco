@@ -1,9 +1,11 @@
 import {
+  Home,
   Landmark,
   LifeBuoy,
   Menu,
   MessageCircle,
   Settings,
+  Vault,
 } from 'lucide-react';
 import Link from 'next/link';
 import { FC, ReactNode } from 'react';
@@ -25,18 +27,15 @@ import {
 import { ROUTES } from '@/utils/routes';
 
 import { WalletButton } from '../button/WalletButton';
+import { Badge } from '../ui/badge';
 
 export const AppLayout: FC<{ children: ReactNode }> = ({ children }) => {
   return (
     <TooltipProvider>
       <div className="grid h-screen w-full md:pl-[53px]">
         <aside className="inset-y fixed left-0 z-20 hidden h-full flex-col border-r md:flex">
-          <div className="border-b p-2">
-            <Button asChild variant="ghost" size="icon" aria-label="Home">
-              <Link href={ROUTES.app.home}>
-                <Landmark className="size-5" />
-              </Link>
-            </Button>
+          <div className="flex items-center justify-center border-b p-2 py-4">
+            <Vault className="size-5" />
           </div>
           <nav className="grid gap-1 p-2">
             <Tooltip>
@@ -44,7 +43,25 @@ export const AppLayout: FC<{ children: ReactNode }> = ({ children }) => {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="rounded-lg bg-muted"
+                  className="rounded-lg"
+                  aria-label="Wallet"
+                  asChild
+                >
+                  <Link href={ROUTES.app.home}>
+                    <Home className="size-5" />
+                  </Link>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="right" sideOffset={5}>
+                Contacts
+              </TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="rounded-lg"
                   aria-label="Wallet"
                   asChild
                 >
@@ -115,7 +132,13 @@ export const AppLayout: FC<{ children: ReactNode }> = ({ children }) => {
               </SheetContent>
             </Sheet>
 
-            <h1 className="text-xl font-black">BANCO</h1>
+            <div className="flex items-center justify-center gap-4">
+              <h1 className="text-xl font-black">BANCO</h1>
+
+              <Badge variant={'destructive'}>
+                Alpha - Limit funds and use at your own risk.
+              </Badge>
+            </div>
 
             <div className="hidden gap-2 md:flex">
               <WalletButton />
