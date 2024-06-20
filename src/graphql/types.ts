@@ -290,6 +290,7 @@ export type RefreshToken = {
 };
 
 export type RefreshWalletInput = {
+  full_scan?: InputMaybe<Scalars['Boolean']['input']>;
   wallet_id: Scalars['String']['input'];
 };
 
@@ -323,6 +324,7 @@ export type SignUpInput = {
   password_hint?: InputMaybe<Scalars['String']['input']>;
   protected_symmetric_key: Scalars['String']['input'];
   secp256k1_key_pair: Secp256k1KeyPairInput;
+  wallet?: InputMaybe<CreateWalletInput>;
 };
 
 export type SimpleWallet = {

@@ -54,17 +54,19 @@ export type CryptoWorkerMessage =
       };
     };
 
+export type CryptoNewWalletPayload = {
+  protectedMnemonic: string;
+  liquidDescriptor: string;
+  secp256k1_key_pair: {
+    public_key: string;
+    protected_private_key: string;
+  };
+};
+
 export type CryptoWorkerResponse =
   | {
       type: 'newWallet';
-      payload: {
-        protectedMnemonic: string;
-        liquidDescriptor: string;
-        secp256k1_key_pair: {
-          public_key: string;
-          protected_private_key: string;
-        };
-      };
+      payload: CryptoNewWalletPayload;
     }
   | {
       type: 'signPset';

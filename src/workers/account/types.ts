@@ -1,3 +1,5 @@
+import { CryptoNewWalletPayload } from '../crypto/types';
+
 export type CreateAccount = {
   email: string;
   password: string;
@@ -28,6 +30,7 @@ export type CreateAccountResult = {
     public_key: string;
     protected_private_key: string;
   };
+  wallet: CryptoNewWalletPayload;
 };
 
 export type GenerateMasterKeyAndHashResult = {
@@ -43,4 +46,5 @@ export type WorkerResponse =
   | {
       type: 'generateMaster';
       payload: GenerateMasterKeyAndHashResult;
-    };
+    }
+  | { type: 'loaded' };

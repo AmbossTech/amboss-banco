@@ -13,23 +13,14 @@ import { nip44 } from 'nostr-tools';
 import { toWithError } from '@/utils/async';
 import {
   bufToHex,
-  generateNewMnemonic,
   hexToUint8Array,
   restoreMnemonic,
   secp256k1GenerateProtectedKeyPair,
 } from '@/utils/crypto';
 import { decryptMessage, encryptMessage } from '@/utils/nostr';
 
+import { createNewWallet, generateLiquidDescriptor } from '../crypto';
 import { CryptoWorkerMessage, CryptoWorkerResponse } from './types';
-
-const generateLiquidDescriptor = async (mnemonic: string) => {
-  const network = Network.mainnet();
-
-  const signer = new Signer(new Mnemonic(mnemonic), network);
-  const wolletDescriptor = signer.wpkhSlip77Descriptor().toString();
-
-  return wolletDescriptor;
-};
 
 const signPset = (mnemonic: string, descriptor: string, pset: string) => {
   const network = Network.mainnet();
@@ -54,23 +45,12 @@ self.onmessage = async e => {
   switch (message.type) {
     case 'newWallet': {
       const { masterKey } = message.payload;
-      const { mnemonic, protectedMnemonic } = generateNewMnemonic(masterKey);
 
-      const { publicKey, protectedPrivateKey } =
-        secp256k1GenerateProtectedKeyPair(masterKey);
-
-      const liquidDescriptor = await generateLiquidDescriptor(mnemonic);
+      const payload = await createNewWallet(masterKey);
 
       const response: CryptoWorkerResponse = {
         type: 'newWallet',
-        payload: {
-          protectedMnemonic: protectedMnemonic,
-          liquidDescriptor,
-          secp256k1_key_pair: {
-            public_key: publicKey,
-            protected_private_key: protectedPrivateKey,
-          },
-        },
+        payload,
       };
 
       self.postMessage(response);

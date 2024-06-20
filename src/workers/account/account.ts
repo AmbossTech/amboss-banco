@@ -4,6 +4,7 @@ import {
   secp256k1GenerateProtectedKeyPair,
 } from '@/utils/crypto';
 
+import { createNewWallet } from '../crypto';
 import {
   CreateAccountResult,
   GenerateMasterKeyAndHashResult,
@@ -24,6 +25,8 @@ async function generateAccount(
   const { publicKey, protectedPrivateKey } =
     secp256k1GenerateProtectedKeyPair(masterKey);
 
+  const wallet = await createNewWallet(masterKey);
+
   return {
     email,
     master_password_hash: masterPasswordHash,
@@ -33,6 +36,7 @@ async function generateAccount(
       public_key: publicKey,
       protected_private_key: protectedPrivateKey,
     },
+    wallet,
   };
 }
 
@@ -95,3 +99,5 @@ self.onmessage = async e => {
       break;
   }
 };
+
+self.postMessage({ type: 'loaded' });

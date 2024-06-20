@@ -1,5 +1,6 @@
 'use client';
 
+import { ApolloError, useApolloClient } from '@apollo/client';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
 import Link from 'next/link';
@@ -18,7 +19,13 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { useSignUpMutation } from '@/graphql/mutations/__generated__/signUp.generated';
+import {
+  SignUpDocument,
+  SignUpMutation,
+  SignUpMutationVariables,
+} from '@/graphql/mutations/__generated__/signUp.generated';
+import { WalletAccountType, WalletType } from '@/graphql/types';
+import { toWithError } from '@/utils/async';
 import { handleApolloError } from '@/utils/error';
 import {
   evaluatePasswordStrength,
@@ -62,24 +69,11 @@ const FormSchema = z
 export function SignUpForm() {
   const { toast } = useToast();
 
+  const client = useApolloClient();
+
   const workerRef = useRef<Worker>();
 
-  const [loading, setLoading] = useState(false);
-
-  const [signUp] = useSignUpMutation({
-    onCompleted: () => {
-      window.location.href = ROUTES.app.home;
-    },
-    onError: err => {
-      const messages = handleApolloError(err);
-
-      toast({
-        variant: 'destructive',
-        title: 'Error logging in.',
-        description: messages.join(', '),
-      });
-    },
-  });
+  const [loading, setLoading] = useState(true);
 
   const form = useForm<z.infer<typeof FormSchema>>({
     reValidateMode: 'onChange',
@@ -120,20 +114,58 @@ export function SignUpForm() {
       new URL('../workers/account/account.ts', import.meta.url)
     );
 
-    workerRef.current.onmessage = event => {
+    workerRef.current.onmessage = async event => {
       const message: WorkerResponse = event.data;
 
       switch (message.type) {
-        case 'create':
-          signUp({ variables: { input: message.payload } });
+        case 'loaded':
+          setLoading(false);
           break;
 
-        default:
-          console.error('Unhandled message type:', event.data.type);
+        case 'create':
+          const { wallet, ...userInfo } = message.payload;
+
+          const [, error] = await toWithError(
+            client.mutate<SignUpMutation, SignUpMutationVariables>({
+              mutation: SignUpDocument,
+              variables: {
+                input: {
+                  ...userInfo,
+                  wallet: {
+                    secp256k1_key_pair: wallet.secp256k1_key_pair,
+                    details: {
+                      type: WalletType.ClientGenerated,
+                      protected_mnemonic: wallet.protectedMnemonic,
+                    },
+                    accounts: [
+                      {
+                        type: WalletAccountType.Liquid,
+                        liquid_descriptor: wallet.liquidDescriptor,
+                      },
+                    ],
+                  },
+                },
+              },
+            })
+          );
+
+          if (error) {
+            const messages = handleApolloError(error as ApolloError);
+
+            toast({
+              variant: 'destructive',
+              title: 'Error creating account.',
+              description: messages.join(', '),
+            });
+
+            setLoading(false);
+            return;
+          }
+
+          window.location.href = ROUTES.app.home;
+
           break;
       }
-
-      setLoading(false);
     };
 
     workerRef.current.onerror = error => {
@@ -144,7 +176,7 @@ export function SignUpForm() {
     return () => {
       if (workerRef.current) workerRef.current.terminate();
     };
-  }, [signUp]);
+  }, [client, toast]);
 
   return (
     <Card>
