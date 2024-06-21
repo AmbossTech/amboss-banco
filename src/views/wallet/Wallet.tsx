@@ -188,7 +188,7 @@ export const WalletInfo: FC<{ id: string }> = ({ id }) => {
 
   return (
     <div className="w-full">
-      <h2 className="scroll-m-20 pb-2 text-xl font-semibold tracking-tight first:mt-0">
+      <h2 className="scroll-m-20 pb-2 pt-6 text-xl font-semibold tracking-tight first:mt-0">
         Accounts
       </h2>
       <div className="flex w-full flex-col gap-4 md:flex-row">

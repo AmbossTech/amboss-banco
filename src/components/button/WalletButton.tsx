@@ -108,7 +108,16 @@ export function WalletButton() {
 
             {!!value && wallets.length ? (
               <CommandGroup heading="Current Wallet">
-                <RefreshWallet walletId={value} />
+                <RefreshWallet
+                  walletId={value}
+                  fullScan={false}
+                  title="Refresh"
+                />
+                <RefreshWallet
+                  walletId={value}
+                  fullScan={true}
+                  title="Full Refresh"
+                />
                 <CommandItem
                   className="cursor-pointer"
                   onSelect={() => {

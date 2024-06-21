@@ -7,16 +7,20 @@ import { useRefreshWalletMutation } from '@/graphql/mutations/__generated__/refr
 
 import { CommandItem } from '../ui/command';
 
-export const RefreshWallet: FC<{ walletId: string }> = ({ walletId }) => {
+export const RefreshWallet: FC<{
+  title: string;
+  walletId: string;
+  fullScan: boolean;
+}> = ({ walletId, fullScan, title }) => {
   const [refresh, { loading }] = useRefreshWalletMutation({
-    variables: { input: { wallet_id: walletId } },
+    variables: { input: { wallet_id: walletId, full_scan: fullScan } },
     refetchQueries: ['getWallet'],
     onError: err => console.log('ERROR', err),
   });
 
   return (
     <CommandItem onSelect={() => refresh()} className="cursor-pointer">
-      Refresh
+      {title}
       {loading ? (
         <Loader2 className="ml-auto size-4 animate-spin" />
       ) : (
