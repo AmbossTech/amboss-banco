@@ -8,10 +8,16 @@ export const ROUTES = {
     wallet: {
       home: '/app/wallet',
       settings: (id: string) => `/app/wallet/${id}/settings`,
-      send: (walletId: string, accountId: string, assetId: string) =>
-        `/app/wallet/${walletId}/account/${accountId}/send?assetId=${assetId}`,
       receive: (walletId: string, accountId: string) =>
         `/app/wallet/${walletId}/account/${accountId}/receive`,
+      send: {
+        home: (walletId: string, accountId: string, assetId: string) =>
+          `/app/wallet/${walletId}/account/${accountId}/send?assetId=${assetId}`,
+        address: (walletId: string, accountId: string, assetId: string) =>
+          `/app/wallet/${walletId}/account/${accountId}/send/address?assetId=${assetId}`,
+        invoice: (walletId: string, accountId: string, assetId: string) =>
+          `/app/wallet/${walletId}/account/${accountId}/send/invoice?assetId=${assetId}`,
+      },
     },
     contacts: {
       home: '/app/contacts',

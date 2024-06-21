@@ -35,6 +35,7 @@
     "@types/lodash": "^4.17.5",
     "argon2-browser": "^1.18.0",
     "big.js": "^6.2.1",
+    "bolt11": "^1.4.1",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "cmdk": "^1.0.0",

@@ -92,7 +92,7 @@ const BalanceCard: FC<{
         </Button>
         <Button variant="secondary" size={'sm'} className="w-full">
           <Link
-            href={ROUTES.app.wallet.send(walletId, accountId, assetId)}
+            href={ROUTES.app.wallet.send.home(walletId, accountId, assetId)}
             className="flex"
           >
             <ArrowUpToLine className="mr-2 h-4 w-4" />

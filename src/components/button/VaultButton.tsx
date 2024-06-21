@@ -52,7 +52,7 @@ const UnlockDialogContent: FC<{ callback: () => void }> = ({ callback }) => {
 
   const setMasterKey = useKeyStore(s => s.setMasterKey);
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [tempMasterKey, setTempMasterKey] = useState('');
 
   const { data } = useUserQuery({ errorPolicy: 'ignore' });
@@ -108,9 +108,9 @@ const UnlockDialogContent: FC<{ callback: () => void }> = ({ callback }) => {
 
           break;
 
-        default:
-          console.error('Unhandled message type:', event.data.type);
-          break;
+        case 'loaded':
+          setLoading(false);
+          return;
       }
 
       setLoading(false);
