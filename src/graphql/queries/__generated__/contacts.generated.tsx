@@ -106,6 +106,7 @@ export type GetWalletContactMessagesQuery = {
             id: string;
             contact_is_sender: boolean;
             payload: string;
+            created_at: string;
           }>;
         };
       };
@@ -324,6 +325,7 @@ export const GetWalletContactMessagesDocument = gql`
               id
               contact_is_sender
               payload
+              created_at
             }
           }
         }

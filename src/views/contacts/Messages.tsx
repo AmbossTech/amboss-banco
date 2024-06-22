@@ -1,3 +1,4 @@
+import { format } from 'date-fns';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useLocalStorage } from 'usehooks-ts';
 
@@ -18,12 +19,13 @@ type Message = {
   id: string;
   contact_is_sender: boolean;
   message: string;
+  created_at: string;
 };
 
 export const Messages = () => {
   const workerRef = useRef<Worker>();
 
-  const [unecryptedMessage, setUnencryptedMessage] = useState<Message[]>([]);
+  const [decryptedMessage, setDecryptedMessage] = useState<Message[]>([]);
 
   const [workerLoaded, setWorkerLoaded] = useState<boolean>(false);
 
@@ -40,14 +42,15 @@ export const Messages = () => {
 
   const messages = useMemo(() => {
     if (!data?.wallets.find_one.contacts.find_one.messages.length) return [];
-    if (unecryptedMessage.length) return unecryptedMessage;
+    if (decryptedMessage.length) return decryptedMessage;
 
     return data.wallets.find_one.contacts.find_one.messages.map(m => ({
       id: m.id,
       contact_is_sender: m.contact_is_sender,
       message: m.payload,
+      created_at: m.created_at,
     }));
-  }, [unecryptedMessage, data]);
+  }, [decryptedMessage, data]);
 
   useEffect(() => {
     if (!masterKey) return;
@@ -82,7 +85,7 @@ export const Messages = () => {
 
       switch (message.type) {
         case 'decryptMessages':
-          setUnencryptedMessage(message.payload);
+          setDecryptedMessage(message.payload);
           break;
 
         case 'loaded':
@@ -123,6 +126,9 @@ export const Messages = () => {
             {m.message.substring(0, 1) === '{'
               ? 'Encrypted message'
               : m.message}
+            <p className="mt-2 text-xs text-muted-foreground">
+              {format(new Date(m.created_at), 'yyyy.MM.dd - HH:mm')}
+            </p>
           </div>
         ))}
       </div>

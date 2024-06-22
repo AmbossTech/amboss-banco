@@ -42,6 +42,7 @@ export type BroadcastLiquidTransactionInput = {
 export type ContactMessage = {
   __typename?: 'ContactMessage';
   contact_is_sender: Scalars['Boolean']['output'];
+  created_at: Scalars['String']['output'];
   id: Scalars['String']['output'];
   payload: Scalars['String']['output'];
 };

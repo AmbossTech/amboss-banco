@@ -72,6 +72,7 @@ export const GetWalletContactMessages = gql`
               id
               contact_is_sender
               payload
+              created_at
             }
           }
         }

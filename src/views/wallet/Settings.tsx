@@ -147,13 +147,13 @@ export const WalletSettings: FC<{ walletId: string }> = ({ walletId }) => {
                 disabled={loading || !!mnemonic || !masterKey}
                 onClick={() => handleDecrypt()}
               >
-                Unencrypt
+                Decrypt
               </Button>
             </div>
           </div>
 
           <div className="mt-2">
-            <Label htmlFor="mnemonic">Unencrypted</Label>
+            <Label htmlFor="mnemonic">Decrypted</Label>
             <div className="flex gap-2">
               <Input
                 id="mnemonic"

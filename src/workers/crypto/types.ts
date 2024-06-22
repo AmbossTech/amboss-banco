@@ -50,6 +50,7 @@ export type CryptoWorkerMessage =
           id: string;
           contact_is_sender: boolean;
           payload: string;
+          created_at: string;
         }[];
       };
     };
@@ -96,6 +97,7 @@ export type CryptoWorkerResponse =
         id: string;
         contact_is_sender: boolean;
         message: string;
+        created_at: string;
       }[];
     }
   | { type: 'loaded' }
