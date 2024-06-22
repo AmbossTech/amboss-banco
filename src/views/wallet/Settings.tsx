@@ -1,16 +1,15 @@
 'use client';
 
-import { Copy, CopyCheck, Shield } from 'lucide-react';
+import { Copy, CopyCheck } from 'lucide-react';
 import { FC, useEffect, useRef, useState } from 'react';
 import { useCopyToClipboard } from 'usehooks-ts';
 
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { VaultButton } from '@/components/button/VaultButton';
 import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
@@ -142,13 +141,17 @@ export const WalletSettings: FC<{ walletId: string }> = ({ walletId }) => {
                 readOnly
                 defaultValue={protectedMnemonic}
               />
-              <Button
-                className="w-40"
-                disabled={loading || !!mnemonic || !masterKey}
-                onClick={() => handleDecrypt()}
-              >
-                Decrypt
-              </Button>
+              {!masterKey ? (
+                <VaultButton lockedTitle="Unlock to Decrypt" />
+              ) : (
+                <Button
+                  className="w-40"
+                  disabled={loading || !!mnemonic || !masterKey}
+                  onClick={() => handleDecrypt()}
+                >
+                  Decrypt
+                </Button>
+              )}
             </div>
           </div>
 
@@ -171,17 +174,6 @@ export const WalletSettings: FC<{ walletId: string }> = ({ walletId }) => {
             </div>
           </div>
         </CardContent>
-        {!masterKey ? (
-          <CardFooter>
-            <Alert variant={'destructive'}>
-              <Shield color="red" className="size-4" />
-              <AlertTitle>Vault Locked!</AlertTitle>
-              <AlertDescription>
-                To decrypt your mnemonic you need to unlock your vault first.
-              </AlertDescription>
-            </Alert>
-          </CardFooter>
-        ) : null}
       </Card>
     </div>
   );
