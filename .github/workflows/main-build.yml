@@ -85,4 +85,4 @@ jobs:
           repo_name="amboss-banco-ci"
           event_type="trigger-workflow"
 
-          gh workflow -R $repo_owner/$repo_name run deploy-banco-prod.yaml -f tag=${{ steps.prep.outputs.shortref }}
+          gh workflow -R $repo_owner/$repo_name -r main run deploy-banco-prod.yaml -f tag=${{ steps.prep.outputs.shortref }}
