@@ -1,19 +1,27 @@
 'use client';
 
-import { Copy, Handshake, Loader2, RefreshCcw } from 'lucide-react';
+import {
+  AlertTriangle,
+  Copy,
+  CopyCheck,
+  Handshake,
+  Loader2,
+  RefreshCcw,
+} from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { FC, useEffect, useMemo, useState } from 'react';
 import { useCopyToClipboard, useLocalStorage } from 'usehooks-ts';
 
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useRefreshWalletMutation } from '@/graphql/mutations/__generated__/refreshWallet.generated';
 import {
   useGetAllWalletsQuery,
   useGetWalletDetailsQuery,
-  useGetWalletQuery,
 } from '@/graphql/queries/__generated__/wallet.generated';
+import { useWalletInfo } from '@/hooks/wallet';
 import { LOCALSTORAGE_KEYS } from '@/utils/constants';
 import { ROUTES } from '@/utils/routes';
 
@@ -79,21 +87,20 @@ const WalletDetails: FC<{ id: string }> = ({ id }) => {
                 <>
                   <div>
                     <div className="text-2xl font-bold">{address.user}</div>
-                    <p className="text-xs text-muted-foreground">
-                      {'@' + address.domain}
-                    </p>
-                  </div>
+                    <div className="flex gap-1">
+                      <p className="text-xs text-muted-foreground">
+                        {'@' + address.domain}
+                      </p>
 
-                  <Button
-                    variant={'ghost'}
-                    size={'icon'}
-                    onClick={() => copy(address.full)}
-                  >
-                    <Copy
-                      className="size-4"
-                      color={copiedText ? 'green' : undefined}
-                    />
-                  </Button>
+                      <button onClick={() => copy(address.full)}>
+                        {copiedText ? (
+                          <CopyCheck className="size-3" color={'green'} />
+                        ) : (
+                          <Copy className="size-3" />
+                        )}
+                      </button>
+                    </div>
+                  </div>
                 </>
               ) : null}
             </div>
@@ -104,11 +111,38 @@ const WalletDetails: FC<{ id: string }> = ({ id }) => {
   );
 };
 
+const Warning: FC<{ id: string }> = ({ id }) => {
+  const { loading, error, liquidAssets } = useWalletInfo(id);
+
+  const showAlert = useMemo(() => {
+    const otherAssets = liquidAssets.filter(
+      a => a.asset_info.ticker !== 'BTC' && !!a.balance
+    );
+
+    const btcAsset = liquidAssets.filter(
+      a => a.asset_info.ticker == 'BTC' && !!a.balance
+    );
+
+    return !!otherAssets.length && !btcAsset.length;
+  }, [liquidAssets]);
+
+  if (loading || error) return null;
+  if (!liquidAssets.length) return null;
+  if (!showAlert) return null;
+
+  return (
+    <Alert className="mb-4">
+      <AlertTriangle className="h-4 w-4" />
+      <AlertTitle>Add Bitcoin!</AlertTitle>
+      <AlertDescription>
+        In order to send USD you need to add Bitcoin to your wallet.
+      </AlertDescription>
+    </Alert>
+  );
+};
+
 const Wallet: FC<{ walletId: string }> = ({ walletId }) => {
-  const { data, loading } = useGetWalletQuery({
-    variables: { id: walletId },
-    errorPolicy: 'ignore',
-  });
+  const { id, loading } = useWalletInfo(walletId);
 
   if (loading) {
     return (
@@ -118,12 +152,11 @@ const Wallet: FC<{ walletId: string }> = ({ walletId }) => {
     );
   }
 
-  if (!data?.wallets.find_one.id) {
-    return null;
-  }
+  if (!id) return null;
 
   return (
     <>
+      <Warning id={walletId} />
       <WalletDetails id={walletId} />
       <WalletInfo id={walletId} />
     </>

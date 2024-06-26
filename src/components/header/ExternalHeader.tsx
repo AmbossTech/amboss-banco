@@ -14,9 +14,12 @@ export const ExternalHeader = () => {
         <p className="text-xl font-bold">Banco</p>
       </Link>
       <div className="flex items-center justify-center gap-2">
-        <Link href={ROUTES.signup}>
-          <Button variant="outline">Sign Up</Button>
-        </Link>
+        <Button variant="ghost" asChild>
+          <Link href={ROUTES.login}>Login</Link>
+        </Button>
+        <Button asChild>
+          <Link href={ROUTES.signup}>Sign Up</Link>
+        </Button>
         <ThemeToggle />
       </div>
     </div>

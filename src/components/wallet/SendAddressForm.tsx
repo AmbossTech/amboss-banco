@@ -35,13 +35,17 @@ import {
   PayLiquidAddressMutation,
   PayLiquidAddressMutationVariables,
 } from '@/graphql/mutations/__generated__/pay.generated';
-import { useGetWalletQuery } from '@/graphql/queries/__generated__/wallet.generated';
 import { useWalletInfo } from '@/hooks/wallet';
 import { cn } from '@/lib/utils';
 import { useKeyStore } from '@/stores/keys';
 import { toWithError } from '@/utils/async';
 import { handleApolloError } from '@/utils/error';
-import { numberWithoutPrecision } from '@/utils/numbers';
+import { cryptoToUsd } from '@/utils/fiat';
+import {
+  numberWithoutPrecision,
+  numberWithPrecision,
+  numberWithPrecisionAndDecimals,
+} from '@/utils/numbers';
 import { ROUTES } from '@/utils/routes';
 import {
   CryptoWorkerMessage,
@@ -49,6 +53,7 @@ import {
 } from '@/workers/crypto/types';
 
 import { VaultButton } from '../button/VaultButton';
+import { Badge } from '../ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Checkbox } from '../ui/checkbox';
 import { useToast } from '../ui/use-toast';
@@ -82,19 +87,17 @@ export const SendAddressForm: FC<{
 
   const { push } = useRouter();
 
-  const walletInfo = useWalletInfo();
-
-  const [stateLoading, setStateLoading] = useState(false);
-
-  const masterKey = useKeyStore(s => s.masterKey);
-
   const {
     data,
     loading: walletLoading,
     error,
-  } = useGetWalletQuery({
-    variables: { id: walletId },
-  });
+    protected_mnemonic,
+    getLiquidAssetById: getLiquidAsset,
+  } = useWalletInfo(walletId);
+
+  const [stateLoading, setStateLoading] = useState(false);
+
+  const masterKey = useKeyStore(s => s.masterKey);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -107,17 +110,32 @@ export const SendAddressForm: FC<{
     },
   });
 
-  const watchAsset = form.watch(['assetId', 'sendAllBtc']);
+  const [watchedAssetId, watchedSendAll, watchedAmount] = form.watch([
+    'assetId',
+    'sendAllBtc',
+    'amount',
+  ]);
+
+  const currentAsset = getLiquidAsset(watchedAssetId);
 
   useEffect(() => {
-    const [watchedAssetId, watchedSendAll] = watchAsset;
+    if (!watchedSendAll) return;
+    if (!currentAsset) return;
+
+    form.setValue(
+      'amount',
+      numberWithPrecision(
+        currentAsset.balance || 0,
+        currentAsset.asset_info.precision || 0
+      )?.toString() || '0'
+    );
+  }, [watchedSendAll, currentAsset, form]);
+
+  useEffect(() => {
     if (watchedAssetId !== LBTC_ASSET_ID && !!watchedSendAll) {
       form.resetField('sendAllBtc');
     }
-  }, [watchAsset, form]);
-
-  const selectedAsset = form.getValues('assetId');
-  const sendAll = form.getValues('sendAllBtc');
+  }, [form, watchedAssetId, watchedSendAll]);
 
   const loading = stateLoading || walletLoading;
 
@@ -132,8 +150,8 @@ export const SendAddressForm: FC<{
     if (!currentAccount?.liquid) return;
 
     const firstAsset = currentAccount.liquid.assets[0];
-    const foundAsset = selectedAsset
-      ? currentAccount.liquid.assets.find(a => a.asset_id === selectedAsset)
+    const foundAsset = watchedAssetId
+      ? currentAccount.liquid.assets.find(a => a.asset_id === watchedAssetId)
       : undefined;
 
     const currentAsset = foundAsset || firstAsset;
@@ -141,7 +159,7 @@ export const SendAddressForm: FC<{
     if (!currentAccount) return;
 
     return currentAsset;
-  }, [data, walletLoading, error, accountId, selectedAsset]);
+  }, [data, walletLoading, error, accountId, watchedAssetId]);
 
   const accountAssets = useMemo(() => {
     if (walletLoading || error) return [];
@@ -275,11 +293,7 @@ export const SendAddressForm: FC<{
       return;
     }
 
-    if (
-      !result.data?.pay.liquid_address ||
-      !walletInfo.protected_mnemonic ||
-      !masterKey
-    ) {
+    if (!result.data?.pay.liquid_address || !protected_mnemonic || !masterKey) {
       setStateLoading(false);
       return;
     }
@@ -293,7 +307,7 @@ export const SendAddressForm: FC<{
       type: 'signPset',
       payload: {
         wallet_account_id: result.data.pay.liquid_address.wallet_account.id,
-        mnemonic: walletInfo.protected_mnemonic,
+        mnemonic: protected_mnemonic,
         descriptor: result.data.pay.liquid_address.wallet_account.descriptor,
         pset: result.data.pay.liquid_address.base_64,
         masterKey,
@@ -329,8 +343,8 @@ export const SendAddressForm: FC<{
               )}
             />
 
-            <div className={cn(sendAll ? '' : 'grid grid-cols-2 gap-4')}>
-              {sendAll ? null : (
+            <div className={cn(watchedSendAll ? '' : 'grid grid-cols-2 gap-4')}>
+              {watchedSendAll ? null : (
                 <FormField
                   control={form.control}
                   name="amount"
@@ -380,7 +394,47 @@ export const SendAddressForm: FC<{
               />
             </div>
 
-            {selectedAsset === LBTC_ASSET_ID ? (
+            {currentAsset ? (
+              <>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (!!watchedSendAll) return;
+
+                    form.setValue(
+                      'amount',
+                      numberWithPrecision(
+                        currentAsset.balance || 0,
+                        currentAsset.asset_info.precision || 0
+                      )?.toString() || '0'
+                    );
+                  }}
+                >
+                  <Badge variant={'outline'}>
+                    {`Max: ${numberWithPrecisionAndDecimals(
+                      currentAsset.balance || 0,
+                      currentAsset.asset_info.precision || 0
+                    )} ${currentAsset.asset_info.ticker}`}
+                  </Badge>
+                </button>
+
+                {watchedAmount ? (
+                  <Badge variant={'outline'}>
+                    {cryptoToUsd(
+                      numberWithoutPrecision(
+                        watchedAmount,
+                        currentAsset.asset_info.precision
+                      )?.toString() || '0',
+                      currentAsset.asset_info.precision,
+                      currentAsset.asset_info.ticker,
+                      currentAsset.fiat_info.fiat_to_btc
+                    )}
+                  </Badge>
+                ) : null}
+              </>
+            ) : null}
+
+            {watchedAssetId === LBTC_ASSET_ID ? (
               <FormField
                 control={form.control}
                 name="sendAllBtc"
@@ -416,7 +470,7 @@ export const SendAddressForm: FC<{
               )}
             />
 
-            <div className="flex items-center justify-center">
+            <div className="flex items-center justify-center pt-2">
               {masterKey ? (
                 <Button type="submit" disabled={loading} className="w-full">
                   {loading ? (
@@ -425,7 +479,7 @@ export const SendAddressForm: FC<{
                   Send
                 </Button>
               ) : (
-                <VaultButton lockedTitle="Unlock to Send" />
+                <VaultButton className="w-full" lockedTitle="Unlock to Send" />
               )}
             </div>
           </form>

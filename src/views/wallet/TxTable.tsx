@@ -33,7 +33,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { numberWithPrecision } from '@/utils/numbers';
+import { numberWithPrecisionAndDecimals } from '@/utils/numbers';
 
 import { TransactionEntry } from './Wallet';
 
@@ -117,7 +117,10 @@ export const columns: ColumnDef<TransactionEntry>[] = [
     cell: ({ row }) => {
       const amount = parseFloat(row.getValue('balance'));
 
-      const formatted = numberWithPrecision(amount, row.original.precision);
+      const formatted = numberWithPrecisionAndDecimals(
+        amount,
+        row.original.precision
+      );
 
       return row.original.date ? (
         <div className="text-right">

@@ -21,7 +21,7 @@ import {
 } from '@/components/ui/card';
 import { useGetWalletQuery } from '@/graphql/queries/__generated__/wallet.generated';
 import { cryptoToUsd } from '@/utils/fiat';
-import { numberWithPrecision } from '@/utils/numbers';
+import { numberWithPrecisionAndDecimals } from '@/utils/numbers';
 import { ROUTES } from '@/utils/routes';
 import { TransactionTable } from '@/views/wallet/TxTable';
 
@@ -52,9 +52,9 @@ export type TransactionEntry = {
 const BalanceIcon: FC<{ ticker: string }> = ({ ticker }) => {
   const classname = 'h-4 w-4 text-muted-foreground';
   switch (ticker) {
-    case 'USDt':
+    case 'USDT':
       return <DollarSign className={classname} />;
-    case 'LBTC':
+    case 'BTC':
       return <Bitcoin className={classname} />;
     default:
       return null;
@@ -78,7 +78,7 @@ const BalanceCard: FC<{
       </CardHeader>
       <CardContent>
         <div className="text-2xl font-bold">{formatted_balance}</div>
-        <p className="text-xs text-muted-foreground">{`${numberWithPrecision(balance, precision)} ${ticker}`}</p>
+        <p className="text-xs text-muted-foreground">{`${numberWithPrecisionAndDecimals(balance, precision)} ${ticker}`}</p>
       </CardContent>
       <CardFooter className="flex w-full gap-2">
         <Button size={'sm'} className="w-full">

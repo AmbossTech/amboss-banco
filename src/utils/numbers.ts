@@ -1,15 +1,26 @@
 export const numberWithPrecision = (
   num: number | string,
-  precision: number,
-  ticker?: string
-): string => {
+  precision: number
+): number | undefined => {
   const parsed = Number(num);
 
-  if (isNaN(parsed)) return '-';
+  if (isNaN(parsed)) return undefined;
 
   const precise = parsed / Math.pow(10, precision);
 
-  const minimumFractionDigits = ticker === 'USDt' ? 2 : 0;
+  return precise;
+};
+
+export const numberWithPrecisionAndDecimals = (
+  num: number | string,
+  precision: number,
+  ticker?: string
+): string => {
+  const precise = numberWithPrecision(num, precision);
+
+  if (!precise) return '-';
+
+  const minimumFractionDigits = ticker === 'USDT' ? 2 : 0;
 
   return precise.toLocaleString(undefined, { minimumFractionDigits });
 };

@@ -42,14 +42,19 @@ import { PaymentOption, useChat, useContactStore } from '@/stores/contacts';
 import { useKeyStore } from '@/stores/keys';
 import { toWithError } from '@/utils/async';
 import { handleApolloError } from '@/utils/error';
-import { numberWithPrecision } from '@/utils/numbers';
+import { cryptoToUsd } from '@/utils/fiat';
+import {
+  numberWithoutPrecision,
+  numberWithPrecision,
+  numberWithPrecisionAndDecimals,
+} from '@/utils/numbers';
 import {
   CryptoWorkerMessage,
   CryptoWorkerResponse,
 } from '@/workers/crypto/types';
 
 const formatNumber = (value: string) => {
-  return value ? numberWithPrecision(value, 0) : value;
+  return value ? numberWithPrecisionAndDecimals(value, 0) : value;
 };
 
 export const PayMessageBox: FC<{
@@ -83,6 +88,10 @@ export const PayMessageBox: FC<{
     contact: { payment_options },
     loading: contactLoading,
   } = useContactInfo();
+
+  const currentAsset = walletInfo.getLiquidAssetByCode(
+    currentPaymentOption.code
+  );
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (loading) return;
@@ -266,16 +275,60 @@ export const PayMessageBox: FC<{
 
   return (
     <>
-      <div className="flex flex-wrap items-center gap-1 py-2">
-        {totalFee ? (
-          <Badge variant="outline">{`Fee: ${numberWithPrecision(totalFee, 0)} sat${totalFee === 1 ? '' : 's'}`}</Badge>
-        ) : null}
-        {currentPaymentOption?.min_sendable ? (
-          <Badge variant="outline">{`Min: ${numberWithPrecision(currentPaymentOption.min_sendable, 0)} sat${currentPaymentOption.min_sendable === 1 ? '' : 's'}`}</Badge>
-        ) : null}
-        {currentPaymentOption?.max_sendable ? (
-          <Badge variant="outline">{`Max: ${numberWithPrecision(currentPaymentOption.max_sendable, 0)} sat${currentPaymentOption.max_sendable === 1 ? '' : 's'}`}</Badge>
-        ) : null}
+      <div className="flex flex-wrap items-center justify-between gap-1 py-2">
+        <div className="flex flex-wrap items-center gap-1">
+          {totalFee ? (
+            <Badge variant="outline">{`Fee: ${numberWithPrecisionAndDecimals(totalFee, 0)} sat${totalFee === 1 ? '' : 's'}`}</Badge>
+          ) : null}
+          {currentPaymentOption?.min_sendable ? (
+            <Badge variant="outline">{`Min: ${numberWithPrecisionAndDecimals(currentPaymentOption.min_sendable, 0)} sat${currentPaymentOption.min_sendable === 1 ? '' : 's'}`}</Badge>
+          ) : null}
+          {currentPaymentOption?.max_sendable ? (
+            <Badge variant="outline">{`Max: ${numberWithPrecisionAndDecimals(currentPaymentOption.max_sendable, 0)} sat${currentPaymentOption.max_sendable === 1 ? '' : 's'}`}</Badge>
+          ) : null}
+        </div>
+        <div className="flex flex-wrap items-center gap-1">
+          {currentAsset ? (
+            <>
+              <button
+                type="button"
+                onClick={() => {
+                  const withPrecision =
+                    numberWithPrecision(
+                      currentAsset.balance || 0,
+                      currentAsset.asset_info.precision || 0
+                    ) || 0;
+
+                  setInputValue({
+                    number: withPrecision,
+                    formattedNumber: formatNumber(withPrecision + ''),
+                  });
+                }}
+              >
+                <Badge variant={'outline'}>
+                  {`Max: ${numberWithPrecisionAndDecimals(
+                    currentAsset.balance || 0,
+                    currentAsset.asset_info.precision || 0
+                  )} ${currentAsset.asset_info.ticker}`}
+                </Badge>
+              </button>
+
+              {inputValue.number ? (
+                <Badge variant={'outline'}>
+                  {cryptoToUsd(
+                    numberWithoutPrecision(
+                      inputValue.number,
+                      currentAsset.asset_info.precision
+                    )?.toString() || '0',
+                    currentAsset.asset_info.precision,
+                    currentAsset.asset_info.ticker,
+                    currentAsset.fiat_info.fiat_to_btc
+                  )}
+                </Badge>
+              ) : null}
+            </>
+          ) : null}
+        </div>
       </div>
 
       <form

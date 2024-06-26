@@ -34,7 +34,7 @@ import { useWalletInfo } from '@/hooks/wallet';
 import { useKeyStore } from '@/stores/keys';
 import { toWithError } from '@/utils/async';
 import { handleApolloError } from '@/utils/error';
-import { numberWithPrecision } from '@/utils/numbers';
+import { numberWithPrecisionAndDecimals } from '@/utils/numbers';
 import { ROUTES } from '@/utils/routes';
 import { shorten } from '@/utils/string';
 import {
@@ -82,7 +82,7 @@ const Decoded: FC<{ invoice: string }> = ({ invoice }) => {
       <Input
         readOnly
         contentEditable={'false'}
-        value={numberWithPrecision(decoded.satoshis, 0) + ' sats'}
+        value={numberWithPrecisionAndDecimals(decoded.satoshis, 0) + ' sats'}
       />
       <Label>Destination</Label>
       <div className="flex gap-1">
