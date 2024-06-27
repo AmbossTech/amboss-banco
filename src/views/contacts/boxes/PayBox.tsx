@@ -7,6 +7,7 @@ import {
   ChangeEvent,
   FC,
   ReactNode,
+  useCallback,
   useEffect,
   useMemo,
   useRef,
@@ -36,6 +37,7 @@ import {
   PayLightningAddressMutation,
   PayLightningAddressMutationVariables,
 } from '@/graphql/mutations/__generated__/pay.generated';
+import { useSendMessage } from '@/hooks/message';
 import { useContactInfo } from '@/hooks/user';
 import { useWalletInfo } from '@/hooks/wallet';
 import { PaymentOption, useChat, useContactStore } from '@/stores/contacts';
@@ -85,7 +87,8 @@ export const PayMessageBox: FC<{
   });
 
   const {
-    contact: { payment_options },
+    protected_encryption_private_key,
+    contact: { payment_options, encryption_pubkey, money_address },
     loading: contactLoading,
   } = useContactInfo();
 
@@ -93,8 +96,21 @@ export const PayMessageBox: FC<{
     currentPaymentOption.code
   );
 
+  const cbk = useCallback(() => {
+    setInputValue({
+      number: 0,
+      formattedNumber: '',
+    });
+    setLoading(false);
+  }, []);
+
+  const { sendMessage, loading: sendLoading } = useSendMessage(cbk);
+
+  const isLoading =
+    loading || contactLoading || walletInfo.loading || sendLoading;
+
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    if (loading) return;
+    if (isLoading) return;
 
     const value = e.target.value.replace(/\D/g, ''); // Remove non-digit characters
 
@@ -250,15 +266,39 @@ export const PayMessageBox: FC<{
             description: `Money has been sent to this contact.`,
           });
 
-          setInputValue({
-            number: 0,
-            formattedNumber: '',
+          if (
+            !currentContact?.id ||
+            !masterKey ||
+            !money_address ||
+            !currentAsset
+          ) {
+            setLoading(false);
+            return;
+          }
+
+          const fiatAmount = cryptoToUsd(
+            numberWithoutPrecision(
+              inputValue.number,
+              currentAsset.asset_info.precision
+            )?.toString() || '0',
+            currentAsset.asset_info.precision,
+            currentAsset.asset_info.ticker,
+            currentAsset.fiat_info.fiat_to_btc
+          );
+
+          const amount = `${inputValue.formattedNumber} ${currentAsset.asset_info.ticker}`;
+
+          sendMessage({
+            contact_id: currentContact.id,
+            protectedPrivateKey: protected_encryption_private_key,
+            masterKey,
+            receiver_pubkey: encryption_pubkey,
+            receiver_money_address: money_address,
+            message: `${fiatAmount} (${amount})`,
           });
 
           break;
       }
-
-      setLoading(false);
     };
 
     workerRef.current.onerror = error => {
@@ -269,9 +309,18 @@ export const PayMessageBox: FC<{
     return () => {
       if (workerRef.current) workerRef.current.terminate();
     };
-  }, [client, toast]);
-
-  const isLoading = loading || contactLoading || walletInfo.loading;
+  }, [
+    client,
+    toast,
+    currentContact,
+    masterKey,
+    sendMessage,
+    encryption_pubkey,
+    money_address,
+    protected_encryption_private_key,
+    currentAsset,
+    inputValue,
+  ]);
 
   return (
     <>
@@ -343,6 +392,7 @@ export const PayMessageBox: FC<{
             autoComplete="off"
             value={inputValue.formattedNumber}
             onChange={handleChange}
+            disabled={isLoading}
             placeholder="Type the amount you want to send here..."
             className="min-h-12 resize-none border-0 p-3 shadow-none focus-visible:ring-0"
           />

@@ -14,22 +14,13 @@ export const useContactInfo = () => {
     errorPolicy: 'ignore',
   });
 
-  const defaultInfo = {
-    contact: {
-      encryption_pubkey: '',
-      payment_options: [],
-    },
-    loading,
-  };
-
-  if (loading) {
-    return defaultInfo;
-  }
-
   return {
-    ...defaultInfo,
+    loading,
+    protected_encryption_private_key:
+      data?.wallets.find_one.secp256k1_key_pair
+        .protected_encryption_private_key || '',
     contact: {
-      ...defaultInfo.contact,
+      money_address: data?.wallets.find_one.contacts.find_one.money_address,
       encryption_pubkey:
         data?.wallets.find_one.contacts.find_one.encryption_pubkey,
       payment_options:

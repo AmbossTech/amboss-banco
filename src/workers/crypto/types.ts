@@ -35,10 +35,9 @@ export type CryptoWorkerMessage =
         contact_id: string;
         protectedPrivateKey: string;
         masterKey: string;
-        receiver_pubkey: string;
+        receiver_pubkey: string | null | undefined;
         receiver_money_address: string;
-        sender_message: string;
-        receiver_message: string;
+        message: string;
       };
     }
   | {
@@ -88,7 +87,7 @@ export type CryptoWorkerResponse =
         contact_id: string;
         receiver_money_address: string;
         sender_payload: string;
-        receiver_payload: string;
+        receiver_payload: string | null;
       };
     }
   | {

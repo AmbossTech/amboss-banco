@@ -1,4 +1,4 @@
-import { useApolloClient } from '@apollo/client';
+import { ApolloError, useApolloClient } from '@apollo/client';
 import { useEffect, useRef, useState } from 'react';
 import { useLocalStorage } from 'usehooks-ts';
 
@@ -11,6 +11,7 @@ import {
 import { GetWalletContactMessagesDocument } from '@/graphql/queries/__generated__/contacts.generated';
 import { toWithError } from '@/utils/async';
 import { LOCALSTORAGE_KEYS } from '@/utils/constants';
+import { handleApolloError } from '@/utils/error';
 import {
   CryptoWorkerMessage,
   CryptoWorkerResponse,
@@ -67,15 +68,15 @@ export const useSendMessage = (cbk: () => void) => {
           );
 
           if (error) {
-            console.log(error);
+            const messages = handleApolloError(error as ApolloError);
             toast({
               variant: 'default',
               title: 'Unable to send message',
-              description: 'No encryption pubkey found for this contact',
+              description: messages.join(', '),
             });
-          } else {
-            cbk();
           }
+
+          cbk();
 
           break;
 
@@ -88,6 +89,7 @@ export const useSendMessage = (cbk: () => void) => {
 
     workerRef.current.onerror = error => {
       console.error('Worker error:', error);
+      cbk();
       setLoading(false);
     };
 
@@ -102,16 +104,14 @@ export const useSendMessage = (cbk: () => void) => {
     protectedPrivateKey,
     receiver_pubkey,
     receiver_money_address,
-    sender_message,
-    receiver_message,
+    message,
   }: {
     contact_id: string;
     masterKey: string;
     protectedPrivateKey: string;
-    receiver_pubkey: string;
+    receiver_pubkey: string | undefined | null;
     receiver_money_address: string;
-    sender_message: string;
-    receiver_message: string;
+    message: string;
   }) => {
     if (loading) return;
 
@@ -126,8 +126,7 @@ export const useSendMessage = (cbk: () => void) => {
           masterKey,
           receiver_pubkey,
           receiver_money_address,
-          sender_message,
-          receiver_message,
+          message,
         },
       };
 

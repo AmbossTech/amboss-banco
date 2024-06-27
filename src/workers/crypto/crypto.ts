@@ -8,7 +8,7 @@ import {
   Wollet,
   WolletDescriptor,
 } from 'lwk_wasm';
-import { nip44 } from 'nostr-tools';
+import { Event, nip44 } from 'nostr-tools';
 
 import { toWithError } from '@/utils/async';
 import {
@@ -149,8 +149,6 @@ self.onmessage = async e => {
         protectedPrivateKey,
         receiver_money_address,
         receiver_pubkey,
-        sender_message,
-        receiver_message,
       } = message.payload;
 
       const unprotectedPrivateKey = nip44.v2.decrypt(
@@ -161,24 +159,30 @@ self.onmessage = async e => {
       const publicKey = getPublicKey(unprotectedPrivateKey).subarray(1, 33);
 
       const sender_payload = encryptMessage(
-        sender_message,
+        message.payload.message,
         hexToUint8Array(unprotectedPrivateKey),
         bufToHex(publicKey)
       );
 
-      const receiver_payload = encryptMessage(
-        receiver_message,
-        hexToUint8Array(unprotectedPrivateKey),
-        receiver_pubkey.substring(2)
-      );
+      let receiver_payload: Event | null = null;
+
+      if (!!receiver_pubkey) {
+        receiver_payload = encryptMessage(
+          message.payload.message,
+          hexToUint8Array(unprotectedPrivateKey),
+          receiver_pubkey.substring(2)
+        );
+      }
 
       const response: CryptoWorkerResponse = {
         type: 'encryptMessage',
         payload: {
           contact_id,
           receiver_money_address,
-          receiver_payload: JSON.stringify(receiver_payload),
           sender_payload: JSON.stringify(sender_payload),
+          receiver_payload: receiver_payload
+            ? JSON.stringify(receiver_payload)
+            : null,
         },
       };
 

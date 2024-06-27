@@ -92,8 +92,7 @@ export const SendMessageBox: FC<{ iconOptions?: ReactNode }> = ({
         data.wallets.find_one.contacts.find_one.encryption_pubkey,
       receiver_money_address:
         data.wallets.find_one.contacts.find_one.money_address,
-      sender_message: message,
-      receiver_message: message,
+      message,
     });
   };
 
