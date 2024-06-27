@@ -38,14 +38,11 @@ const WalletDetails: FC<{ id: string }> = ({ id }) => {
     onError: err => console.log('ERROR', err),
   });
 
-  const address = useMemo(() => {
+  const addresses = useMemo(() => {
     if (!data?.wallets.find_one.money_address) {
-      return null;
+      return [];
     }
-
-    const [user, domain] = data.wallets.find_one.money_address.split('@');
-
-    return { user, domain, full: data.wallets.find_one.money_address };
+    return data.wallets.find_one.money_address;
   }, [data]);
 
   const [copiedText, copy] = useCopyToClipboard();
@@ -76,36 +73,43 @@ const WalletDetails: FC<{ id: string }> = ({ id }) => {
         </div>
       </div>
       <div className="md:flex">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Money Address</CardTitle>
-            <Handshake className={'h-4 w-4 text-muted-foreground'} />
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-between gap-2">
-              {!!address ? (
-                <>
-                  <div>
-                    <div className="text-2xl font-bold">{address.user}</div>
-                    <div className="flex gap-1">
-                      <p className="text-xs text-muted-foreground">
-                        {'@' + address.domain}
-                      </p>
-
-                      <button onClick={() => copy(address.full)}>
-                        {copiedText ? (
-                          <CopyCheck className="size-3" color={'green'} />
-                        ) : (
-                          <Copy className="size-3" />
-                        )}
-                      </button>
+        {!addresses.length ? null : (
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Money Address
+              </CardTitle>
+              <Handshake className={'h-4 w-4 text-muted-foreground'} />
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center justify-between gap-2">
+                {addresses.map(a => {
+                  return (
+                    <div key={a.id}>
+                      <div className="text-2xl font-bold">{a.user}</div>
+                      {a.domains.map(d => {
+                        return (
+                          <div className="flex gap-1" key={d}>
+                            <p className="text-xs text-muted-foreground">
+                              {'@' + d}
+                            </p>
+                            <button onClick={() => copy(`${a.user}@${d}`)}>
+                              {copiedText ? (
+                                <CopyCheck className="size-3" color={'green'} />
+                              ) : (
+                                <Copy className="size-3" />
+                              )}
+                            </button>
+                          </div>
+                        );
+                      })}
                     </div>
-                  </div>
-                </>
-              ) : null}
-            </div>
-          </CardContent>
-        </Card>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );

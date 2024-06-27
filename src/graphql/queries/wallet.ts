@@ -24,7 +24,11 @@ export const GetWalletDetails = gql`
       find_one(id: $id) {
         id
         name
-        money_address
+        money_address {
+          id
+          user
+          domains
+        }
         details {
           id
           type
@@ -42,7 +46,11 @@ export const GetWallet = gql`
       find_one(id: $id) {
         id
         name
-        money_address
+        money_address {
+          id
+          user
+          domains
+        }
         details {
           id
           type

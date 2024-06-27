@@ -40,7 +40,12 @@ export type GetWalletDetailsQuery = {
       __typename?: 'Wallet';
       id: string;
       name: string;
-      money_address?: string | null;
+      money_address: Array<{
+        __typename?: 'MoneyAddress';
+        id: string;
+        user: string;
+        domains: Array<string>;
+      }>;
       details: {
         __typename?: 'WalletDetails';
         id: string;
@@ -64,7 +69,12 @@ export type GetWalletQuery = {
       __typename?: 'Wallet';
       id: string;
       name: string;
-      money_address?: string | null;
+      money_address: Array<{
+        __typename?: 'MoneyAddress';
+        id: string;
+        user: string;
+        domains: Array<string>;
+      }>;
       details: {
         __typename?: 'WalletDetails';
         id: string;
@@ -218,7 +228,11 @@ export const GetWalletDetailsDocument = gql`
       find_one(id: $id) {
         id
         name
-        money_address
+        money_address {
+          id
+          user
+          domains
+        }
         details {
           id
           type
@@ -305,7 +319,11 @@ export const GetWalletDocument = gql`
       find_one(id: $id) {
         id
         name
-        money_address
+        money_address {
+          id
+          user
+          domains
+        }
         details {
           id
           type

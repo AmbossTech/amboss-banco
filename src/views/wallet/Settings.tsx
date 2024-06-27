@@ -102,28 +102,37 @@ export const WalletSettings: FC<{ walletId: string }> = ({ walletId }) => {
             receive money.
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <div>
-            <Label htmlFor="address">Money Address</Label>
-            <div className="flex gap-2">
-              <Input
-                id="address"
-                readOnly
-                defaultValue={data?.wallets.find_one.money_address || ''}
-              />
-              <Button
-                onClick={() => copy(data?.wallets.find_one.money_address || '')}
-                disabled={!data?.wallets.find_one.money_address}
-              >
-                {copiedText ? 'Copied' : 'Copy'}
-                {copiedText ? (
-                  <CopyCheck className="ml-2 size-4" color="green" />
-                ) : (
-                  <Copy className="ml-2 size-4" />
-                )}
-              </Button>
-            </div>
-          </div>
+        <CardContent className="flex flex-col gap-2">
+          {!data?.wallets.find_one.money_address.length ? (
+            <p className="text-sm text-muted-foreground">
+              No money address found.
+            </p>
+          ) : (
+            data.wallets.find_one.money_address.map(a => {
+              return a.domains.map(d => {
+                return (
+                  <div key={a.id}>
+                    <Label htmlFor="address">Money Address</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        id="address"
+                        readOnly
+                        defaultValue={`${a.user}@${d}`}
+                      />
+                      <Button onClick={() => copy(`${a.user}@${d}`)}>
+                        {copiedText ? 'Copied' : 'Copy'}
+                        {copiedText ? (
+                          <CopyCheck className="ml-2 size-4" color="green" />
+                        ) : (
+                          <Copy className="ml-2 size-4" />
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                );
+              });
+            })
+          )}
         </CardContent>
       </Card>
 

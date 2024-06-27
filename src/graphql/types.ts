@@ -185,6 +185,13 @@ export type LoginInput = {
   master_password_hash: Scalars['String']['input'];
 };
 
+export type MoneyAddress = {
+  __typename?: 'MoneyAddress';
+  domains: Array<Scalars['String']['output']>;
+  id: Scalars['String']['output'];
+  user: Scalars['String']['output'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   checkPassword: Scalars['Boolean']['output'];
@@ -192,7 +199,6 @@ export type Mutation = {
   login: NewAccount;
   logout: Scalars['Boolean']['output'];
   pay: PayMutations;
-  payInvoice: Scalars['Boolean']['output'];
   refreshToken: RefreshToken;
   signUp: NewAccount;
   wallets: WalletMutations;
@@ -208,10 +214,6 @@ export type MutationLoginArgs = {
 
 export type MutationPayArgs = {
   input: PayInput;
-};
-
-export type MutationPayInvoiceArgs = {
-  invoice: Scalars['String']['input'];
 };
 
 export type MutationSignUpArgs = {
@@ -328,6 +330,11 @@ export type SignUpInput = {
   wallet?: InputMaybe<CreateWalletInput>;
 };
 
+export type SimpleSwap = {
+  __typename?: 'SimpleSwap';
+  id: Scalars['String']['output'];
+};
+
 export type SimpleWallet = {
   __typename?: 'SimpleWallet';
   accounts: Array<SimpleWalletAccount>;
@@ -361,9 +368,10 @@ export type Wallet = {
   contacts: WalletContacts;
   details: WalletDetails;
   id: Scalars['String']['output'];
-  money_address?: Maybe<Scalars['String']['output']>;
+  money_address: Array<MoneyAddress>;
   name: Scalars['String']['output'];
   secp256k1_key_pair: Secp256k1KeyPair;
+  swaps: WalletSwaps;
 };
 
 export type WalletAccount = {
@@ -439,6 +447,12 @@ export type WalletQueries = {
 
 export type WalletQueriesFind_OneArgs = {
   id: Scalars['String']['input'];
+};
+
+export type WalletSwaps = {
+  __typename?: 'WalletSwaps';
+  find_many: Array<SimpleSwap>;
+  id: Scalars['String']['output'];
 };
 
 export enum WalletType {
