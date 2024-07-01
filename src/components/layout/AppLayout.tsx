@@ -53,7 +53,7 @@ export const AppLayout: FC<{ children: ReactNode }> = ({ children }) => {
                 </Button>
               </TooltipTrigger>
               <TooltipContent side="right" sideOffset={5}>
-                Contacts
+                Home
               </TooltipContent>
             </Tooltip>
             <Tooltip>
@@ -83,8 +83,11 @@ export const AppLayout: FC<{ children: ReactNode }> = ({ children }) => {
                   size="icon"
                   className="mt-auto rounded-lg"
                   aria-label="Help"
+                  asChild
                 >
-                  <LifeBuoy className="size-5" />
+                  <Link href={'mailto:info@amboss.tech'}>
+                    <LifeBuoy className="size-5" />
+                  </Link>
                 </Button>
               </TooltipTrigger>
               <TooltipContent side="right" sideOffset={5}>

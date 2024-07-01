@@ -30,7 +30,7 @@ import { handleApolloError } from '@/utils/error';
 
 const formSchema = z.object({
   money_address: z.string().min(1, {
-    message: 'A money address is required to create a new contact.',
+    message: 'A lightning address is required to create a new contact.',
   }),
   // .email('This is not a valid email.'),
 });
@@ -97,7 +97,7 @@ export const AddContact: FC<{ walletId: string }> = ({ walletId }) => {
             name="money_address"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Money Address</FormLabel>
+                <FormLabel>Lightning Address</FormLabel>
                 <FormControl>
                   <Input
                     type="money_address"
@@ -108,7 +108,7 @@ export const AddContact: FC<{ walletId: string }> = ({ walletId }) => {
                 </FormControl>
                 <FormMessage />
                 <FormDescription>
-                  Input the money address from the new contact.
+                  Input the lightning address from the new contact.
                 </FormDescription>
               </FormItem>
             )}
