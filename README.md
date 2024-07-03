@@ -18,4 +18,4 @@ This is a [Next.js](https://nextjs.org/docs/app/building-your-application/deploy
 
 ## Deployed apps
 
-[https://mibanco.app/](https://mibanco.app/)
+- [mibanco.app](https://mibanco.app/)
