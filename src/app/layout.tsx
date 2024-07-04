@@ -3,6 +3,8 @@ import './globals.css';
 import type { Metadata } from 'next';
 import { Noto_Sans } from 'next/font/google';
 import { cookies } from 'next/headers';
+import { NextIntlClientProvider } from 'next-intl';
+import { getLocale, getMessages } from 'next-intl/server';
 
 import { Toaster } from '@/components/ui/toaster';
 import { ApolloWrapper } from '@/lib/apollo/wrapper';
@@ -17,7 +19,7 @@ export const metadata: Metadata = {
   description: 'Banco',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -29,24 +31,29 @@ export default function RootLayout({
   const accessToken = cookieStore.get('amboss_banco_access_token')?.value;
   const refreshToken = cookieStore.get('amboss_banco_refresh_token')?.value;
 
+  const locale = await getLocale();
+  const messages = await getMessages();
+
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning>
       <body className={font.className}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <ApolloWrapper
-            serverUrl={serverUrl}
-            accessToken={accessToken}
-            refreshToken={refreshToken}
+        <NextIntlClientProvider messages={messages}>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
           >
-            {children}
-            <Toaster />
-          </ApolloWrapper>
-        </ThemeProvider>
+            <ApolloWrapper
+              serverUrl={serverUrl}
+              accessToken={accessToken}
+              refreshToken={refreshToken}
+            >
+              {children}
+              <Toaster />
+            </ApolloWrapper>
+          </ThemeProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   );
