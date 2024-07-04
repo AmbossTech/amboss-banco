@@ -2,7 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
-import { FC } from 'react';
+import { Dispatch, FC, SetStateAction } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -35,7 +35,10 @@ const formSchema = z.object({
   // .email('This is not a valid email.'),
 });
 
-export const AddContact: FC<{ walletId: string }> = ({ walletId }) => {
+export const AddContact: FC<{
+  walletId: string;
+  setOpenDialog: Dispatch<SetStateAction<boolean>>;
+}> = ({ walletId, setOpenDialog }) => {
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -47,11 +50,13 @@ export const AddContact: FC<{ walletId: string }> = ({ walletId }) => {
 
   const [create, { loading }] = useCreateContactMutation({
     onCompleted: () => {
+      setOpenDialog(false);
       toast({
         variant: 'default',
         title: 'Contact Added',
         description: 'New contact has been added successfully',
       });
+      form.reset();
     },
     onError: err => {
       const messages = handleApolloError(err);

@@ -64,7 +64,8 @@ const ContactCard: FC<{ contact: ContactType; cbk?: () => void }> = ({
 };
 
 export const Contacts = () => {
-  const [open, setOpen] = useState(false);
+  const [openDrawer, setOpenDrawer] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false);
 
   const currentContact = useContactStore(s => s.currentContact);
   const setContact = useContactStore(s => s.setCurrentContact);
@@ -95,7 +96,7 @@ export const Contacts = () => {
         <div className="flex w-full items-center justify-between">
           <h1 className="text-sm font-semibold md:text-lg">Contacts</h1>
           <div className="flex gap-2">
-            <Drawer open={open} onOpenChange={setOpen}>
+            <Drawer open={openDrawer} onOpenChange={setOpenDrawer}>
               <DrawerTrigger asChild className="flex md:hidden">
                 <Button size={'icon'} variant={'outline'}>
                   <User className="size-4" />
@@ -112,7 +113,7 @@ export const Contacts = () => {
                       <ContactCard
                         key={c.id}
                         contact={c}
-                        cbk={() => setOpen(p => !p)}
+                        cbk={() => setOpenDrawer(p => !p)}
                       />
                     ))
                   ) : (
@@ -131,13 +132,13 @@ export const Contacts = () => {
               </DrawerContent>
             </Drawer>
 
-            <Dialog>
+            <Dialog open={openDialog} onOpenChange={setOpenDialog}>
               <DialogTrigger asChild>
                 <Button size={'icon'} variant={'outline'}>
                   <Plus className="size-4" />
                 </Button>
               </DialogTrigger>
-              <AddContact walletId={value} />
+              <AddContact walletId={value} setOpenDialog={setOpenDialog} />
             </Dialog>
           </div>
         </div>
