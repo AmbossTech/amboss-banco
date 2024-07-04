@@ -9,8 +9,9 @@ This is the frontend of the Banco tech stack which can be self-hosted.
 1. `git clone` the repo
 2. `cd` into the directory
 3. install packages with `npm install` (using node `v20.11.1`)
-4. `yarn dev` or `npm run dev`
-5. app opens on `localhost:3000`
+4. `cp .env.example .env.local` (and setup env variables)
+5. `yarn dev` or `npm run dev`
+6. app opens on `localhost:3000`
 
 ## Build for production
 
