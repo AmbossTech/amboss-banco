@@ -4,6 +4,7 @@ import { ApolloError, useApolloClient } from '@apollo/client';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { generateMnemonic } from '@scure/bip39';
 import { wordlist } from '@scure/bip39/wordlists/english';
+import stringEntropy from 'fast-password-entropy';
 import { Copy, CopyCheck, Eye, EyeOff, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
@@ -30,10 +31,6 @@ import {
 import { WalletAccountType, WalletType } from '@/graphql/types';
 import { toWithError } from '@/utils/async';
 import { handleApolloError } from '@/utils/error';
-import {
-  evaluatePasswordStrength,
-  MIN_PASSWORD_LENGTH,
-} from '@/utils/password';
 import { ROUTES } from '@/utils/routes';
 import { WorkerMessage, WorkerResponse } from '@/workers/account/types';
 
@@ -54,13 +51,15 @@ const FormSchema = z
     email: z.string().email().min(5, {
       message: 'Invalid email.',
     }),
-    password: z.string().min(MIN_PASSWORD_LENGTH, {
-      message: `Password needs to be at least ${MIN_PASSWORD_LENGTH} characters.`,
-    }),
+    password: z.string(),
     confirm_password: z.string(),
     password_hint: z.string().optional(),
     accept_tos_and_pp: z.boolean(),
     accept_condition_1: z.boolean(),
+  })
+  .refine(data => stringEntropy(data.password) >= 100, {
+    message: 'Password is weak.',
+    path: ['password'],
   })
   .refine(data => data.password === data.confirm_password, {
     message: "Passwords don't match.",
@@ -102,7 +101,8 @@ export function SignUpForm() {
   });
 
   const password = form.watch('password', '');
-  const strength = evaluatePasswordStrength(password);
+
+  const entropy = stringEntropy(password);
 
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     if (loading) return;
@@ -275,11 +275,10 @@ export function SignUpForm() {
                     </div>
                   </FormControl>
                   <FormMessage />
-                  <Progress value={strength?.progress || 0} />
+                  <Progress value={Math.min(100, (entropy || 0) / 2)} />
                   <FormDescription>
                     <strong>Important: </strong>
-                    Your account cannot be recovered if you forget it! Minimum
-                    length is {MIN_PASSWORD_LENGTH} characters.
+                    Your account cannot be recovered if you forget it!
                   </FormDescription>
                 </FormItem>
               )}
