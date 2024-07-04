@@ -18,6 +18,16 @@ export type CreateWalletMutation = {
   };
 };
 
+export type ChangeWalletNameMutationVariables = Types.Exact<{
+  id: Types.Scalars['String']['input'];
+  name: Types.Scalars['String']['input'];
+}>;
+
+export type ChangeWalletNameMutation = {
+  __typename?: 'Mutation';
+  wallets: { __typename?: 'WalletMutations'; change_name: boolean };
+};
+
 export const CreateWalletDocument = gql`
   mutation CreateWallet($input: CreateWalletInput!) {
     wallets {
@@ -69,4 +79,55 @@ export type CreateWalletMutationResult =
 export type CreateWalletMutationOptions = Apollo.BaseMutationOptions<
   CreateWalletMutation,
   CreateWalletMutationVariables
+>;
+export const ChangeWalletNameDocument = gql`
+  mutation ChangeWalletName($id: String!, $name: String!) {
+    wallets {
+      change_name(id: $id, name: $name)
+    }
+  }
+`;
+export type ChangeWalletNameMutationFn = Apollo.MutationFunction<
+  ChangeWalletNameMutation,
+  ChangeWalletNameMutationVariables
+>;
+
+/**
+ * __useChangeWalletNameMutation__
+ *
+ * To run a mutation, you first call `useChangeWalletNameMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useChangeWalletNameMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [changeWalletNameMutation, { data, loading, error }] = useChangeWalletNameMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      name: // value for 'name'
+ *   },
+ * });
+ */
+export function useChangeWalletNameMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    ChangeWalletNameMutation,
+    ChangeWalletNameMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    ChangeWalletNameMutation,
+    ChangeWalletNameMutationVariables
+  >(ChangeWalletNameDocument, options);
+}
+export type ChangeWalletNameMutationHookResult = ReturnType<
+  typeof useChangeWalletNameMutation
+>;
+export type ChangeWalletNameMutationResult =
+  Apollo.MutationResult<ChangeWalletNameMutation>;
+export type ChangeWalletNameMutationOptions = Apollo.BaseMutationOptions<
+  ChangeWalletNameMutation,
+  ChangeWalletNameMutationVariables
 >;

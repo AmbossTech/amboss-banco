@@ -253,6 +253,7 @@ export type PayMutations = {
   lightning_invoice: CreateLiquidTransaction;
   liquid_address: CreateLiquidTransaction;
   money_address: CreateLiquidTransaction;
+  network_swap: CreateLiquidTransaction;
 };
 
 export type PayMutationsLightning_InvoiceArgs = {
@@ -265,6 +266,24 @@ export type PayMutationsLiquid_AddressArgs = {
 
 export type PayMutationsMoney_AddressArgs = {
   input: PayLnAddressInput;
+};
+
+export type PayMutationsNetwork_SwapArgs = {
+  input: PayNetworkSwapInput;
+};
+
+export type PayNetworkSwapInput = {
+  quote_id: Scalars['String']['input'];
+  settle_address: Scalars['String']['input'];
+};
+
+export type PayQueries = {
+  __typename?: 'PayQueries';
+  network_swap_quote: SwapQuote;
+};
+
+export type PayQueriesNetwork_Swap_QuoteArgs = {
+  input: SwapQuoteInput;
 };
 
 export enum PaymentOptionCode {
@@ -281,8 +300,25 @@ export enum PaymentOptionNetwork {
 export type Query = {
   __typename?: 'Query';
   hello: Scalars['String']['output'];
+  pay: PayQueries;
   user: User;
   wallets: WalletQueries;
+};
+
+export type ReceiveSwap = {
+  __typename?: 'ReceiveSwap';
+  coin: SwapCoin;
+  id: Scalars['String']['output'];
+  max: Scalars['String']['output'];
+  min: Scalars['String']['output'];
+  network: SwapNetwork;
+  receive_address: Scalars['String']['output'];
+};
+
+export type ReceiveSwapInput = {
+  deposit_coin: SwapCoin;
+  deposit_network: SwapNetwork;
+  wallet_account_id: Scalars['String']['input'];
 };
 
 export type RefreshToken = {
@@ -355,11 +391,50 @@ export type SimpleWalletContact = {
   money_address: Scalars['String']['output'];
 };
 
+export enum SwapCoin {
+  Btc = 'BTC',
+  Usdt = 'USDT',
+}
+
+export enum SwapNetwork {
+  Bitcoin = 'bitcoin',
+  Ethereum = 'ethereum',
+  Liquid = 'liquid',
+  Tron = 'tron',
+}
+
+export type SwapQuote = {
+  __typename?: 'SwapQuote';
+  created_at: Scalars['String']['output'];
+  deposit_amount: Scalars['String']['output'];
+  deposit_coin: Scalars['String']['output'];
+  deposit_network: Scalars['String']['output'];
+  expires_at: Scalars['String']['output'];
+  id: Scalars['String']['output'];
+  rate: Scalars['String']['output'];
+  settle_amount: Scalars['String']['output'];
+  settle_coin: Scalars['String']['output'];
+  settle_network: Scalars['String']['output'];
+};
+
+export type SwapQuoteInput = {
+  settle_amount: Scalars['String']['input'];
+  settle_coin: SwapCoin;
+  settle_network: SwapNetwork;
+};
+
 export type User = {
   __typename?: 'User';
   default_wallet_id?: Maybe<Scalars['String']['output']>;
   email: Scalars['String']['output'];
   id: Scalars['String']['output'];
+  swap_info: UserSwapInfo;
+};
+
+export type UserSwapInfo = {
+  __typename?: 'UserSwapInfo';
+  id: Scalars['String']['output'];
+  shifts_enabled: Scalars['Boolean']['output'];
 };
 
 export type Wallet = {
@@ -417,13 +492,20 @@ export type WalletDetails = {
 export type WalletMutations = {
   __typename?: 'WalletMutations';
   broadcast_liquid_transaction: BroadcastLiquidTransaction;
+  change_name: Scalars['Boolean']['output'];
   create: CreateWallet;
   create_onchain_address: CreateOnchainAddress;
+  create_onchain_address_swap: ReceiveSwap;
   refresh_wallet: Scalars['Boolean']['output'];
 };
 
 export type WalletMutationsBroadcast_Liquid_TransactionArgs = {
   input: BroadcastLiquidTransactionInput;
+};
+
+export type WalletMutationsChange_NameArgs = {
+  id: Scalars['String']['input'];
+  name: Scalars['String']['input'];
 };
 
 export type WalletMutationsCreateArgs = {
@@ -432,6 +514,10 @@ export type WalletMutationsCreateArgs = {
 
 export type WalletMutationsCreate_Onchain_AddressArgs = {
   input: CreateOnchainAddressInput;
+};
+
+export type WalletMutationsCreate_Onchain_Address_SwapArgs = {
+  input: ReceiveSwapInput;
 };
 
 export type WalletMutationsRefresh_WalletArgs = {
