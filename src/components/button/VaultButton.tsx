@@ -10,6 +10,7 @@ import { useCheckPasswordMutation } from '@/graphql/mutations/__generated__/chec
 import { useUserQuery } from '@/graphql/queries/__generated__/user.generated';
 import { cn } from '@/lib/utils';
 import { useKeyStore } from '@/stores/keys';
+import { handleApolloError } from '@/utils/error';
 import { MIN_PASSWORD_LENGTH } from '@/utils/password';
 import { WorkerMessage, WorkerResponse } from '@/workers/account/types';
 
@@ -33,6 +34,7 @@ import {
   FormMessage,
 } from '../ui/form';
 import { Input } from '../ui/input';
+import { useToast } from '../ui/use-toast';
 
 const formSchema = z.object({
   password: z.string().min(MIN_PASSWORD_LENGTH, {
@@ -49,6 +51,8 @@ const UnlockDialogContent: FC<{ callback: () => void }> = ({ callback }) => {
       password: '',
     },
   });
+
+  const { toast } = useToast();
 
   const setMasterKey = useKeyStore(s => s.setMasterKey);
 
@@ -67,7 +71,14 @@ const UnlockDialogContent: FC<{ callback: () => void }> = ({ callback }) => {
       }
     },
     onError: error => {
-      console.log(error);
+      const messages = handleApolloError(error);
+
+      toast({
+        variant: 'destructive',
+        title: 'Unable to unlock.',
+        description: messages.join(', '),
+      });
+
       setTempMasterKey('');
       form.reset();
     },
