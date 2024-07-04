@@ -9,12 +9,12 @@ type Contact = {
 
 type ContactState = {
   currentContact: Contact | undefined;
-  setCurrentContact: (contact: Contact) => void;
+  setCurrentContact: (contact: Contact | undefined) => void;
 };
 
 export const useContactStore = create<ContactState>()(set => ({
   currentContact: undefined,
-  setCurrentContact: (contact: Contact) => set({ currentContact: contact }),
+  setCurrentContact: contact => set({ currentContact: contact }),
 }));
 
 export type PaymentOption = {
