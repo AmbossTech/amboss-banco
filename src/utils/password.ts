@@ -18,6 +18,8 @@ export const evaluatePasswordStrength = (password: string) => {
   // Check password length
   if (password.length < MIN_PASSWORD_LENGTH) score = 0;
 
+  if (password.split(' ').length > 6) score = 4;
+
   switch (score) {
     case 0:
       return { title: 'Weak', progress: 0 };

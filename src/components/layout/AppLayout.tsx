@@ -138,7 +138,7 @@ export const AppLayout: FC<{ children: ReactNode }> = ({ children }) => {
             <div className="flex items-center justify-center gap-4">
               <h1 className="text-xl font-black">BANCO</h1>
 
-              <Badge variant={'destructive'}>
+              <Badge variant={'destructive'} className="hidden md:block">
                 Alpha - Limit funds and use at your own risk.
               </Badge>
             </div>
@@ -168,6 +168,14 @@ export const AppLayout: FC<{ children: ReactNode }> = ({ children }) => {
               </SheetContent>
             </Sheet>
           </header>
+
+          <Badge
+            variant={'destructive'}
+            className="mx-4 mt-2 block text-center md:hidden"
+          >
+            Alpha - Limit funds and use at your own risk.
+          </Badge>
+
           <main className="flex flex-col justify-center px-4">{children}</main>
         </div>
       </div>

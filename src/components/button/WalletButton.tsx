@@ -21,6 +21,7 @@ import {
 } from '@/components/ui/popover';
 import { useGetAllWalletsQuery } from '@/graphql/queries/__generated__/wallet.generated';
 import { cn } from '@/lib/utils';
+import { useChat, useContactStore } from '@/stores/contacts';
 import { LOCALSTORAGE_KEYS } from '@/utils/constants';
 import { ROUTES } from '@/utils/routes';
 
@@ -28,6 +29,9 @@ import { RefreshWallet } from './RefreshWallet';
 
 export function WalletButton() {
   const [open, setOpen] = useState(false);
+
+  const setCurrentContact = useContactStore(s => s.setCurrentContact);
+  const setCurrentPaymentOption = useChat(s => s.setCurrentPaymentOption);
 
   const { push } = useRouter();
 
@@ -92,6 +96,8 @@ export function WalletButton() {
                       setValue(currentValue);
                       push(ROUTES.app.home);
                       setOpen(false);
+                      setCurrentContact(undefined);
+                      setCurrentPaymentOption(undefined);
                     }}
                   >
                     {w.label}

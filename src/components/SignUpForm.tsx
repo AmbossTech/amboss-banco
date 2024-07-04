@@ -2,10 +2,13 @@
 
 import { ApolloError, useApolloClient } from '@apollo/client';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Loader2 } from 'lucide-react';
+import { generateMnemonic } from '@scure/bip39';
+import { wordlist } from '@scure/bip39/wordlists/english';
+import { Copy, CopyCheck, Eye, EyeOff, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useCopyToClipboard } from 'usehooks-ts';
 import { z } from 'zod';
 
 import { Button } from '@/components/ui/button';
@@ -34,6 +37,7 @@ import {
 import { ROUTES } from '@/utils/routes';
 import { WorkerMessage, WorkerResponse } from '@/workers/account/types';
 
+import { Badge } from './ui/badge';
 import {
   Card,
   CardContent,
@@ -56,6 +60,7 @@ const FormSchema = z
     confirm_password: z.string(),
     password_hint: z.string().optional(),
     accept_tos_and_pp: z.boolean(),
+    accept_condition_1: z.boolean(),
   })
   .refine(data => data.password === data.confirm_password, {
     message: "Passwords don't match.",
@@ -64,6 +69,10 @@ const FormSchema = z
   .refine(data => !!data.accept_tos_and_pp, {
     message: 'You must accept to sign up.',
     path: ['accept_tos_and_pp'],
+  })
+  .refine(data => !!data.accept_condition_1, {
+    message: 'You must accept to sign up.',
+    path: ['accept_condition_1'],
   });
 
 export function SignUpForm() {
@@ -74,6 +83,10 @@ export function SignUpForm() {
   const workerRef = useRef<Worker>();
 
   const [loading, setLoading] = useState(true);
+  const [clickedGenerate, setClickedGenerate] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
+  const [copiedPassword, copyPassword] = useCopyToClipboard();
 
   const form = useForm<z.infer<typeof FormSchema>>({
     reValidateMode: 'onChange',
@@ -84,6 +97,7 @@ export function SignUpForm() {
       password_hint: '',
       confirm_password: '',
       accept_tos_and_pp: false,
+      accept_condition_1: false,
     },
   });
 
@@ -178,6 +192,13 @@ export function SignUpForm() {
     };
   }, [client, toast]);
 
+  const handleGenerateClick = () => {
+    const mnemonic = generateMnemonic(wordlist);
+    form.setValue('password', mnemonic);
+    form.setValue('confirm_password', mnemonic);
+    setClickedGenerate(true);
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -208,20 +229,57 @@ export function SignUpForm() {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Master Password</FormLabel>
+                  <div className="flex w-full items-center justify-between">
+                    <FormLabel>Master Password</FormLabel>
+                    <button type="button" onClick={handleGenerateClick}>
+                      <Badge variant={'secondary'}>
+                        Generate Strong Password
+                      </Badge>
+                    </button>
+                  </div>
                   <FormControl>
-                    <Input
-                      placeholder="super secret password"
-                      type="password"
-                      {...field}
-                    />
+                    <div className="flex gap-2">
+                      <Input
+                        placeholder="super secret password"
+                        type={showPassword ? undefined : 'password'}
+                        {...field}
+                      />
+                      <Button
+                        type="button"
+                        onClick={() => setShowPassword(p => !p)}
+                        size={'icon'}
+                        className="px-2"
+                        variant={'outline'}
+                      >
+                        {showPassword ? (
+                          <EyeOff className="size-4" />
+                        ) : (
+                          <Eye className="size-4" />
+                        )}
+                      </Button>
+                      {clickedGenerate ? (
+                        <Button
+                          type="button"
+                          onClick={() => copyPassword(password)}
+                          size={'icon'}
+                          className="px-2"
+                          variant={'outline'}
+                        >
+                          {copiedPassword ? (
+                            <CopyCheck color="green" className="size-4" />
+                          ) : (
+                            <Copy className="size-4" />
+                          )}
+                        </Button>
+                      ) : null}
+                    </div>
                   </FormControl>
                   <FormMessage />
                   <Progress value={strength?.progress || 0} />
                   <FormDescription>
                     <strong>Important: </strong>
-                    Your master password cannot be recovered if you forget it!
-                    Minimum length is {MIN_PASSWORD_LENGTH}.
+                    Your account cannot be recovered if you forget it! Minimum
+                    length is {MIN_PASSWORD_LENGTH} characters.
                   </FormDescription>
                 </FormItem>
               )}
@@ -261,8 +319,7 @@ export function SignUpForm() {
                   <FormMessage />
                   <FormDescription>
                     <strong>Important: </strong>
-                    The password hint will be stored in clear text on the
-                    server.
+                    The password hint will be stored in clear text.
                   </FormDescription>
                 </FormItem>
               )}
@@ -272,7 +329,7 @@ export function SignUpForm() {
               control={form.control}
               name="accept_tos_and_pp"
               render={({ field }) => (
-                <FormItem className="flex flex-row items-start space-x-3 space-y-0 py-4">
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0 pt-4">
                   <FormControl>
                     <Checkbox
                       checked={field.value}
@@ -283,6 +340,28 @@ export function SignUpForm() {
                     <FormLabel>
                       By checking this box you agree to the Terms of Service and
                       the Privacy Policy.
+                    </FormLabel>
+
+                    <FormMessage />
+                  </div>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="accept_condition_1"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0 pb-4">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <div className="flex flex-col gap-2">
+                    <FormLabel>
+                      I understand that if I forget the password
+                      <strong> my account cannot be recovered.</strong>
                     </FormLabel>
 
                     <FormMessage />
