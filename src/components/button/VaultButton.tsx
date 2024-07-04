@@ -11,7 +11,6 @@ import { useUserQuery } from '@/graphql/queries/__generated__/user.generated';
 import { cn } from '@/lib/utils';
 import { useKeyStore } from '@/stores/keys';
 import { handleApolloError } from '@/utils/error';
-import { MIN_PASSWORD_LENGTH } from '@/utils/password';
 import { WorkerMessage, WorkerResponse } from '@/workers/account/types';
 
 import { Button } from '../ui/button';
@@ -37,9 +36,7 @@ import { Input } from '../ui/input';
 import { useToast } from '../ui/use-toast';
 
 const formSchema = z.object({
-  password: z.string().min(MIN_PASSWORD_LENGTH, {
-    message: `Password needs to be at least ${MIN_PASSWORD_LENGTH} characters.`,
-  }),
+  password: z.string(),
 });
 
 const UnlockDialogContent: FC<{ callback: () => void }> = ({ callback }) => {

@@ -20,7 +20,6 @@ import { Input } from '@/components/ui/input';
 import { useLoginMutation } from '@/graphql/mutations/__generated__/login.generated';
 import { argon2Hash } from '@/utils/crypto';
 import { handleApolloError } from '@/utils/error';
-import { MIN_PASSWORD_LENGTH } from '@/utils/password';
 import { ROUTES } from '@/utils/routes';
 
 import {
@@ -36,9 +35,7 @@ const FormSchema = z.object({
   email: z.string().email().min(5, {
     message: 'Invalid email.',
   }),
-  password: z.string().min(MIN_PASSWORD_LENGTH, {
-    message: `The password is at least ${MIN_PASSWORD_LENGTH} characters.`,
-  }),
+  password: z.string(),
 });
 
 export function LoginForm() {
