@@ -9,3 +9,11 @@ export const CreateWallet = gql`
     }
   }
 `;
+
+export const ChangeWalletName = gql`
+  mutation ChangeWalletName($id: String!, $name: String!) {
+    wallets {
+      change_name(id: $id, name: $name)
+    }
+  }
+`;
