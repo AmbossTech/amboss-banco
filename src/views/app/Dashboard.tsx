@@ -86,23 +86,28 @@ const WalletDetails: FC<{ id: string }> = ({ id }) => {
                 {addresses.map(a => {
                   return (
                     <div key={a.id}>
-                      <div className="text-2xl font-bold">{a.user}</div>
-                      {a.domains.map(d => {
-                        return (
-                          <div className="flex gap-1" key={d}>
-                            <p className="text-xs text-muted-foreground">
-                              {'@' + d}
-                            </p>
-                            <button onClick={() => copy(`${a.user}@${d}`)}>
-                              {copiedText ? (
-                                <CopyCheck className="size-3" color={'green'} />
-                              ) : (
-                                <Copy className="size-3" />
-                              )}
-                            </button>
-                          </div>
-                        );
-                      })}
+                      <div className="mb-2 text-2xl font-bold">{a.user}</div>
+                      <div className="flex flex-wrap gap-2">
+                        {a.domains.map(d => {
+                          return (
+                            <div className="flex gap-1" key={d}>
+                              <p className="text-xs text-muted-foreground">
+                                {'@' + d}
+                              </p>
+                              <button onClick={() => copy(`${a.user}@${d}`)}>
+                                {copiedText === `${a.user}@${d}` ? (
+                                  <CopyCheck
+                                    className="size-3"
+                                    color={'green'}
+                                  />
+                                ) : (
+                                  <Copy className="size-3 hover:text-purple-500" />
+                                )}
+                              </button>
+                            </div>
+                          );
+                        })}
+                      </div>
                     </div>
                   );
                 })}
