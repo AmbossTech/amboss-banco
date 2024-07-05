@@ -101,7 +101,7 @@ export const SendMessageBox: FC<{ iconOptions?: ReactNode }> = ({
   return (
     <form
       onSubmit={handleSubmit}
-      className="relative overflow-hidden rounded-lg border bg-background focus-within:ring-1 focus-within:ring-ring"
+      className="rounded-lg border bg-background focus-within:ring-1 focus-within:ring-ring"
     >
       <Label htmlFor="message" className="sr-only">
         Message

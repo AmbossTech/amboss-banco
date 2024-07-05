@@ -23,6 +23,8 @@ type Message = {
 };
 
 export const Messages = () => {
+  const scrollDiv = useRef<HTMLDivElement>(null);
+
   const workerRef = useRef<Worker>();
 
   const [decryptedMessage, setDecryptedMessage] = useState<Message[]>([]);
@@ -51,6 +53,12 @@ export const Messages = () => {
       created_at: m.created_at,
     }));
   }, [decryptedMessage, data]);
+
+  useEffect(() => {
+    if (scrollDiv.current) {
+      scrollDiv.current.scrollTop = scrollDiv.current.scrollHeight;
+    }
+  }, [messages]);
 
   useEffect(() => {
     if (!masterKey) return;
@@ -104,14 +112,16 @@ export const Messages = () => {
   }, []);
 
   return (
-    <div className="relative flex h-full min-h-[50vh] flex-col rounded-xl bg-muted/50 p-4 lg:col-span-3">
+    <div
+      ref={scrollDiv}
+      className="relative flex h-[calc(100dvh-170px)] flex-col overflow-y-auto rounded-xl bg-muted/50 md:h-[calc(100dvh-86px)] lg:col-span-3"
+    >
       {!!currentContact?.user ? (
         <Badge variant="secondary" className="absolute right-3 top-3">
           {currentContact.user}
         </Badge>
       ) : null}
-      <div className="flex-1" />
-      <div className="my-8 flex flex-col gap-4">
+      <div className="mt-8 flex flex-grow flex-col gap-4 px-4 pt-4">
         {messages.map(m => (
           <div
             key={m.id}
@@ -132,7 +142,9 @@ export const Messages = () => {
           </div>
         ))}
       </div>
-      <ContactMessageBox />
+      <div className="sticky bottom-0 left-0 bg-[#f9f9fa] px-4 pb-4 pt-8 dark:bg-[#101724]">
+        <ContactMessageBox />
+      </div>
     </div>
   );
 };
