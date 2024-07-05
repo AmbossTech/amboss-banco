@@ -14,6 +14,12 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { SupportedLanguage } from '@/i18n';
 
+const getCookie = () =>
+  document.cookie
+    .split('; ')
+    .find(c => c.startsWith('locale='))
+    ?.split('=')[1] as SupportedLanguage | undefined;
+
 const setCookie = (locale: SupportedLanguage) =>
   (document.cookie = `locale=${locale}; max-age=31536000; path=/;`);
 
@@ -24,14 +30,7 @@ export function LanguageToggle() {
   const { refresh } = useRouter();
 
   const [language, setLanguage] = useState<SupportedLanguage | undefined>(
-    () => {
-      const localeCookie = document.cookie
-        .split('; ')
-        .find(c => c.startsWith('locale='))
-        ?.split('=')[1] as SupportedLanguage | undefined;
-
-      return localeCookie;
-    }
+    getCookie()
   );
 
   return (
