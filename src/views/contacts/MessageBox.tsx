@@ -60,7 +60,7 @@ export const ContactMessageBox = () => {
 
   if (loading) {
     return (
-      <div className="flex w-full justify-center">
+      <div className="flex h-28 w-full items-center justify-center">
         <Loader2 className="animate-spin" />
       </div>
     );
@@ -68,7 +68,7 @@ export const ContactMessageBox = () => {
 
   if (!payment_options.length && !encryption_pubkey) {
     return (
-      <div className="flex w-full justify-center">
+      <div className="flex h-28 w-full items-center justify-center">
         <p className="text-sm text-muted-foreground">
           No action available for this contact.
         </p>
