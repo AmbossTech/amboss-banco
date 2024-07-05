@@ -2,7 +2,6 @@
   "ci": {
     "collect": {
       "startServerCommand": "node .next/standalone/server.js",
-      "startServerReadyPattern": "ready on",
       "url": ["http://localhost:3000/"],
       "numberOfRuns": 1,
       "settings": {
