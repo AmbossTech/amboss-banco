@@ -143,7 +143,7 @@ export const Contacts = () => {
           </div>
         </div>
 
-        <div className="hidden w-full flex-col gap-2 md:flex">
+        <div className="hidden h-[calc(100dvh-130px)] w-full flex-col gap-2 overflow-y-auto md:flex">
           {contacts.length ? (
             contacts.map(c => <ContactCard key={c.id} contact={c} />)
           ) : (
