@@ -1,14 +1,14 @@
 import { cookies, headers } from 'next/headers';
 import { getRequestConfig } from 'next-intl/server';
 
-type SupportedLanguage = 'en' | 'es';
+export type SupportedLanguage = 'en' | 'es';
 const defaultLocale = 'en';
 
 export default getRequestConfig(async () => {
   let locale: SupportedLanguage;
 
   const cookieStore = cookies();
-  const localeCookie = cookieStore.get('locale') as
+  const localeCookie = cookieStore.get('locale')?.value as
     | SupportedLanguage
     | undefined;
 
