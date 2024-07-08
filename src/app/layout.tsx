@@ -25,6 +25,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const usePlausible = process.env.PLAUSIBLE;
+  const domain = process.env.URL?.split('https://')[1];
 
   const cookieStore = cookies();
 
@@ -42,7 +43,7 @@ export default async function RootLayout({
         <head>
           <script
             defer
-            data-domain="mibanco.app"
+            data-domain={domain}
             src="https://plausible.io/js/script.js"
           />
         </head>
