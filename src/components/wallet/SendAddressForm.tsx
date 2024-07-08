@@ -105,7 +105,7 @@ export const SendAddressForm: FC<{
       destination: '',
       assetId,
       amount: '',
-      feeRate: '0.1',
+      feeRate: '0.01',
       sendAllBtc: false,
     },
   });
@@ -461,7 +461,7 @@ export const SendAddressForm: FC<{
               name="feeRate"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Fee Rate</FormLabel>
+                  <FormLabel>{'Fee Rate (sat/vb)'}</FormLabel>
                   <FormControl>
                     <Input type="number" autoComplete="off" {...field} />
                   </FormControl>
