@@ -1,1 +1,9 @@
-{}
+{
+  "Index": {
+    "accounts": "Cuentas",
+    "contacts": "Contactos",
+    "settings": "Configuración",
+    "transactions": "Transacciones",
+    "wallet": "Billetera"
+  }
+}

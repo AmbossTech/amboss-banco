@@ -9,6 +9,7 @@ import {
   Loader2,
 } from 'lucide-react';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { FC, useMemo } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -105,6 +106,8 @@ const BalanceCard: FC<{
 };
 
 export const WalletInfo: FC<{ id: string }> = ({ id }) => {
+  const t = useTranslations('Index');
+
   const { data, loading, error } = useGetWalletQuery({ variables: { id } });
 
   const balances = useMemo(() => {
@@ -189,7 +192,7 @@ export const WalletInfo: FC<{ id: string }> = ({ id }) => {
   return (
     <div className="w-full">
       <h2 className="scroll-m-20 pb-2 pt-6 text-xl font-semibold tracking-tight first:mt-0">
-        Accounts
+        {t('accounts')}
       </h2>
       <div className="flex w-full flex-col gap-4 md:flex-row">
         {balances.map((b, index) => (
@@ -202,7 +205,7 @@ export const WalletInfo: FC<{ id: string }> = ({ id }) => {
         ))}
       </div>
       <h2 className="scroll-m-20 pb-2 pt-6 text-xl font-semibold tracking-tight first:mt-0">
-        Transactions
+        {t('transactions')}
       </h2>
       <TransactionTable data={transactions} />
     </div>

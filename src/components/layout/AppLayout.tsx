@@ -27,6 +27,7 @@ import {
 import { ROUTES } from '@/utils/routes';
 
 import { WalletButton } from '../button/WalletButton';
+import { LanguageToggle } from '../LanguageToggle';
 import { Badge } from '../ui/badge';
 
 export const AppLayout: FC<{ children: ReactNode }> = ({ children }) => {
@@ -147,6 +148,7 @@ export const AppLayout: FC<{ children: ReactNode }> = ({ children }) => {
               <WalletButton />
               <VaultButton />
               <ThemeToggle />
+              <LanguageToggle />
             </div>
 
             <Sheet>
@@ -161,9 +163,10 @@ export const AppLayout: FC<{ children: ReactNode }> = ({ children }) => {
                 </Button>
               </SheetTrigger>
               <SheetContent side="right" className="flex flex-col">
-                <div className="flex gap-2">
+                <div className="mt-6 flex gap-2">
                   <VaultButton />
                   <ThemeToggle />
+                  <LanguageToggle />
                 </div>
               </SheetContent>
             </Sheet>

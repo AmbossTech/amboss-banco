@@ -1,6 +1,7 @@
 'use client';
 
 import { Plus, User } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { FC, useEffect, useState } from 'react';
 import { useLocalStorage } from 'usehooks-ts';
 
@@ -64,6 +65,8 @@ const ContactCard: FC<{ contact: ContactType; cbk?: () => void }> = ({
 };
 
 export const Contacts = () => {
+  const t = useTranslations('Index');
+
   const [openDrawer, setOpenDrawer] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
 
@@ -94,7 +97,7 @@ export const Contacts = () => {
     <div className="my-4 grid flex-1 gap-4 overflow-auto md:grid-cols-2 lg:grid-cols-4">
       <div className="flex flex-col gap-2">
         <div className="flex w-full items-center justify-between">
-          <h1 className="text-sm font-semibold md:text-lg">Contacts</h1>
+          <h1 className="text-sm font-semibold md:text-lg">{t('contacts')}</h1>
           <div className="flex gap-2">
             <Drawer open={openDrawer} onOpenChange={setOpenDrawer}>
               <DrawerTrigger asChild className="flex md:hidden">
