@@ -117,7 +117,10 @@ export const Messages = () => {
       className="relative flex h-[calc(100dvh-170px)] flex-col overflow-y-auto rounded-xl bg-muted/50 md:h-[calc(100dvh-86px)] lg:col-span-3"
     >
       {!!currentContact?.user ? (
-        <Badge variant="secondary" className="absolute right-3 top-3">
+        <Badge
+          variant="secondary"
+          className="sticky left-full top-3 mr-3 w-fit"
+        >
           {currentContact.user}
         </Badge>
       ) : null}
