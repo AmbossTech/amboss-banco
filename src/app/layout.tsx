@@ -24,6 +24,8 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const usePlausible = process.env.plausible;
+
   const cookieStore = cookies();
 
   const serverUrl = `${process.env.URL}/api/graphql`;
@@ -36,6 +38,15 @@ export default async function RootLayout({
 
   return (
     <html lang={locale} suppressHydrationWarning>
+      {usePlausible ? (
+        <head>
+          <script
+            defer
+            data-domain="mibanco.app"
+            src="https://plausible.io/js/script.js"
+          />
+        </head>
+      ) : null}
       <body className={font.className}>
         <NextIntlClientProvider messages={messages}>
           <ThemeProvider
