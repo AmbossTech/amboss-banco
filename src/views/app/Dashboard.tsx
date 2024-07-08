@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { FC, useEffect, useMemo, useState } from 'react';
 import { useCopyToClipboard, useLocalStorage } from 'usehooks-ts';
 
@@ -28,6 +29,8 @@ import { ROUTES } from '@/utils/routes';
 import { WalletInfo } from '../wallet/Wallet';
 
 const WalletDetails: FC<{ id: string }> = ({ id }) => {
+  const t = useTranslations('Index');
+
   const { data } = useGetWalletDetailsQuery({
     variables: { id },
   });
@@ -51,7 +54,7 @@ const WalletDetails: FC<{ id: string }> = ({ id }) => {
     <div className="w-full">
       <div className="flex w-full items-center justify-between pb-4 md:pb-2">
         <h2 className="scroll-m-20 text-xl font-semibold tracking-tight">
-          Wallet
+          {t('wallet')}
         </h2>
         <div className="flex gap-2">
           <Button

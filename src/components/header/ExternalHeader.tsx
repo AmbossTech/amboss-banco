@@ -4,12 +4,13 @@ import Link from 'next/link';
 
 import { ROUTES } from '@/utils/routes';
 
+import { LanguageToggle } from '../LanguageToggle';
 import { ThemeToggle } from '../ThemeToggle';
 import { Button } from '../ui/button';
 
 export const ExternalHeader = () => {
   return (
-    <div className="mt-1 flex w-full max-w-5xl items-center justify-between text-sm">
+    <div className="mt-1 flex w-full max-w-5xl flex-wrap items-center justify-between text-sm">
       <Link href={ROUTES.home}>
         <p className="text-xl font-bold">Banco</p>
       </Link>
@@ -21,6 +22,7 @@ export const ExternalHeader = () => {
           <Link href={ROUTES.signup}>Sign Up</Link>
         </Button>
         <ThemeToggle />
+        <LanguageToggle />
       </div>
     </div>
   );

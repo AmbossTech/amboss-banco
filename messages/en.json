@@ -1,1 +1,9 @@
-{}
+{
+  "Index": {
+    "accounts": "Accounts",
+    "contacts": "Contacts",
+    "settings": "Settings",
+    "transactions": "Transactions",
+    "wallet": "Wallet"
+  }
+}
