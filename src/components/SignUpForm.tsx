@@ -57,7 +57,7 @@ const FormSchema = z
     accept_tos_and_pp: z.boolean(),
     accept_condition_1: z.boolean(),
   })
-  .refine(data => stringEntropy(data.password) >= 100, {
+  .refine(data => stringEntropy(data.password) >= 90, {
     message: 'Password is weak.',
     path: ['password'],
   })
