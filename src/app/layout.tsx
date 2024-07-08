@@ -24,7 +24,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const usePlausible = process.env.plausible;
+  const usePlausible = process.env.PLAUSIBLE;
 
   const cookieStore = cookies();
 
