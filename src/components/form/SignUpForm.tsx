@@ -34,17 +34,17 @@ import { handleApolloError } from '@/utils/error';
 import { ROUTES } from '@/utils/routes';
 import { WorkerMessage, WorkerResponse } from '@/workers/account/types';
 
-import { Badge } from './ui/badge';
+import { Badge } from '../ui/badge';
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
   CardTitle,
-} from './ui/card';
-import { Checkbox } from './ui/checkbox';
-import { Progress } from './ui/progress';
-import { useToast } from './ui/use-toast';
+} from '../ui/card';
+import { Checkbox } from '../ui/checkbox';
+import { Progress } from '../ui/progress';
+import { useToast } from '../ui/use-toast';
 
 const FormSchema = z
   .object({

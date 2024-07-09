@@ -15,7 +15,7 @@ import {
   LogoutButtonWithTooltip,
 } from '@/components/button/LogoutButton';
 import { VaultButton } from '@/components/button/VaultButton';
-import { ThemeToggle } from '@/components/ThemeToggle';
+import { ThemeToggle } from '@/components/toggle/ThemeToggle';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import {
@@ -27,7 +27,7 @@ import {
 import { ROUTES } from '@/utils/routes';
 
 import { WalletButton } from '../button/WalletButton';
-import { LanguageToggle } from '../LanguageToggle';
+import { LanguageToggle } from '../toggle/LanguageToggle';
 import { Badge } from '../ui/badge';
 
 export const AppLayout: FC<{ children: ReactNode }> = ({ children }) => {

@@ -4,8 +4,8 @@ import Link from 'next/link';
 
 import { ROUTES } from '@/utils/routes';
 
-import { LanguageToggle } from '../LanguageToggle';
-import { ThemeToggle } from '../ThemeToggle';
+import { LanguageToggle } from '../toggle/LanguageToggle';
+import { ThemeToggle } from '../toggle/ThemeToggle';
 import { Button } from '../ui/button';
 
 export const ExternalHeader = () => {

@@ -28,8 +28,8 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from './ui/card';
-import { useToast } from './ui/use-toast';
+} from '../ui/card';
+import { useToast } from '../ui/use-toast';
 
 const FormSchema = z.object({
   email: z.string().email().min(5, {
