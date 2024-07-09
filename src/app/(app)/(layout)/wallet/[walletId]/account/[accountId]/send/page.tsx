@@ -19,7 +19,7 @@ export default function Page({
       <h1 className="text-lg font-bold">Payment Options</h1>
       <div className="mt-4 flex justify-center gap-4">
         <Link
-          href={ROUTES.app.wallet.send.invoice(
+          href={ROUTES.wallet.send.invoice(
             params.walletId,
             params.accountId,
             assetId
@@ -36,7 +36,7 @@ export default function Page({
         </Link>
 
         <Link
-          href={ROUTES.app.wallet.send.address(
+          href={ROUTES.wallet.send.address(
             params.walletId,
             params.accountId,
             assetId

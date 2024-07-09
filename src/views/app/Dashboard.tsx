@@ -78,7 +78,7 @@ const WalletDetails: FC<{ id: string }> = ({ id }) => {
             )}
           </Button>
           <Button asChild variant={'outline'} size={'sm'}>
-            <Link href={ROUTES.app.wallet.settings(id)}>Settings</Link>
+            <Link href={ROUTES.wallet.settings(id)}>Settings</Link>
           </Button>
         </div>
       </div>

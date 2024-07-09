@@ -75,11 +75,7 @@ const makeClient = (
             case 'UNAUTHENTICATED':
               if (operation.operationName === 'refreshToken') return;
               if (ssrMode) return;
-
-              if (!refreshToken) {
-                window.location.href = ROUTES.home;
-                return;
-              }
+              if (!refreshToken) return;
 
               return promiseToObservable(
                 refreshTokens(serverUrl, accessToken, refreshToken).catch(

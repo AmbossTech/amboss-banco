@@ -93,7 +93,7 @@ export function WalletButton() {
                     value={w.value}
                     onSelect={currentValue => {
                       setValue(currentValue);
-                      push(ROUTES.app.home);
+                      push(ROUTES.dashboard);
                       setOpen(false);
                       setCurrentContact(undefined);
                       setCurrentPaymentOption(undefined);
@@ -130,7 +130,7 @@ export function WalletButton() {
                   }}
                 >
                   <Link
-                    href={ROUTES.app.wallet.settings(value)}
+                    href={ROUTES.wallet.settings(value)}
                     className="flex w-full items-center justify-between"
                   >
                     Settings

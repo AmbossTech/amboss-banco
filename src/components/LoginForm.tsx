@@ -45,7 +45,7 @@ export function LoginForm() {
 
   const [login] = useLoginMutation({
     onCompleted: () => {
-      window.location.href = ROUTES.app.home;
+      window.location.href = ROUTES.dashboard;
     },
     onError: err => {
       const messages = handleApolloError(err);

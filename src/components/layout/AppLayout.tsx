@@ -48,7 +48,7 @@ export const AppLayout: FC<{ children: ReactNode }> = ({ children }) => {
                   aria-label="Wallet"
                   asChild
                 >
-                  <Link href={ROUTES.app.home}>
+                  <Link href={ROUTES.dashboard}>
                     <Home className="size-5" />
                   </Link>
                 </Button>
@@ -66,7 +66,7 @@ export const AppLayout: FC<{ children: ReactNode }> = ({ children }) => {
                   aria-label="Wallet"
                   asChild
                 >
-                  <Link href={ROUTES.app.contacts.home}>
+                  <Link href={ROUTES.contacts.home}>
                     <MessageCircle className="size-5" />
                   </Link>
                 </Button>
@@ -114,7 +114,7 @@ export const AppLayout: FC<{ children: ReactNode }> = ({ children }) => {
               <SheetContent side="left" className="flex flex-col">
                 <nav className="grid gap-2 font-medium">
                   <Link
-                    href={ROUTES.app.home}
+                    href={ROUTES.dashboard}
                     className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
                   >
                     <Landmark className="h-5 w-5" />
@@ -123,7 +123,7 @@ export const AppLayout: FC<{ children: ReactNode }> = ({ children }) => {
                 </nav>
                 <nav className="grid gap-2 font-medium">
                   <Link
-                    href={ROUTES.app.contacts.home}
+                    href={ROUTES.contacts.home}
                     className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
                   >
                     <MessageCircle className="h-5 w-5" />

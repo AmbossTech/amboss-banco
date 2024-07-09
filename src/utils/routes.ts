@@ -2,26 +2,23 @@ export const ROUTES = {
   home: '/',
   signup: '/sign-up',
   login: '/login',
-  app: {
-    home: '/app',
-    user: '/app/user',
-    wallet: {
-      home: '/app/wallet',
-      settings: (id: string) => `/app/wallet/${id}/settings`,
-      receive: (walletId: string, accountId: string) =>
-        `/app/wallet/${walletId}/account/${accountId}/receive`,
-      send: {
-        home: (walletId: string, accountId: string, assetId: string) =>
-          `/app/wallet/${walletId}/account/${accountId}/send?assetId=${assetId}`,
-        address: (walletId: string, accountId: string, assetId: string) =>
-          `/app/wallet/${walletId}/account/${accountId}/send/address?assetId=${assetId}`,
-        invoice: (walletId: string, accountId: string, assetId: string) =>
-          `/app/wallet/${walletId}/account/${accountId}/send/invoice?assetId=${assetId}`,
-      },
+  dashboard: '/dashboard',
+  wallet: {
+    home: '/wallet',
+    settings: (id: string) => `/wallet/${id}/settings`,
+    receive: (walletId: string, accountId: string) =>
+      `/wallet/${walletId}/account/${accountId}/receive`,
+    send: {
+      home: (walletId: string, accountId: string, assetId: string) =>
+        `/wallet/${walletId}/account/${accountId}/send?assetId=${assetId}`,
+      address: (walletId: string, accountId: string, assetId: string) =>
+        `/wallet/${walletId}/account/${accountId}/send/address?assetId=${assetId}`,
+      invoice: (walletId: string, accountId: string, assetId: string) =>
+        `/wallet/${walletId}/account/${accountId}/send/invoice?assetId=${assetId}`,
     },
-    contacts: {
-      home: '/app/contacts',
-    },
+  },
+  contacts: {
+    home: '/contacts',
   },
   setup: {
     wallet: {

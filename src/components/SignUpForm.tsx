@@ -176,7 +176,7 @@ export function SignUpForm() {
             return;
           }
 
-          window.location.href = ROUTES.app.home;
+          window.location.href = ROUTES.dashboard;
 
           break;
       }

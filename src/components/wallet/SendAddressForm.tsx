@@ -217,7 +217,7 @@ export const SendAddressForm: FC<{
             description: `Money has been sent.`,
           });
 
-          push(ROUTES.app.home);
+          push(ROUTES.dashboard);
 
           break;
       }

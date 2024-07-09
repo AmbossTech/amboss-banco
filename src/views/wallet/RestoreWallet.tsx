@@ -71,7 +71,7 @@ const RestoreWalletButton = () => {
 
   const [createWallet, { loading: createLoading }] = useCreateWalletMutation({
     onCompleted: () => {
-      push(ROUTES.app.home);
+      push(ROUTES.dashboard);
     },
     onError: err => {
       const messages = handleApolloError(err);
