@@ -125,7 +125,7 @@ export function SignUpForm() {
 
   useEffect(() => {
     workerRef.current = new Worker(
-      new URL('../workers/account/account.ts', import.meta.url)
+      new URL('../../workers/account/account.ts', import.meta.url)
     );
 
     workerRef.current.onmessage = async event => {
