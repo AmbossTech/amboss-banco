@@ -127,7 +127,6 @@ export const Contacts = () => {
                 </div>
 
                 <DrawerFooter>
-                  {/* <Button>Submit</Button> */}
                   <DrawerClose asChild>
                     <Button variant="outline">Close</Button>
                   </DrawerClose>

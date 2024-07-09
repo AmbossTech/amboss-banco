@@ -59,13 +59,9 @@ const UnlockDialogContent: FC<{ callback: () => void }> = ({ callback }) => {
   const { data } = useUserQuery({ errorPolicy: 'ignore' });
 
   const [checkPassword] = useCheckPasswordMutation({
-    onCompleted: data => {
-      if (!data.checkPassword) {
-        // TODO INVALID PASSWORD
-      } else {
-        setMasterKey(tempMasterKey);
-        callback();
-      }
+    onCompleted: () => {
+      setMasterKey(tempMasterKey);
+      callback();
     },
     onError: error => {
       const messages = handleApolloError(error);

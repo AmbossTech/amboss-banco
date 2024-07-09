@@ -191,7 +191,6 @@ export const Dashboard = () => {
     if (loading) return;
     if (error) return;
 
-    // User has no wallets for his account
     if (!data?.wallets.find_many.length) {
       localStorage.removeItem(LOCALSTORAGE_KEYS.currentWalletId);
       push(ROUTES.setup.wallet.home);
@@ -203,7 +202,6 @@ export const Dashboard = () => {
     if (value) {
       const wallet = savedWallets.find(w => w.id === value);
 
-      // User has a valid wallet id in localstorage
       if (!!wallet) {
         setCheckingId(false);
         return;

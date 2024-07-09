@@ -32,7 +32,6 @@ const formSchema = z.object({
   money_address: z.string().min(1, {
     message: 'A lightning address is required to create a new contact.',
   }),
-  // .email('This is not a valid email.'),
 });
 
 export const AddContact: FC<{

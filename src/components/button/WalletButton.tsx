@@ -50,7 +50,6 @@ export function WalletButton() {
   }, [value, data, setValue]);
 
   const wallets = useMemo(() => {
-    // return [];
     const walletData = data?.wallets.find_many || [];
 
     return walletData.map(w => {
