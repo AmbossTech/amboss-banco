@@ -84,7 +84,6 @@ export function LoginForm() {
         },
       });
     } catch (error) {
-      console.error(error);
       toast({
         variant: 'destructive',
         title: 'Error logging in.',

@@ -17,6 +17,7 @@ import { useCopyToClipboard, useLocalStorage } from 'usehooks-ts';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useToast } from '@/components/ui/use-toast';
 import { useRefreshWalletMutation } from '@/graphql/mutations/__generated__/refreshWallet.generated';
 import {
   useGetAllWalletsQuery,
@@ -29,6 +30,8 @@ import { ROUTES } from '@/utils/routes';
 import { WalletInfo } from '../wallet/Wallet';
 
 const WalletDetails: FC<{ id: string }> = ({ id }) => {
+  const { toast } = useToast();
+
   const t = useTranslations('Index');
 
   const { data } = useGetWalletDetailsQuery({
@@ -38,7 +41,11 @@ const WalletDetails: FC<{ id: string }> = ({ id }) => {
   const [refresh, { loading }] = useRefreshWalletMutation({
     variables: { input: { wallet_id: id } },
     refetchQueries: ['getWallet'],
-    onError: err => console.log('ERROR', err),
+    onError: () =>
+      toast({
+        variant: 'destructive',
+        title: 'Error refeshing wallet.',
+      }),
   });
 
   const addresses = useMemo(() => {

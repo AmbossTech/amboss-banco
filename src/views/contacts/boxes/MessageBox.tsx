@@ -56,7 +56,7 @@ export const SendMessageBox: FC<{ iconOptions?: ReactNode }> = ({
       toast({
         variant: 'default',
         title: 'Unable to send message',
-        description: 'No encryption pubkey found for this contact',
+        description: 'No encryption pubkey found for this contact.',
       });
 
       return;
@@ -66,7 +66,7 @@ export const SendMessageBox: FC<{ iconOptions?: ReactNode }> = ({
       toast({
         variant: 'destructive',
         title: 'Vault Locked',
-        description: 'Unlock your vault to send a message',
+        description: 'Unlock your vault to send a message.',
       });
 
       return;
@@ -76,7 +76,7 @@ export const SendMessageBox: FC<{ iconOptions?: ReactNode }> = ({
       toast({
         variant: 'destructive',
         title: 'No Contact Selected',
-        description: 'Select a contact to send them a message',
+        description: 'Select a contact to send them a message.',
       });
 
       return;

@@ -58,7 +58,7 @@ const WalletName: FC<{ walletId: string }> = ({ walletId }) => {
 
       toast({
         variant: 'destructive',
-        title: 'Error creating new wallet.',
+        title: 'Error changing wallet name.',
         description: messages.join(', '),
       });
     },
@@ -106,6 +106,8 @@ const WalletName: FC<{ walletId: string }> = ({ walletId }) => {
 };
 
 const WalletMnemonic: FC<{ walletId: string }> = ({ walletId }) => {
+  const { toast } = useToast();
+
   const workerRef = useRef<Worker>();
 
   const [stateLoading, setLoading] = useState(false);
@@ -117,7 +119,11 @@ const WalletMnemonic: FC<{ walletId: string }> = ({ walletId }) => {
 
   const { data, loading: walletLoading } = useGetWalletDetailsQuery({
     variables: { id: walletId },
-    onError: err => console.log('ERROR', err),
+    onError: () =>
+      toast({
+        variant: 'destructive',
+        title: 'Error getting wallet details.',
+      }),
   });
 
   useEffect(() => {

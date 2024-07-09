@@ -121,8 +121,6 @@ const RestoreWalletButton = () => {
 
       switch (message.type) {
         case 'newWallet':
-          console.log('Creating wallet', message);
-
           createWallet({
             variables: {
               input: {

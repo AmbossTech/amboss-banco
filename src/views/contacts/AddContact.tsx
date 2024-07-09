@@ -53,7 +53,7 @@ export const AddContact: FC<{
       toast({
         variant: 'default',
         title: 'Contact Added',
-        description: 'New contact has been added successfully',
+        description: 'New contact has been added successfully.',
       });
       form.reset();
     },

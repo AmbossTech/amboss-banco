@@ -244,7 +244,7 @@ export const SendAddressForm: FC<{
       toast({
         variant: 'destructive',
         title: 'Error Sending Money',
-        description: '"Send All" is only possible for BTC',
+        description: '"Send All" is only possible for BTC.',
       });
 
       setStateLoading(false);

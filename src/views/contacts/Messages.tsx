@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useLocalStorage } from 'usehooks-ts';
 
 import { Badge } from '@/components/ui/badge';
+import { useToast } from '@/components/ui/use-toast';
 import { useGetWalletContactMessagesQuery } from '@/graphql/queries/__generated__/contacts.generated';
 import { cn } from '@/lib/utils';
 import { useContactStore } from '@/stores/contacts';
@@ -23,6 +24,8 @@ type Message = {
 };
 
 export const Messages = () => {
+  const { toast } = useToast();
+
   const scrollDiv = useRef<HTMLDivElement>(null);
 
   const workerRef = useRef<Worker>();
@@ -40,6 +43,11 @@ export const Messages = () => {
   const { data, loading, error } = useGetWalletContactMessagesQuery({
     variables: { id: value, contact_id: currentContact?.id || '' },
     skip: !currentContact?.id,
+    onError: () =>
+      toast({
+        variant: 'destructive',
+        title: 'Error getting messages.',
+      }),
   });
 
   const messages = useMemo(() => {
