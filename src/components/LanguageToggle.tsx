@@ -30,7 +30,7 @@ export function LanguageToggle() {
   const { refresh } = useRouter();
 
   const [language, setLanguage] = useState<SupportedLanguage | undefined>(
-    getCookie()
+    typeof window !== 'undefined' ? getCookie() : undefined
   );
 
   return (
