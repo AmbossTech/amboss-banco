@@ -14,7 +14,7 @@ import {
   CryptoWorkerResponse,
 } from '@/workers/crypto/types';
 
-import { ContactMessageBox } from './MessageBox';
+import { ContactMessageBox } from './ContactMessageBox';
 
 type Message = {
   id: string;
