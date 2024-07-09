@@ -116,4 +116,3 @@ export const decryptMessage = (
     return 'Error decrypting message';
   }
 };
-
