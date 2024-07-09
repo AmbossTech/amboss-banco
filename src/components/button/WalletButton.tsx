@@ -20,8 +20,8 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { useGetAllWalletsQuery } from '@/graphql/queries/__generated__/wallet.generated';
-import { cn } from '@/lib/utils';
 import { useChat, useContactStore } from '@/stores/contacts';
+import { cn } from '@/utils/cn';
 import { LOCALSTORAGE_KEYS } from '@/utils/constants';
 import { ROUTES } from '@/utils/routes';
 

@@ -8,8 +8,8 @@ import { z } from 'zod';
 
 import { useCheckPasswordMutation } from '@/graphql/mutations/__generated__/checkPassword.generated';
 import { useUserQuery } from '@/graphql/queries/__generated__/user.generated';
-import { cn } from '@/lib/utils';
 import { useKeyStore } from '@/stores/keys';
+import { cn } from '@/utils/cn';
 import { handleApolloError } from '@/utils/error';
 import { WorkerMessage, WorkerResponse } from '@/workers/account/types';
 

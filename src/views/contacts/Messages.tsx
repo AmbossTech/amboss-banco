@@ -5,9 +5,9 @@ import { useLocalStorage } from 'usehooks-ts';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/use-toast';
 import { useGetWalletContactMessagesQuery } from '@/graphql/queries/__generated__/contacts.generated';
-import { cn } from '@/lib/utils';
 import { useContactStore } from '@/stores/contacts';
 import { useKeyStore } from '@/stores/keys';
+import { cn } from '@/utils/cn';
 import { LOCALSTORAGE_KEYS } from '@/utils/constants';
 import {
   CryptoWorkerMessage,

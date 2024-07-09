@@ -20,8 +20,8 @@ import {
   GetWalletContactsQuery,
   useGetWalletContactsQuery,
 } from '@/graphql/queries/__generated__/contacts.generated';
-import { cn } from '@/lib/utils';
 import { useContactStore } from '@/stores/contacts';
+import { cn } from '@/utils/cn';
 import { LOCALSTORAGE_KEYS } from '@/utils/constants';
 
 import { AddContact } from './AddContact';
