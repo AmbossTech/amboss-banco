@@ -272,7 +272,7 @@ export const PayMessageBox: FC<{
             !money_address ||
             !currentAsset
           ) {
-            setLoading(false);
+            cbk();
             return;
           }
 
@@ -320,6 +320,7 @@ export const PayMessageBox: FC<{
     protected_encryption_private_key,
     currentAsset,
     inputValue,
+    cbk,
   ]);
 
   return (
