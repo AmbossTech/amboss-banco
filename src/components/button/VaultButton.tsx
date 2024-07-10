@@ -135,7 +135,7 @@ const UnlockDialogContent: FC<{ callback: () => void }> = ({ callback }) => {
       <DialogHeader>
         <DialogTitle>Unlock your vault</DialogTitle>
         <DialogDescription>
-          This will allow you to encrypt and decrypt your private keys
+          This will allow you to send funds and messages.
         </DialogDescription>
       </DialogHeader>
       <Form {...form}>

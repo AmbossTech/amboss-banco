@@ -181,7 +181,7 @@ const WalletMnemonic: FC<{ walletId: string }> = ({ walletId }) => {
   const loading = stateLoading || walletLoading;
 
   return (
-    <Section title="Mnemonic" description="View your wallets secret mnemonic">
+    <Section title="Mnemonic" description="View your wallets secret mnemonic.">
       <div>
         <Label htmlFor="protectedMnemonic">Encrypted</Label>
         <div className="flex gap-2">
@@ -204,7 +204,7 @@ const WalletMnemonic: FC<{ walletId: string }> = ({ walletId }) => {
         </div>
       </div>
 
-      <div className="mt-2">
+      <div className="my-2">
         <Label htmlFor="mnemonic">Decrypted</Label>
         <div className="flex gap-2">
           <Input
