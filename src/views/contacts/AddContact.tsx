@@ -26,6 +26,7 @@ import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
 import { useCreateContactMutation } from '@/graphql/mutations/__generated__/contact.generated';
 import { GetWalletContactsDocument } from '@/graphql/queries/__generated__/contacts.generated';
+import { useContactStore } from '@/stores/contacts';
 import { handleApolloError } from '@/utils/error';
 
 const formSchema = z.object({
@@ -38,6 +39,8 @@ export const AddContact: FC<{
   walletId: string;
   setOpenDialog: Dispatch<SetStateAction<boolean>>;
 }> = ({ walletId, setOpenDialog }) => {
+  const setContact = useContactStore(s => s.setCurrentContact);
+
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -48,14 +51,25 @@ export const AddContact: FC<{
   });
 
   const [create, { loading }] = useCreateContactMutation({
-    onCompleted: () => {
+    onCompleted: data => {
       setOpenDialog(false);
+
       toast({
         variant: 'default',
         title: 'Contact Added',
         description: 'New contact has been added successfully.',
       });
+
       form.reset();
+
+      const [user, domain] = data.contacts.create.money_address.split('@');
+
+      setContact({
+        id: data.contacts.create.id,
+        user,
+        domain,
+        address: data.contacts.create.money_address,
+      });
     },
     onError: err => {
       const messages = handleApolloError(err);

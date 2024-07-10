@@ -14,7 +14,7 @@ export type CreateContactMutation = {
   __typename?: 'Mutation';
   contacts: {
     __typename?: 'ContactMutations';
-    create: { __typename?: 'CreateContact'; id: string };
+    create: { __typename?: 'CreateContact'; id: string; money_address: string };
   };
 };
 
@@ -35,6 +35,7 @@ export const CreateContactDocument = gql`
     contacts {
       create(input: $input) {
         id
+        money_address
       }
     }
   }
