@@ -40,12 +40,12 @@ const Section: FC<{
 const WalletName: FC<{ walletId: string }> = ({ walletId }) => {
   const { toast } = useToast();
 
-  const [name, setName] = useState<string | undefined>();
-
   const { data } = useGetWalletDetailsQuery({
     variables: { id: walletId },
     errorPolicy: 'ignore',
   });
+
+  const [name, setName] = useState(data?.wallets.find_one.name || '');
 
   const [changeName, { loading }] = useChangeWalletNameMutation({
     onCompleted: () => {
@@ -87,7 +87,6 @@ const WalletName: FC<{ walletId: string }> = ({ walletId }) => {
             autoComplete="off"
             value={name}
             onChange={e => setName(e.target.value)}
-            defaultValue={data.wallets.find_one.name}
             placeholder="Wallet Name"
           />
           <Button
@@ -280,7 +279,7 @@ export const WalletSettings: FC<{ walletId: string }> = ({ walletId }) => {
           data.wallets.find_one.money_address.map(a => {
             return a.domains.map(d => {
               return (
-                <div key={a.id}>
+                <div key={d}>
                   <Label htmlFor="address">Lightning Address</Label>
                   <div className="flex gap-2">
                     <Input
@@ -289,8 +288,8 @@ export const WalletSettings: FC<{ walletId: string }> = ({ walletId }) => {
                       defaultValue={`${a.user}@${d}`}
                     />
                     <Button onClick={() => copy(`${a.user}@${d}`)}>
-                      {copiedText ? 'Copied' : 'Copy'}
-                      {copiedText ? (
+                      {copiedText === `${a.user}@${d}` ? 'Copied' : 'Copy'}
+                      {copiedText === `${a.user}@${d}` ? (
                         <CopyCheck className="ml-2 size-4" color="green" />
                       ) : (
                         <Copy className="ml-2 size-4" />
