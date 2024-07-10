@@ -112,7 +112,7 @@ export const PayMessageBox: FC<{
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (isLoading) return;
 
-    const value = e.target.value.replace(/\D/g, ''); // Remove non-digit characters
+    const value = e.target.value.replace(/\D/g, '');
 
     const numberValue = Number(value);
 
@@ -272,7 +272,7 @@ export const PayMessageBox: FC<{
             !money_address ||
             !currentAsset
           ) {
-            setLoading(false);
+            cbk();
             return;
           }
 
@@ -320,6 +320,7 @@ export const PayMessageBox: FC<{
     protected_encryption_private_key,
     currentAsset,
     inputValue,
+    cbk,
   ]);
 
   return (

@@ -18,7 +18,7 @@ export const numberWithPrecisionAndDecimals = (
 ): string => {
   const precise = numberWithPrecision(num, precision);
 
-  if (!precise) return '-';
+  if (precise === undefined) return '-';
 
   const minimumFractionDigits = ticker === 'USDT' ? 2 : 0;
 

@@ -34,17 +34,17 @@ import { handleApolloError } from '@/utils/error';
 import { ROUTES } from '@/utils/routes';
 import { WorkerMessage, WorkerResponse } from '@/workers/account/types';
 
-import { Badge } from './ui/badge';
+import { Badge } from '../ui/badge';
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
   CardTitle,
-} from './ui/card';
-import { Checkbox } from './ui/checkbox';
-import { Progress } from './ui/progress';
-import { useToast } from './ui/use-toast';
+} from '../ui/card';
+import { Checkbox } from '../ui/checkbox';
+import { Progress } from '../ui/progress';
+import { useToast } from '../ui/use-toast';
 
 const FormSchema = z
   .object({
@@ -125,7 +125,7 @@ export function SignUpForm() {
 
   useEffect(() => {
     workerRef.current = new Worker(
-      new URL('../workers/account/account.ts', import.meta.url)
+      new URL('../../workers/account/account.ts', import.meta.url)
     );
 
     workerRef.current.onmessage = async event => {
@@ -176,7 +176,7 @@ export function SignUpForm() {
             return;
           }
 
-          window.location.href = ROUTES.app.home;
+          window.location.href = ROUTES.dashboard;
 
           break;
       }

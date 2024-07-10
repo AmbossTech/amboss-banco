@@ -20,8 +20,8 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { useGetAllWalletsQuery } from '@/graphql/queries/__generated__/wallet.generated';
-import { cn } from '@/lib/utils';
 import { useChat, useContactStore } from '@/stores/contacts';
+import { cn } from '@/utils/cn';
 import { LOCALSTORAGE_KEYS } from '@/utils/constants';
 import { ROUTES } from '@/utils/routes';
 
@@ -50,7 +50,6 @@ export function WalletButton() {
   }, [value, data, setValue]);
 
   const wallets = useMemo(() => {
-    // return [];
     const walletData = data?.wallets.find_many || [];
 
     return walletData.map(w => {
@@ -94,7 +93,7 @@ export function WalletButton() {
                     value={w.value}
                     onSelect={currentValue => {
                       setValue(currentValue);
-                      push(ROUTES.app.home);
+                      push(ROUTES.dashboard);
                       setOpen(false);
                       setCurrentContact(undefined);
                       setCurrentPaymentOption(undefined);
@@ -131,7 +130,7 @@ export function WalletButton() {
                   }}
                 >
                   <Link
-                    href={ROUTES.app.wallet.settings(value)}
+                    href={ROUTES.wallet.settings(value)}
                     className="flex w-full items-center justify-between"
                   >
                     Settings

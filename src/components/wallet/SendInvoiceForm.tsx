@@ -175,7 +175,7 @@ export const SendInvoiceForm: FC<{
             description: `Money has been sent.`,
           });
 
-          push(ROUTES.app.home);
+          push(ROUTES.dashboard);
 
           break;
       }

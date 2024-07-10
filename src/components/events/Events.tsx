@@ -25,7 +25,7 @@ export const EventHandler: FC<{
       toast({
         title: 'New Message',
         description: sender
-          ? `You have a new message from ${sender}`
+          ? `You have a new message from ${sender}.`
           : undefined,
       });
     },

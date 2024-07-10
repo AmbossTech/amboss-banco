@@ -8,13 +8,20 @@ import { ROUTES } from '@/utils/routes';
 
 import { Button } from '../ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
+import { useToast } from '../ui/use-toast';
 
 export const LogoutButtonWithTooltip = () => {
+  const { toast } = useToast();
+
   const [logout] = useLogoutMutation({
     onCompleted: () => {
       window.location.href = ROUTES.home;
     },
-    onError: err => console.log('ERROR', err),
+    onError: () =>
+      toast({
+        variant: 'destructive',
+        title: 'Error logging out.',
+      }),
   });
 
   return (
@@ -38,12 +45,18 @@ export const LogoutButtonWithTooltip = () => {
 };
 
 export const LogoutButton = () => {
+  const { toast } = useToast();
+
   const [logout] = useLogoutMutation({
     onCompleted: () => {
       localStorage.removeItem(LOCALSTORAGE_KEYS.currentWalletId);
       window.location.href = ROUTES.home;
     },
-    onError: err => console.log('ERROR', err),
+    onError: () =>
+      toast({
+        variant: 'destructive',
+        title: 'Error logging out.',
+      }),
   });
 
   return (
