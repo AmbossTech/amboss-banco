@@ -231,7 +231,8 @@ export const VaultButton: FC<{
             <DialogHeader>
               <DialogTitle>Lock your vault</DialogTitle>
               <DialogDescription>
-                You will not be able to encrypt or decrypt your private keys
+                You will not be able to send funds or messages until the vault
+                is unlocked with your Master Password.
               </DialogDescription>
             </DialogHeader>
             <DialogFooter className="gap-2 sm:justify-center">
