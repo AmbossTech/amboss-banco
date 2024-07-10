@@ -5,6 +5,7 @@ import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useLocalStorage } from 'usehooks-ts';
 import { z } from 'zod';
 
 import { Button } from '@/components/ui/button';
@@ -31,7 +32,9 @@ import { useCreateWalletMutation } from '@/graphql/mutations/__generated__/walle
 import { UserDocument } from '@/graphql/queries/__generated__/user.generated';
 import { GetAllWalletsDocument } from '@/graphql/queries/__generated__/wallet.generated';
 import { WalletAccountType, WalletType } from '@/graphql/types';
+import { useChat, useContactStore } from '@/stores/contacts';
 import { useKeyStore } from '@/stores/keys';
+import { LOCALSTORAGE_KEYS } from '@/utils/constants';
 import { handleApolloError } from '@/utils/error';
 import { ROUTES } from '@/utils/routes';
 import {
@@ -55,6 +58,11 @@ const formSchema = z
   );
 
 const RestoreWalletButton = () => {
+  const [, setValue] = useLocalStorage(LOCALSTORAGE_KEYS.currentWalletId, '');
+
+  const setCurrentContact = useContactStore(s => s.setCurrentContact);
+  const setCurrentPaymentOption = useChat(s => s.setCurrentPaymentOption);
+
   const { toast } = useToast();
 
   const workerRef = useRef<Worker>();
@@ -70,8 +78,15 @@ const RestoreWalletButton = () => {
   const masterKey = useKeyStore(s => s.masterKey);
 
   const [createWallet, { loading: createLoading }] = useCreateWalletMutation({
-    onCompleted: () => {
+    onCompleted: data => {
+      setValue(data.wallets.create.id);
       push(ROUTES.dashboard);
+      setCurrentContact(undefined);
+      setCurrentPaymentOption(undefined);
+
+      toast({
+        title: 'Wallet restored!',
+      });
     },
     onError: err => {
       const messages = handleApolloError(err);
@@ -205,14 +220,14 @@ export function RestoreWallet() {
   if (!masterKey) {
     return (
       <div>
-        <h1 className="mb-2 font-semibold">Restore Wallet</h1>
+        <h1 className="mx-4 mb-2 font-semibold">Restore Wallet</h1>
         <VaultLockedAlert />
       </div>
     );
   }
 
   return (
-    <Card>
+    <Card className="mx-4">
       <CardHeader>
         <CardTitle>Restore Wallet</CardTitle>
         <CardDescription>
