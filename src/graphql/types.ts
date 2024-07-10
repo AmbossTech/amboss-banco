@@ -70,6 +70,7 @@ export type CreateAccountInput = {
 export type CreateContact = {
   __typename?: 'CreateContact';
   id: Scalars['String']['output'];
+  money_address: Scalars['String']['output'];
 };
 
 export type CreateContactInput = {
@@ -233,7 +234,7 @@ export type PayInput = {
 };
 
 export type PayLiquidAddressInput = {
-  fee_rate: Scalars['Float']['input'];
+  fee_rate?: InputMaybe<Scalars['Float']['input']>;
   recipients: Array<LiquidRecipientInput>;
   send_all_lbtc?: InputMaybe<Scalars['Boolean']['input']>;
 };

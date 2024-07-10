@@ -28,8 +28,8 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from './ui/card';
-import { useToast } from './ui/use-toast';
+} from '../ui/card';
+import { useToast } from '../ui/use-toast';
 
 const FormSchema = z.object({
   email: z.string().email().min(5, {
@@ -45,7 +45,7 @@ export function LoginForm() {
 
   const [login] = useLoginMutation({
     onCompleted: () => {
-      window.location.href = ROUTES.app.home;
+      window.location.href = ROUTES.dashboard;
     },
     onError: err => {
       const messages = handleApolloError(err);
@@ -84,7 +84,6 @@ export function LoginForm() {
         },
       });
     } catch (error) {
-      console.error(error);
       toast({
         variant: 'destructive',
         title: 'Error logging in.',

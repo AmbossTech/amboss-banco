@@ -5,7 +5,6 @@ import { wordlist } from '@scure/bip39/wordlists/english';
 import argon2 from 'argon2-browser';
 import { nip44 } from 'nostr-tools';
 
-// Same defaults as those in Bitwarden
 export const ARGON_DEFAULTS = {
   hash_length: 32,
   iterations: 3,

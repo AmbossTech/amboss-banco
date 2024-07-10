@@ -38,28 +38,6 @@ import { numberWithPrecisionAndDecimals } from '@/utils/numbers';
 import { TransactionEntry } from './Wallet';
 
 export const columns: ColumnDef<TransactionEntry>[] = [
-  // {
-  //   id: 'select',
-  //   header: ({ table }) => (
-  //     <Checkbox
-  //       checked={
-  //         table.getIsAllPageRowsSelected() ||
-  //         (table.getIsSomePageRowsSelected() && 'indeterminate')
-  //       }
-  //       onCheckedChange={value => table.toggleAllPageRowsSelected(!!value)}
-  //       aria-label="Select all"
-  //     />
-  //   ),
-  //   cell: ({ row }) => (
-  //     <Checkbox
-  //       checked={row.getIsSelected()}
-  //       onCheckedChange={value => row.toggleSelected(!!value)}
-  //       aria-label="Select row"
-  //     />
-  //   ),
-  //   enableSorting: false,
-  //   enableHiding: false,
-  // },
   {
     accessorKey: 'direction',
     header: '',
@@ -96,21 +74,6 @@ export const columns: ColumnDef<TransactionEntry>[] = [
     header: 'Account',
     cell: ({ row }) => <div className="capitalize">{row.original.name}</div>,
   },
-  // {
-  //   accessorKey: 'email',
-  //   header: ({ column }) => {
-  //     return (
-  //       <Button
-  //         variant="ghost"
-  //         onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-  //       >
-  //         Email
-  //         <ArrowUpDown className="ml-2 h-4 w-4" />
-  //       </Button>
-  //     );
-  //   },
-  //   cell: ({ row }) => <div className="lowercase">{row.getValue('email')}</div>,
-  // },
   {
     accessorKey: 'balance',
     header: () => <div className="text-right">Amount</div>,
@@ -209,9 +172,9 @@ export const TransactionTable: React.FC<{
   });
 
   return (
-    <div className="w-full">
+    <div className="w-full max-w-[calc(100dvw-32px)]">
       <div className="rounded-md border">
-        <Table>
+        <Table className="whitespace-nowrap">
           <TableHeader>
             {table.getHeaderGroups().map(headerGroup => (
               <TableRow key={headerGroup.id}>

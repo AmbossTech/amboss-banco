@@ -8,14 +8,14 @@ import {
   Vault,
 } from 'lucide-react';
 import Link from 'next/link';
-import { FC, ReactNode } from 'react';
+import { FC, ReactNode, useState } from 'react';
 
 import {
   LogoutButton,
   LogoutButtonWithTooltip,
 } from '@/components/button/LogoutButton';
 import { VaultButton } from '@/components/button/VaultButton';
-import { ThemeToggle } from '@/components/ThemeToggle';
+import { ThemeToggle } from '@/components/toggle/ThemeToggle';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import {
@@ -27,10 +27,12 @@ import {
 import { ROUTES } from '@/utils/routes';
 
 import { WalletButton } from '../button/WalletButton';
-import { LanguageToggle } from '../LanguageToggle';
+import { LanguageToggle } from '../toggle/LanguageToggle';
 import { Badge } from '../ui/badge';
 
 export const AppLayout: FC<{ children: ReactNode }> = ({ children }) => {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   return (
     <TooltipProvider>
       <div className="grid h-screen w-full md:pl-[53px]">
@@ -48,7 +50,7 @@ export const AppLayout: FC<{ children: ReactNode }> = ({ children }) => {
                   aria-label="Wallet"
                   asChild
                 >
-                  <Link href={ROUTES.app.home}>
+                  <Link href={ROUTES.dashboard}>
                     <Home className="size-5" />
                   </Link>
                 </Button>
@@ -66,7 +68,7 @@ export const AppLayout: FC<{ children: ReactNode }> = ({ children }) => {
                   aria-label="Wallet"
                   asChild
                 >
-                  <Link href={ROUTES.app.contacts.home}>
+                  <Link href={ROUTES.contacts.home}>
                     <MessageCircle className="size-5" />
                   </Link>
                 </Button>
@@ -100,7 +102,7 @@ export const AppLayout: FC<{ children: ReactNode }> = ({ children }) => {
         </aside>
         <div className="flex flex-col">
           <header className="sticky top-0 z-10 flex h-[53px] items-center justify-between gap-1 border-b bg-background px-4">
-            <Sheet>
+            <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
               <SheetTrigger asChild>
                 <Button
                   variant="outline"
@@ -114,7 +116,8 @@ export const AppLayout: FC<{ children: ReactNode }> = ({ children }) => {
               <SheetContent side="left" className="flex flex-col">
                 <nav className="grid gap-2 font-medium">
                   <Link
-                    href={ROUTES.app.home}
+                    href={ROUTES.dashboard}
+                    onClick={() => setMobileMenuOpen(false)}
                     className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
                   >
                     <Landmark className="h-5 w-5" />
@@ -123,14 +126,27 @@ export const AppLayout: FC<{ children: ReactNode }> = ({ children }) => {
                 </nav>
                 <nav className="grid gap-2 font-medium">
                   <Link
-                    href={ROUTES.app.contacts.home}
+                    href={ROUTES.contacts.home}
+                    onClick={() => setMobileMenuOpen(false)}
                     className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
                   >
                     <MessageCircle className="h-5 w-5" />
                     Chat
                   </Link>
                 </nav>
-                <div className="mt-auto">
+                <div className="mt-auto space-y-2">
+                  <Button
+                    asChild
+                    variant="outline"
+                    className="mt-auto w-full rounded-lg"
+                    aria-label="Help"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <Link href={'mailto:info@amboss.tech'}>
+                      <LifeBuoy className="mr-2 h-5 w-5" />
+                      Help
+                    </Link>
+                  </Button>
                   <LogoutButton />
                 </div>
               </SheetContent>
@@ -163,10 +179,13 @@ export const AppLayout: FC<{ children: ReactNode }> = ({ children }) => {
                 </Button>
               </SheetTrigger>
               <SheetContent side="right" className="flex flex-col">
-                <div className="mt-6 flex gap-2">
+                <div className="mt-6 space-y-2">
+                  <WalletButton />
                   <VaultButton />
-                  <ThemeToggle />
-                  <LanguageToggle />
+                  <div className="flex space-x-2">
+                    <ThemeToggle />
+                    <LanguageToggle />
+                  </div>
                 </div>
               </SheetContent>
             </Sheet>

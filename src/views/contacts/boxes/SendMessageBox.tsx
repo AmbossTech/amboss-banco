@@ -50,13 +50,13 @@ export const SendMessageBox: FC<{ iconOptions?: ReactNode }> = ({
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (sendLoading) return;
+    if (sendLoading || !message) return;
 
     if (!data?.wallets.find_one.contacts.find_one.encryption_pubkey) {
       toast({
         variant: 'default',
         title: 'Unable to send message',
-        description: 'No encryption pubkey found for this contact',
+        description: 'No encryption pubkey found for this contact.',
       });
 
       return;
@@ -66,7 +66,7 @@ export const SendMessageBox: FC<{ iconOptions?: ReactNode }> = ({
       toast({
         variant: 'destructive',
         title: 'Vault Locked',
-        description: 'Unlock your vault to send a message',
+        description: 'Unlock your vault to send a message.',
       });
 
       return;
@@ -76,7 +76,7 @@ export const SendMessageBox: FC<{ iconOptions?: ReactNode }> = ({
       toast({
         variant: 'destructive',
         title: 'No Contact Selected',
-        description: 'Select a contact to send them a message',
+        description: 'Select a contact to send them a message.',
       });
 
       return;
@@ -119,7 +119,7 @@ export const SendMessageBox: FC<{ iconOptions?: ReactNode }> = ({
         {masterKey ? (
           <Button
             type="submit"
-            disabled={isLoading}
+            disabled={isLoading || !message}
             size="sm"
             className="ml-auto gap-1.5"
           >

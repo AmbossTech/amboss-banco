@@ -84,7 +84,7 @@ const BalanceCard: FC<{
       <CardFooter className="flex w-full gap-2">
         <Button size={'sm'} className="w-full">
           <Link
-            href={ROUTES.app.wallet.receive(walletId, accountId)}
+            href={ROUTES.wallet.receive(walletId, accountId)}
             className="flex"
           >
             <ArrowDownToLine className="mr-2 h-4 w-4" />
@@ -93,7 +93,7 @@ const BalanceCard: FC<{
         </Button>
         <Button variant="secondary" size={'sm'} className="w-full">
           <Link
-            href={ROUTES.app.wallet.send.home(walletId, accountId, assetId)}
+            href={ROUTES.wallet.send.home(walletId, accountId, assetId)}
             className="flex"
           >
             <ArrowUpToLine className="mr-2 h-4 w-4" />

@@ -29,7 +29,6 @@ const nextConfig = {
       config.resolve.fallback.fs = false;
     }
 
-    // // Perform customizations to webpack config
     config.plugins.push(
       new webpack.IgnorePlugin({ resourceRegExp: /\/__tests__\// })
     );
@@ -39,7 +38,6 @@ const nextConfig = {
       layers: true,
     };
 
-    // Important: return the modified config
     return config;
   },
 };

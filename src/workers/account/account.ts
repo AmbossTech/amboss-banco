@@ -4,7 +4,7 @@ import {
   secp256k1GenerateProtectedKeyPair,
 } from '@/utils/crypto';
 
-import { createNewWallet } from '../crypto';
+import { createNewWallet } from '../crypto/crypto';
 import {
   CreateAccountResult,
   GenerateMasterKeyAndHashResult,

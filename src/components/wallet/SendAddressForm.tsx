@@ -36,9 +36,9 @@ import {
   PayLiquidAddressMutationVariables,
 } from '@/graphql/mutations/__generated__/pay.generated';
 import { useWalletInfo } from '@/hooks/wallet';
-import { cn } from '@/lib/utils';
 import { useKeyStore } from '@/stores/keys';
 import { toWithError } from '@/utils/async';
+import { cn } from '@/utils/cn';
 import { handleApolloError } from '@/utils/error';
 import { cryptoToUsd } from '@/utils/fiat';
 import {
@@ -217,7 +217,7 @@ export const SendAddressForm: FC<{
             description: `Money has been sent.`,
           });
 
-          push(ROUTES.app.home);
+          push(ROUTES.dashboard);
 
           break;
       }
@@ -244,7 +244,7 @@ export const SendAddressForm: FC<{
       toast({
         variant: 'destructive',
         title: 'Error Sending Money',
-        description: '"Send All" is only possible for BTC',
+        description: '"Send All" is only possible for BTC.',
       });
 
       setStateLoading(false);

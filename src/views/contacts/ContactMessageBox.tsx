@@ -12,8 +12,8 @@ import {
 import { useContactInfo } from '@/hooks/user';
 import { useChat } from '@/stores/contacts';
 
-import { SendMessageBox } from './boxes/MessageBox';
-import { PayMessageBox } from './boxes/PayBox';
+import { PayMessageBox } from './boxes/PayMessageBox';
+import { SendMessageBox } from './boxes/SendMessageBox';
 
 export const ContactMessageBox = () => {
   const {

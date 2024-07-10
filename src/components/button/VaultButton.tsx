@@ -8,8 +8,8 @@ import { z } from 'zod';
 
 import { useCheckPasswordMutation } from '@/graphql/mutations/__generated__/checkPassword.generated';
 import { useUserQuery } from '@/graphql/queries/__generated__/user.generated';
-import { cn } from '@/lib/utils';
 import { useKeyStore } from '@/stores/keys';
+import { cn } from '@/utils/cn';
 import { handleApolloError } from '@/utils/error';
 import { WorkerMessage, WorkerResponse } from '@/workers/account/types';
 
@@ -59,13 +59,9 @@ const UnlockDialogContent: FC<{ callback: () => void }> = ({ callback }) => {
   const { data } = useUserQuery({ errorPolicy: 'ignore' });
 
   const [checkPassword] = useCheckPasswordMutation({
-    onCompleted: data => {
-      if (!data.checkPassword) {
-        // TODO INVALID PASSWORD
-      } else {
-        setMasterKey(tempMasterKey);
-        callback();
-      }
+    onCompleted: () => {
+      setMasterKey(tempMasterKey);
+      callback();
     },
     onError: error => {
       const messages = handleApolloError(error);
@@ -139,7 +135,7 @@ const UnlockDialogContent: FC<{ callback: () => void }> = ({ callback }) => {
       <DialogHeader>
         <DialogTitle>Unlock your vault</DialogTitle>
         <DialogDescription>
-          This will allow you to encrypt and decrypt your private keys
+          This will allow you to send funds and messages.
         </DialogDescription>
       </DialogHeader>
       <Form {...form}>
@@ -235,7 +231,8 @@ export const VaultButton: FC<{
             <DialogHeader>
               <DialogTitle>Lock your vault</DialogTitle>
               <DialogDescription>
-                You will not be able to encrypt or decrypt your private keys
+                You will not be able to send funds or messages until the vault
+                is unlocked with your Master Password.
               </DialogDescription>
             </DialogHeader>
             <DialogFooter className="gap-2 sm:justify-center">

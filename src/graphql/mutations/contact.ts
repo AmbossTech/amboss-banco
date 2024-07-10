@@ -5,6 +5,7 @@ export const CreateContact = gql`
     contacts {
       create(input: $input) {
         id
+        money_address
       }
     }
   }
