@@ -50,7 +50,7 @@ export const SendMessageBox: FC<{ iconOptions?: ReactNode }> = ({
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (sendLoading) return;
+    if (sendLoading || !message) return;
 
     if (!data?.wallets.find_one.contacts.find_one.encryption_pubkey) {
       toast({
@@ -119,7 +119,7 @@ export const SendMessageBox: FC<{ iconOptions?: ReactNode }> = ({
         {masterKey ? (
           <Button
             type="submit"
-            disabled={isLoading}
+            disabled={isLoading || !message}
             size="sm"
             className="ml-auto gap-1.5"
           >
