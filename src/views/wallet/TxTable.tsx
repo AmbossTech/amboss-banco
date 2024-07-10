@@ -172,9 +172,9 @@ export const TransactionTable: React.FC<{
   });
 
   return (
-    <div className="w-full">
+    <div className="w-full max-w-[calc(100dvw-32px)]">
       <div className="rounded-md border">
-        <Table>
+        <Table className="whitespace-nowrap">
           <TableHeader>
             {table.getHeaderGroups().map(headerGroup => (
               <TableRow key={headerGroup.id}>
