@@ -63,7 +63,6 @@ const formSchema = z
     destination: z.string().min(1, { message: 'A destination is mandatory' }),
     assetId: z.string().min(1, { message: 'An asset is mandatory' }),
     amount: z.string(),
-    feeRate: z.string().min(1, { message: 'A fee rate is mandatory' }),
     sendAllBtc: z.boolean(),
   })
   .refine(data => data.sendAllBtc || data.amount, {
@@ -105,7 +104,6 @@ export const SendAddressForm: FC<{
       destination: '',
       assetId,
       amount: '',
-      feeRate: '0.01',
       sendAllBtc: false,
     },
   });
@@ -261,7 +259,6 @@ export const SendAddressForm: FC<{
         variables: {
           addressInput: {
             send_all_lbtc: values.sendAllBtc || undefined,
-            fee_rate: Number(values.feeRate) * 1000,
             recipients: [
               {
                 address: values.destination,
@@ -455,20 +452,6 @@ export const SendAddressForm: FC<{
                 )}
               />
             ) : null}
-
-            <FormField
-              control={form.control}
-              name="feeRate"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{'Fee Rate (sat/vb)'}</FormLabel>
-                  <FormControl>
-                    <Input type="number" autoComplete="off" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
 
             <div className="flex items-center justify-center pt-2">
               {masterKey ? (
