@@ -13,7 +13,6 @@ import {
   RefreshTokenDocument,
   RefreshTokenMutation,
 } from '@/graphql/mutations/__generated__/refreshToken.generated';
-import { ROUTES } from '@/utils/routes';
 
 import { promiseToObservable } from './utils';
 
@@ -79,8 +78,8 @@ const makeClient = (
 
               return promiseToObservable(
                 refreshTokens(serverUrl, accessToken, refreshToken).catch(
-                  () => {
-                    window.location.href = ROUTES.home;
+                  error => {
+                    console.log(error);
                   }
                 )
               ).flatMap(accessToken => {
