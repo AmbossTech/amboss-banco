@@ -20,7 +20,7 @@ export const ExternalHeader = () => {
       <div className="flex items-center justify-center gap-2">
         {loading ? null : data?.user.id ? (
           <Button asChild>
-            <Link href={ROUTES.dashboard}>Go To App</Link>
+            <Link href={ROUTES.dashboard}>Go to App</Link>
           </Button>
         ) : (
           <>
