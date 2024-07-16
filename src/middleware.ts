@@ -26,4 +26,13 @@ export function middleware(request: NextRequest) {
       )
     );
   }
+  if (request.nextUrl.pathname.startsWith('/proxy/api/event')) {
+    const requestHeaders = new Headers(request.headers);
+    requestHeaders.set('cookie', '');
+    return NextResponse.next({
+      request: {
+        headers: requestHeaders,
+      },
+    });
+  }
 }
