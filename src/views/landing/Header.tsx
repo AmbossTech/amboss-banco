@@ -18,11 +18,11 @@ export const Header = () => {
 
   return (
     <header className="mx-auto flex w-full max-w-screen-2xl items-center justify-between gap-4 px-4 py-6 lg:px-14">
-      <Link href={ROUTES.home} className="text-2xl font-bold text-landing">
+      <Link href={ROUTES.home} className="text-2xl font-bold text-black">
         Banco
       </Link>
 
-      <nav className="hidden items-center gap-8 text-base font-semibold text-landing lg:flex xl:gap-16">
+      <nav className="hidden items-center gap-8 text-base font-semibold text-black lg:flex xl:gap-16">
         {links.map(l =>
           l !== 'support' ? (
             <button
@@ -48,7 +48,7 @@ export const Header = () => {
         {loading ? null : data?.user.id ? (
           <Link
             href={ROUTES.dashboard}
-            className="flex h-[42px] w-[104px] items-center justify-center rounded-lg border border-neutral-200 bg-white text-base font-semibold text-landing"
+            className="flex h-[42px] w-[104px] items-center justify-center rounded-lg border border-neutral-200 bg-white text-base font-semibold text-black"
           >
             Go to App
           </Link>
@@ -56,14 +56,14 @@ export const Header = () => {
           <>
             <Link
               href={ROUTES.login}
-              className="flex h-[42px] w-[104px] items-center justify-center text-base font-semibold text-landing"
+              className="flex h-[42px] w-[104px] items-center justify-center text-base font-semibold text-black"
             >
               Login
             </Link>
 
             <Link
               href={ROUTES.signup}
-              className="flex h-[42px] w-[104px] items-center justify-center rounded-lg border border-neutral-200 bg-white text-base font-semibold text-landing"
+              className="flex h-[42px] w-[104px] items-center justify-center rounded-lg border border-neutral-200 bg-white text-base font-semibold text-black"
             >
               Sign up
             </Link>
@@ -74,12 +74,12 @@ export const Header = () => {
       <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
         <SheetTrigger asChild>
           <button className="z-10 lg:hidden">
-            <Menu size={24} className="text-landing" />
+            <Menu size={24} className="text-black" />
           </button>
         </SheetTrigger>
 
-        <SheetContent side="left" className="bg-white text-landing">
-          <nav className="flex flex-col gap-10 text-lg font-semibold text-landing">
+        <SheetContent side="left" className="bg-white text-black">
+          <nav className="flex flex-col gap-10 text-lg font-semibold text-black">
             {links.map(l =>
               l !== 'support' ? (
                 <button
@@ -109,7 +109,7 @@ export const Header = () => {
             {loading ? null : data?.user.id ? (
               <Link
                 href={ROUTES.dashboard}
-                className="flex h-[42px] w-full items-center justify-center rounded-lg border border-neutral-200 bg-white text-base font-semibold text-landing"
+                className="flex h-[42px] w-full items-center justify-center rounded-lg border border-neutral-200 bg-white text-base font-semibold text-black"
               >
                 Go to App
               </Link>
@@ -117,14 +117,14 @@ export const Header = () => {
               <>
                 <Link
                   href={ROUTES.login}
-                  className="flex h-[42px] w-full items-center justify-center text-base font-semibold text-landing"
+                  className="flex h-[42px] w-full items-center justify-center text-base font-semibold text-black"
                 >
                   Login
                 </Link>
 
                 <Link
                   href={ROUTES.signup}
-                  className="flex h-[42px] w-full items-center justify-center rounded-lg border border-neutral-200 bg-white text-base font-semibold text-landing"
+                  className="flex h-[42px] w-full items-center justify-center rounded-lg border border-neutral-200 bg-white text-base font-semibold text-black"
                 >
                   Sign up
                 </Link>

@@ -14,25 +14,20 @@ export const Security = () => {
           />
 
           <p className="absolute bottom-10 left-4 right-4 text-[32px] font-semibold text-white lg:left-10 lg:right-10">
-            Our platform uses advanced encryption to protect your data and
-            ensure your funds are always safe.
+            Our platform uses encryption so that only you have access and
+            control over your money.
           </p>
         </div>
 
         <div className="order-first flex flex-col justify-between gap-4 rounded-2xl bg-slate-100 px-4 py-10 lg:order-last lg:px-10">
           <div>
-            <h2 className="text-6xl font-semibold text-landing/45 lg:text-8xl">
-              Your <span className="block text-primary">security</span>
+            <h2 className="text-6xl font-semibold text-black/45 lg:text-8xl">
+              Security made <span className="block text-primary">simple.</span>
             </h2>
-
-            <h3 className="mt-8 text-4xl font-bold text-landing/45 lg:mt-10 lg:text-[64px]">
-              Our <span className="text-primary">priority</span>
-            </h3>
           </div>
 
-          <h4 className="mt-20 text-2xl font-bold text-landing/45 lg:mt-4 lg:text-5xl lg:!leading-[56px]">
-            <span className="text-landing">Trust us</span> to keep your
-            information <span className="text-landing">secure</span>.
+          <h4 className="mt-20 text-2xl font-bold text-black/45 lg:mt-4 lg:text-5xl lg:!leading-[56px]">
+            <span className="text-black">Safeguard</span> your financial future.
           </h4>
         </div>
       </div>

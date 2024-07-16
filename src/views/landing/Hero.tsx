@@ -26,13 +26,13 @@ export const Hero = () => {
         />
 
         <div>
-          <h1 className="mb-8 text-center text-6xl font-semibold text-landing lg:text-8xl">
-            Banking for Everyone
+          <h1 className="mb-8 text-center text-6xl font-bold text-black lg:text-8xl">
+            Your Money, Your Way.
           </h1>
 
-          <p className="mb-12 text-center text-lg font-semibold text-landing/85 lg:text-xl">
-            Join the revolution in digital banking. Simple, secure, and open
-            source.
+          <p className="mb-12 text-center text-lg font-semibold text-black/85 lg:text-xl">
+            Pay and get paid in dollars and bitcoin. Simple, secure and always
+            in your control.
           </p>
 
           <Image
@@ -47,7 +47,7 @@ export const Hero = () => {
               placeholder="Enter your email"
               value={email}
               onChange={e => setEmail(e.target.value)}
-              className="mb-2 h-12 w-full rounded-lg border border-neutral-200 bg-white px-4 py-2 text-base text-landing placeholder:text-landing/45 lg:mb-0 lg:h-14 lg:pr-48"
+              className="mb-2 h-12 w-full rounded-lg border border-neutral-200 bg-white px-4 py-2 text-base text-black placeholder:text-black/45 lg:mb-0 lg:h-14 lg:pr-48"
             />
 
             <Link

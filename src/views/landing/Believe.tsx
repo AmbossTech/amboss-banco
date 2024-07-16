@@ -36,31 +36,31 @@ export const Believe = () => {
           Banco
         </h2>
 
-        <h3 className="max-w-2xl text-4xl font-semibold text-landing/65 lg:w-1/2 lg:text-5xl">
-          We believe that everyone should have access to the financial sector.{' '}
+        <h3 className="max-w-2xl text-4xl font-semibold text-black/65 lg:w-1/2 lg:text-5xl">
+          Access global finance in four simple steps.
         </h3>
       </div>
 
       <div className="grid w-full gap-4 lg:grid-cols-2">
         <Card
-          title="Sign up"
+          title="1. Sign up"
           subtitle="Create your account with just an email and a password."
           image={manPhone}
         />
         <Card
-          title="Set up lightning address"
-          subtitle="Get your unique Lightning Address for seamless transactions."
-          image={womanCard}
+          title="2. Share your lightning address"
+          subtitle="Connect with friends and family."
+          image={groupPhone}
         />
         <Card
-          title="Secure your account"
-          subtitle="Enable encryption for messages and secure your funds."
+          title="3. Get paid"
+          subtitle="Receive dollars or bitcoin in seconds."
           image={womanPhone}
         />
         <Card
-          title="Start banking"
-          subtitle="Enjoy banking without boundaries. Manage your funds with full control."
-          image={groupPhone}
+          title="4. Start banco-ing"
+          subtitle="Enjoy banking without boundaries and full control."
+          image={womanCard}
         />
       </div>
     </section>

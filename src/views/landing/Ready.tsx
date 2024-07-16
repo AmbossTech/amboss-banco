@@ -17,11 +17,11 @@ export const Ready = () => {
         />
 
         <div>
-          <h2 className="text-center text-4xl font-bold text-landing lg:text-5xl">
+          <h2 className="text-center text-4xl font-bold text-black lg:text-5xl">
             Ready to Experience the Future of Banking?
           </h2>
 
-          <h3 className="mb-8 mt-4 text-center text-xl font-semibold text-landing/85 lg:text-2xl">
+          <h3 className="mb-8 mt-4 text-center text-xl font-semibold text-black/85 lg:text-2xl">
             Join Banco today and take control of your financial future.
           </h3>
 

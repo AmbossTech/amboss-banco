@@ -14,9 +14,9 @@ const Card: FC<{ title: string; subtitle: string; image: StaticImageData }> = ({
   return (
     <div className="flex flex-col justify-between rounded-2xl bg-neutral-100 px-4 pt-8 lg:px-12 lg:pt-20">
       <div>
-        <h4 className="mb-2 text-4xl font-semibold text-landing">{title}</h4>
+        <h4 className="mb-2 text-4xl font-semibold text-black">{title}</h4>
 
-        <p className="text-lg font-medium text-landing/65">{subtitle}</p>
+        <p className="text-lg font-medium text-black/65">{subtitle}</p>
       </div>
 
       <Image src={image} alt="graphic" className="mx-auto mt-8" />
@@ -27,32 +27,32 @@ const Card: FC<{ title: string; subtitle: string; image: StaticImageData }> = ({
 export const Why = () => {
   return (
     <section className="mt-28 w-full scroll-mt-16 px-4 lg:px-14" id="features">
-      <h2 className="mb-10 text-5xl font-semibold text-landing/45 lg:text-[88px]">
+      <h2 className="mb-10 text-5xl font-semibold text-black/45 lg:text-[88px]">
         Why choose{' '}
-        <span className="mt-4 block text-7xl font-medium text-landing lg:mt-0 lg:inline lg:text-9xl">
+        <span className="mt-4 block text-7xl font-medium text-black lg:mt-0 lg:inline lg:text-9xl">
           Banco?
         </span>
       </h2>
 
       <div className="grid w-full gap-4 lg:grid-cols-2">
         <Card
-          title="Easy and simple"
+          title="Simple Security"
           subtitle="Banco is designed to be user-friendly. No complicated hoops to jump through. Banking made easy for everyone."
-          image={why1}
-        />
-        <Card
-          title="Full control of funds"
-          subtitle="You are in complete control of your money. No one else can access or move your funds without your permission."
           image={why2}
         />
         <Card
-          title="Lightning address"
-          subtitle="Receive payments with ease. Your Banco account comes with a 'Lightning Address' for simple and quick transactions."
+          title="Total Control"
+          subtitle="No third parties can access or control your funds without your explicit permission."
+          image={why1}
+        />
+        <Card
+          title="Instant Payments"
+          subtitle="Receive and send payments with ease. Your Banco account comes with a 'Lightning Address' for simple and quick transactions."
           image={why3}
         />
         <Card
-          title="Encrypted messaging"
-          subtitle="Send encrypted messages to your contacts securely through Banco. Your privacy is our priority."
+          title="Private messaging"
+          subtitle="Send encrypted messages to your contacts securely through Banco."
           image={why4}
         />
       </div>

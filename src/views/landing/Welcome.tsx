@@ -18,7 +18,7 @@ export const Welcome = () => {
           </h2>
 
           <h2 className="max-w-[600px] text-3xl font-semibold !leading-snug text-white/85 lg:text-5xl">
-            Empowering the Unbanked with Financial Freedom
+            Your gateway to secure and simple banking.
           </h2>
         </div>
       </div>

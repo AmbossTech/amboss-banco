@@ -11,14 +11,14 @@ export const OpenSource = () => {
       <div className="grid w-full gap-4 lg:grid-cols-2">
         <div className="flex w-full flex-col justify-between">
           <div>
-            <h3 className="mb-10 text-5xl font-bold text-landing/85">
+            <h3 className="mb-10 text-5xl font-bold text-black/85">
               Join our open source community
             </h3>
 
             <a
               href={ROUTES.external.github}
               target="_blank"
-              className="flex w-fit items-center justify-center space-x-2 rounded-lg bg-neutral-100 px-4 py-3 text-base font-semibold text-landing"
+              className="flex w-fit items-center justify-center space-x-2 rounded-lg bg-neutral-100 px-4 py-3 text-base font-semibold text-black"
             >
               <Github size={16} /> <span className="block">Visit GitHub</span>
             </a>
