@@ -66,7 +66,7 @@ export const columns: ColumnDef<TransactionEntry>[] = [
           </p>
         </div>
       ) : (
-        '-'
+        'Pending'
       ),
   },
   {
