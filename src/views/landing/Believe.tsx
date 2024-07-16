@@ -59,7 +59,7 @@ export const Believe = () => {
         />
         <Card
           title="4. Start banco-ing"
-          subtitle="Enjoy banking without boundaries and full control."
+          subtitle="Send money securely with complete freedom."
           image={womanCard}
         />
       </div>
