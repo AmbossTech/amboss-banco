@@ -7,6 +7,7 @@ import { wordlist } from '@scure/bip39/wordlists/english';
 import stringEntropy from 'fast-password-entropy';
 import { Copy, CopyCheck, Eye, EyeOff, Loader2 } from 'lucide-react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useCopyToClipboard } from 'usehooks-ts';
@@ -75,6 +76,9 @@ const FormSchema = z
   });
 
 export function SignUpForm() {
+  const searchParams = useSearchParams();
+  const emailParam = searchParams.get('email');
+
   const { toast } = useToast();
 
   const client = useApolloClient();
@@ -91,7 +95,7 @@ export function SignUpForm() {
     reValidateMode: 'onChange',
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      email: '',
+      email: emailParam || '',
       password: '',
       password_hint: '',
       confirm_password: '',

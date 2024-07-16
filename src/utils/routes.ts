@@ -27,4 +27,9 @@ export const ROUTES = {
       restore: '/setup/wallet/restore',
     },
   },
+  external: {
+    github: 'https://github.com/AmbossTech/amboss-banco',
+    x: 'https://x.com/ambosstech',
+    support: 'mailto:support@amboss.tech',
+  },
 };
