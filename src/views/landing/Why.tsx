@@ -51,7 +51,7 @@ export const Why = () => {
           image={why3}
         />
         <Card
-          title="Private messaging"
+          title="Private Messaging"
           subtitle="Send encrypted messages to your contacts securely through Banco."
           image={why4}
         />
