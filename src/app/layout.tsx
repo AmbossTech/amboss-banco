@@ -5,6 +5,7 @@ import { Noto_Sans } from 'next/font/google';
 import { cookies } from 'next/headers';
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getMessages } from 'next-intl/server';
+import PlausibleProvider from 'next-plausible';
 
 import { Toaster } from '@/components/ui/toaster';
 import { ApolloWrapper } from '@/lib/apollo/wrapper';
@@ -27,6 +28,8 @@ export default async function RootLayout({
   const cookieStore = cookies();
 
   const serverUrl = `${process.env.URL}/api/graphql`;
+  const enablePlausible = process.env.ENABLE_PLAUSIBLE === 'true';
+  const plausibleURL = process.env.PLAUSIBLE_DOMAIN || 'mibanco.app';
 
   const accessToken = cookieStore.get('amboss_banco_access_token')?.value;
   const refreshToken = cookieStore.get('amboss_banco_refresh_token')?.value;
@@ -36,6 +39,11 @@ export default async function RootLayout({
 
   return (
     <html lang={locale} suppressHydrationWarning>
+      {enablePlausible ? (
+        <head>
+          <PlausibleProvider domain={plausibleURL} />
+        </head>
+      ) : null}
       <body className={font.className}>
         <NextIntlClientProvider messages={messages}>
           <ThemeProvider

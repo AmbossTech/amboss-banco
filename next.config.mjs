@@ -1,4 +1,5 @@
 import createNextIntlPlugin from 'next-intl/plugin';
+import { withPlausibleProxy } from 'next-plausible';
 
 const withNextIntl = createNextIntlPlugin();
 
@@ -42,4 +43,4 @@ const nextConfig = {
   },
 };
 
-export default withNextIntl(nextConfig);
+export default withPlausibleProxy()(withNextIntl(nextConfig));
