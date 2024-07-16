@@ -66,7 +66,7 @@ export const columns: ColumnDef<TransactionEntry>[] = [
           </p>
         </div>
       ) : (
-        '-'
+        'Pending'
       ),
   },
   {
@@ -85,15 +85,13 @@ export const columns: ColumnDef<TransactionEntry>[] = [
         row.original.precision
       );
 
-      return row.original.date ? (
+      return (
         <div className="text-right">
           {row.original.formatted_balance}
           <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
             {`${formatted} ${row.original.ticker}`}
           </p>
         </div>
-      ) : (
-        <div className="text-right font-medium">{`${formatted} ${row.original.ticker}`}</div>
       );
     },
   },
