@@ -1,5 +1,7 @@
 import { create } from 'zustand';
 
+import { PaymentOptionCode } from '@/graphql/types';
+
 type Contact = {
   id: string;
   user: string;
@@ -20,7 +22,7 @@ export const useContactStore = create<ContactState>()(set => ({
 export type PaymentOption = {
   id: string;
   name: string;
-  code: string;
+  code: PaymentOptionCode;
   network: string;
   symbol: string;
   max_sendable: number | null;

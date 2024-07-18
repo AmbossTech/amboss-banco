@@ -37,6 +37,7 @@ import {
   PayLightningAddressMutation,
   PayLightningAddressMutationVariables,
 } from '@/graphql/mutations/__generated__/pay.generated';
+import { PaymentOptionCode } from '@/graphql/types';
 import { useSendMessage } from '@/hooks/message';
 import { useContactInfo } from '@/hooks/user';
 import { useWalletInfo } from '@/hooks/wallet';
@@ -55,8 +56,10 @@ import {
   CryptoWorkerResponse,
 } from '@/workers/crypto/types';
 
-const formatNumber = (value: string) => {
-  return value ? numberWithPrecisionAndDecimals(value, 0) : value;
+const formatNumber = (value: number, ticker: PaymentOptionCode) => {
+  const minimumFractionDigits = ticker === PaymentOptionCode.Usdt ? 2 : 0;
+
+  return value.toLocaleString(undefined, { minimumFractionDigits });
 };
 
 export const PayMessageBox: FC<{
@@ -78,13 +81,9 @@ export const PayMessageBox: FC<{
 
   const walletInfo = useWalletInfo();
 
-  const [inputValue, setInputValue] = useState<{
-    number: number;
-    formattedNumber: string;
-  }>({
-    number: 0,
-    formattedNumber: '',
-  });
+  const [inputValue, setInputValue] = useState<number | string>('');
+
+  useEffect(() => setInputValue(''), [currentContact]);
 
   const {
     protected_encryption_private_key,
@@ -97,10 +96,7 @@ export const PayMessageBox: FC<{
   );
 
   const cbk = useCallback(() => {
-    setInputValue({
-      number: 0,
-      formattedNumber: '',
-    });
+    setInputValue('');
     setLoading(false);
   }, []);
 
@@ -110,32 +106,29 @@ export const PayMessageBox: FC<{
     loading || contactLoading || walletInfo.loading || sendLoading;
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    if (isLoading) return;
+    const numberValue =
+      currentPaymentOption.code === PaymentOptionCode.Usdt
+        ? e.target.value.split('.')[1]?.length > 2
+          ? Number(e.target.value.slice(0, 4))
+          : Number(e.target.value)
+        : Number(e.target.value);
 
-    const value = e.target.value.replace(/\D/g, '');
+    if (numberValue < 0) return;
 
-    const numberValue = Number(value);
+    if (
+      currentPaymentOption.code !== PaymentOptionCode.Usdt &&
+      !Number.isInteger(numberValue)
+    )
+      return;
 
-    const { max_sendable } = currentPaymentOption;
-
-    if (!!max_sendable && numberValue > Number(max_sendable)) {
-      setInputValue({
-        number: Number(max_sendable),
-        formattedNumber: formatNumber(max_sendable + ''),
-      });
-    } else {
-      setInputValue({
-        number: numberValue,
-        formattedNumber: formatNumber(value),
-      });
-    }
+    setInputValue(numberValue || '');
   };
 
   const totalFee = useMemo(() => {
     const { min_sendable, variable_fee_percentage, fixed_fee } =
       currentPaymentOption;
 
-    const inputAmount = Math.max(Number(min_sendable || 0), inputValue.number);
+    const inputAmount = Math.max(Number(min_sendable || 0), Number(inputValue));
 
     const size = new Big(inputAmount);
 
@@ -172,7 +165,7 @@ export const PayMessageBox: FC<{
           },
           addressInput: {
             address: currentContact.address,
-            amount: inputValue.number * 10 ** currentPaymentOption.decimals,
+            amount: Number(inputValue) * 10 ** currentPaymentOption.decimals,
             payment_option: {
               code: currentPaymentOption.code,
               network: currentPaymentOption.network,
@@ -278,7 +271,7 @@ export const PayMessageBox: FC<{
 
           const fiatAmount = cryptoToUsd(
             numberWithoutPrecision(
-              inputValue.number,
+              inputValue,
               currentAsset.asset_info.precision
             )?.toString() || '0',
             currentAsset.asset_info.precision,
@@ -286,7 +279,7 @@ export const PayMessageBox: FC<{
             currentAsset.fiat_info.fiat_to_btc
           );
 
-          const amount = `${inputValue.formattedNumber} ${currentAsset.asset_info.ticker}`;
+          const amount = `${formatNumber(Number(inputValue), currentPaymentOption.code)} ${currentAsset.asset_info.ticker}`;
 
           sendMessage({
             contact_id: currentContact.id,
@@ -320,6 +313,7 @@ export const PayMessageBox: FC<{
     protected_encryption_private_key,
     currentAsset,
     inputValue,
+    currentPaymentOption.code,
     cbk,
   ]);
 
@@ -349,10 +343,7 @@ export const PayMessageBox: FC<{
                       currentAsset.asset_info.precision || 0
                     ) || 0;
 
-                  setInputValue({
-                    number: withPrecision,
-                    formattedNumber: formatNumber(withPrecision + ''),
-                  });
+                  setInputValue(withPrecision);
                 }}
               >
                 <Badge variant={'outline'}>
@@ -363,11 +354,11 @@ export const PayMessageBox: FC<{
                 </Badge>
               </button>
 
-              {inputValue.number ? (
+              {inputValue ? (
                 <Badge variant={'outline'}>
                   {cryptoToUsd(
                     numberWithoutPrecision(
-                      inputValue.number,
+                      inputValue,
                       currentAsset.asset_info.precision
                     )?.toString() || '0',
                     currentAsset.asset_info.precision,
@@ -390,8 +381,11 @@ export const PayMessageBox: FC<{
             Message
           </Label>
           <Input
+            type="number"
+            min={currentPaymentOption.min_sendable || undefined}
+            max={currentPaymentOption.max_sendable || undefined}
             autoComplete="off"
-            value={inputValue.formattedNumber}
+            value={inputValue}
             onChange={handleChange}
             disabled={isLoading}
             placeholder="Type the amount you want to send here..."
@@ -457,9 +451,7 @@ export const PayMessageBox: FC<{
           {masterKey ? (
             <Button
               type="submit"
-              disabled={
-                isLoading || !currentPaymentOption || !inputValue.number
-              }
+              disabled={isLoading || !currentPaymentOption || !inputValue}
               size="sm"
               className="ml-auto gap-1.5"
             >
