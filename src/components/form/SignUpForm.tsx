@@ -55,6 +55,7 @@ const FormSchema = z
     password: z.string(),
     confirm_password: z.string(),
     password_hint: z.string().optional(),
+    referral_code: z.string().min(1, { message: 'Required.' }),
     accept_tos_and_pp: z.boolean(),
     accept_condition_1: z.boolean(),
   })
@@ -78,6 +79,7 @@ const FormSchema = z
 export function SignUpForm() {
   const searchParams = useSearchParams();
   const emailParam = searchParams.get('email');
+  const referralParam = searchParams.get('referral');
 
   const { toast } = useToast();
 
@@ -99,6 +101,7 @@ export function SignUpForm() {
       password: '',
       password_hint: '',
       confirm_password: '',
+      referral_code: referralParam || '',
       accept_tos_and_pp: false,
       accept_condition_1: false,
     },
@@ -120,6 +123,7 @@ export function SignUpForm() {
           email: data.email,
           password,
           password_hint: data.password_hint,
+          referral_code: data.referral_code,
         },
       };
 
@@ -323,6 +327,26 @@ export function SignUpForm() {
                   <FormDescription>
                     <strong>Important: </strong>
                     The password hint will be stored in clear text.
+                  </FormDescription>
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="referral_code"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Referral Code</FormLabel>
+                  <FormControl>
+                    <Input placeholder="36b8f84d" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                  <FormDescription>
+                    Banco signups are currently available by invitation only.
+                    <br />
+                    Please enter your invite code to complete the signup
+                    process.
                   </FormDescription>
                 </FormItem>
               )}
