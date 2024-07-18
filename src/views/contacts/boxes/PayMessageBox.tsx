@@ -106,10 +106,12 @@ export const PayMessageBox: FC<{
     loading || contactLoading || walletInfo.loading || sendLoading;
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const fractionSplit = e.target.value.split('.');
+
     const numberValue =
       currentPaymentOption.code === PaymentOptionCode.Usdt
-        ? e.target.value.split('.')[1]?.length > 2
-          ? Number(e.target.value.slice(0, 4))
+        ? fractionSplit[1]?.length > 2
+          ? Number(e.target.value.slice(0, fractionSplit[0].length + 3))
           : Number(e.target.value)
         : Number(e.target.value);
 
