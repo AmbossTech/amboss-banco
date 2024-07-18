@@ -15,7 +15,8 @@ import {
 async function generateAccount(
   email: string,
   password: string,
-  password_hint?: string
+  password_hint?: string,
+  referral_code?: string
 ): Promise<CreateAccountResult> {
   const masterKey = await argon2Hash(password, email);
   const masterPasswordHash = await argon2Hash(masterKey, password);
@@ -31,6 +32,7 @@ async function generateAccount(
     email,
     master_password_hash: masterPasswordHash,
     password_hint: password_hint || undefined,
+    referral_code: referral_code || undefined,
     protected_symmetric_key: protectedSymmetricKey,
     secp256k1_key_pair: {
       public_key: publicKey,
@@ -58,13 +60,14 @@ self.onmessage = async e => {
   switch (message.type) {
     case 'create': {
       const {
-        payload: { email, password, password_hint },
+        payload: { email, password, password_hint, referral_code },
       } = message;
 
       const accountParams = await generateAccount(
         email,
         password,
-        password_hint
+        password_hint,
+        referral_code
       );
 
       const response: WorkerResponse = {
