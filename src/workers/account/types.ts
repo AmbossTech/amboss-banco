@@ -4,6 +4,7 @@ export type CreateAccount = {
   email: string;
   password: string;
   password_hint?: string;
+  referral_code?: string;
 };
 
 export type GenerateMasterKeyAndHash = {
@@ -25,6 +26,7 @@ export type CreateAccountResult = {
   email: string;
   master_password_hash: string;
   password_hint: string | undefined;
+  referral_code: string | undefined;
   protected_symmetric_key: string;
   secp256k1_key_pair: {
     public_key: string;
