@@ -339,10 +339,7 @@ export function SignUpForm() {
                 <FormItem>
                   <FormLabel>Referral Code</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="36b8f84d"
-                      {...field}
-                    />
+                    <Input placeholder="36b8f84d" {...field} />
                   </FormControl>
                   <FormMessage />
                   <FormDescription>
