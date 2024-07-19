@@ -1,12 +1,17 @@
 'use client';
 
+import { ColumnDef } from '@tanstack/react-table';
+import { format, formatDistanceToNowStrict } from 'date-fns';
 import { sortBy } from 'lodash';
 import {
+  ArrowDown,
   ArrowDownToLine,
+  ArrowUp,
   ArrowUpToLine,
   Bitcoin,
   DollarSign,
   Loader2,
+  MoreHorizontal,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
@@ -20,11 +25,19 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { useGetWalletQuery } from '@/graphql/queries/__generated__/wallet.generated';
 import { cryptoToUsd } from '@/utils/fiat';
 import { numberWithPrecisionAndDecimals } from '@/utils/numbers';
 import { ROUTES } from '@/utils/routes';
-import { TransactionTable } from '@/views/wallet/TxTable';
+import { SimpleTable } from '@/views/wallet/SimpleTable';
 
 type AssetBalance = {
   accountId: string;
@@ -104,6 +117,111 @@ const BalanceCard: FC<{
     </Card>
   );
 };
+
+export const columns: ColumnDef<TransactionEntry>[] = [
+  {
+    accessorKey: 'direction',
+    header: '',
+    cell: ({ row }) => {
+      const balance = Number(row.original.balance);
+      return balance < 0 ? (
+        <div>
+          <ArrowUp className="size-4" color={'red'} />
+        </div>
+      ) : (
+        <div>
+          <ArrowDown className="size-4" color={'green'} />
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: 'date',
+    header: 'Date',
+    cell: ({ row }) =>
+      row.original.date ? (
+        <div>
+          {`${formatDistanceToNowStrict(row.original.date)} ago`}
+          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+            {format(row.original.date, 'MMM do, yyyy - HH:mm')}
+          </p>
+        </div>
+      ) : (
+        'Pending'
+      ),
+  },
+  {
+    accessorKey: 'asset',
+    header: 'Account',
+    cell: ({ row }) => <div className="capitalize">{row.original.name}</div>,
+  },
+  {
+    accessorKey: 'balance',
+    header: () => <div className="text-right">Amount</div>,
+    cell: ({ row }) => {
+      const amount = parseFloat(row.getValue('balance'));
+
+      const formatted = numberWithPrecisionAndDecimals(
+        amount,
+        row.original.precision
+      );
+
+      return (
+        <div className="text-right">
+          {row.original.formatted_balance}
+          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+            {`${formatted} ${row.original.ticker}`}
+          </p>
+        </div>
+      );
+    },
+  },
+  {
+    id: 'actions',
+    enableHiding: false,
+    cell: ({ row }) => {
+      const payment = row.original;
+
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 p-0">
+              <span className="sr-only">Open menu</span>
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={() => navigator.clipboard.writeText(payment.id)}
+            >
+              Copy ID
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => navigator.clipboard.writeText(payment.tx_id)}
+            >
+              Copy Transaction ID
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={() => navigator.clipboard.writeText(payment.blinded_url)}
+            >
+              Copy Blinded URL
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() =>
+                navigator.clipboard.writeText(payment.unblinded_url)
+              }
+            >
+              Copy Unblinded URL
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      );
+    },
+  },
+];
 
 export const WalletInfo: FC<{ id: string }> = ({ id }) => {
   const t = useTranslations('Index');
@@ -207,7 +325,7 @@ export const WalletInfo: FC<{ id: string }> = ({ id }) => {
       <h2 className="scroll-m-20 pb-2 pt-6 text-xl font-semibold tracking-tight first:mt-0">
         {t('transactions')}
       </h2>
-      <TransactionTable data={transactions} />
+      <SimpleTable<TransactionEntry> data={transactions} columns={columns} />
     </div>
   );
 };

@@ -1,4 +1,5 @@
 import {
+  ArrowLeftRight,
   Home,
   Landmark,
   LifeBuoy,
@@ -78,6 +79,24 @@ export const AppLayout: FC<{ children: ReactNode }> = ({ children }) => {
                 Contacts
               </TooltipContent>
             </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="rounded-lg"
+                  aria-label="Swaps"
+                  asChild
+                >
+                  <Link href={ROUTES.swaps.home}>
+                    <ArrowLeftRight className="size-5" />
+                  </Link>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="right" sideOffset={5}>
+                Swaps
+              </TooltipContent>
+            </Tooltip>
           </nav>
           <nav className="mt-auto grid gap-1 p-2">
             <Tooltip>
@@ -151,6 +170,16 @@ export const AppLayout: FC<{ children: ReactNode }> = ({ children }) => {
                   >
                     <MessageCircle className="h-5 w-5" />
                     Chat
+                  </Link>
+                </nav>
+                <nav className="grid gap-2 font-medium">
+                  <Link
+                    href={ROUTES.swaps.home}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
+                  >
+                    <ArrowLeftRight className="h-5 w-5" />
+                    Swaps
                   </Link>
                 </nav>
                 <div className="mt-auto space-y-2">
