@@ -29,6 +29,12 @@ export type Scalars = {
   Float: { input: number; output: number };
 };
 
+export type AmbossInfo = {
+  __typename?: 'AmbossInfo';
+  id: Scalars['String']['output'];
+  referral_codes: Array<ReferralCode>;
+};
+
 export type BroadcastLiquidTransaction = {
   __typename?: 'BroadcastLiquidTransaction';
   tx_id: Scalars['String']['output'];
@@ -181,6 +187,16 @@ export type LnUrlCurrency = {
   variable_fee_percentage: Scalars['String']['output'];
 };
 
+export type LnUrlInfo = {
+  __typename?: 'LnUrlInfo';
+  id: Scalars['String']['output'];
+  payment_options: Array<LnUrlCurrency>;
+};
+
+export type LnUrlInfoInput = {
+  money_address: Scalars['String']['input'];
+};
+
 export type LoginInput = {
   email: Scalars['String']['input'];
   master_password_hash: Scalars['String']['input'];
@@ -280,7 +296,12 @@ export type PayNetworkSwapInput = {
 
 export type PayQueries = {
   __typename?: 'PayQueries';
+  lnurl_info: LnUrlInfo;
   network_swap_quote: SwapQuote;
+};
+
+export type PayQueriesLnurl_InfoArgs = {
+  input: LnUrlInfoInput;
 };
 
 export type PayQueriesNetwork_Swap_QuoteArgs = {
@@ -320,6 +341,15 @@ export type ReceiveSwapInput = {
   deposit_coin: SwapCoin;
   deposit_network: SwapNetwork;
   wallet_account_id: Scalars['String']['input'];
+};
+
+export type ReferralCode = {
+  __typename?: 'ReferralCode';
+  code: Scalars['String']['output'];
+  current_uses: Scalars['Float']['output'];
+  id: Scalars['String']['output'];
+  is_available: Scalars['Boolean']['output'];
+  max_allowed_uses: Scalars['Float']['output'];
 };
 
 export type RefreshToken = {
@@ -363,13 +393,18 @@ export type SignUpInput = {
   master_password_hash: Scalars['String']['input'];
   password_hint?: InputMaybe<Scalars['String']['input']>;
   protected_symmetric_key: Scalars['String']['input'];
+  referral_code?: InputMaybe<Scalars['String']['input']>;
   secp256k1_key_pair: Secp256k1KeyPairInput;
   wallet?: InputMaybe<CreateWalletInput>;
 };
 
 export type SimpleSwap = {
   __typename?: 'SimpleSwap';
+  created_at: Scalars['String']['output'];
+  from: Scalars['String']['output'];
   id: Scalars['String']['output'];
+  provider: Scalars['String']['output'];
+  to: Scalars['String']['output'];
 };
 
 export type SimpleWallet = {
@@ -426,6 +461,7 @@ export type SwapQuoteInput = {
 
 export type User = {
   __typename?: 'User';
+  amboss?: Maybe<AmbossInfo>;
   default_wallet_id?: Maybe<Scalars['String']['output']>;
   email: Scalars['String']['output'];
   id: Scalars['String']['output'];
