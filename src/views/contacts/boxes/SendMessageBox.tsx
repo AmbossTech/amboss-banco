@@ -27,7 +27,7 @@ export const SendMessageBox: FC<{ iconOptions?: ReactNode }> = ({
 
   const { toast } = useToast();
 
-  const masterKey = useKeyStore(s => s.masterKey);
+  const keys = useKeyStore(s => s.keys);
 
   const currentContact = useContactStore(s => s.currentContact);
 
@@ -62,7 +62,7 @@ export const SendMessageBox: FC<{ iconOptions?: ReactNode }> = ({
       return;
     }
 
-    if (!masterKey) {
+    if (!keys) {
       toast({
         variant: 'destructive',
         title: 'Vault Locked',
@@ -87,7 +87,7 @@ export const SendMessageBox: FC<{ iconOptions?: ReactNode }> = ({
       protectedPrivateKey:
         data.wallets.find_one.secp256k1_key_pair
           .protected_encryption_private_key,
-      masterKey,
+      keys,
       receiver_pubkey:
         data.wallets.find_one.contacts.find_one.encryption_pubkey,
       receiver_money_address:
@@ -116,7 +116,7 @@ export const SendMessageBox: FC<{ iconOptions?: ReactNode }> = ({
       <div className="flex items-center p-3 pt-0">
         {iconOptions}
 
-        {masterKey ? (
+        {!!keys ? (
           <Button
             type="submit"
             disabled={isLoading || !message}

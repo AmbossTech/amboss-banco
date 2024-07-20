@@ -9,6 +9,7 @@ import {
   SendMessageMutationVariables,
 } from '@/graphql/mutations/__generated__/contact.generated';
 import { GetWalletContactMessagesDocument } from '@/graphql/queries/__generated__/contacts.generated';
+import { KeysType } from '@/stores/keys';
 import { toWithError } from '@/utils/async';
 import { LOCALSTORAGE_KEYS } from '@/utils/constants';
 import { handleApolloError } from '@/utils/error';
@@ -100,14 +101,14 @@ export const useSendMessage = (cbk: () => void) => {
 
   const sendMessage = async ({
     contact_id,
-    masterKey,
+    keys,
     protectedPrivateKey,
     receiver_pubkey,
     receiver_money_address,
     message,
   }: {
     contact_id: string;
-    masterKey: string;
+    keys: KeysType;
     protectedPrivateKey: string;
     receiver_pubkey: string | undefined | null;
     receiver_money_address: string;
@@ -123,7 +124,7 @@ export const useSendMessage = (cbk: () => void) => {
         payload: {
           contact_id,
           protectedPrivateKey,
-          masterKey,
+          keys,
           receiver_pubkey,
           receiver_money_address,
           message,

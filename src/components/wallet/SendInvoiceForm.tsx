@@ -117,7 +117,7 @@ export const SendInvoiceForm: FC<{
 
   const [loading, setLoading] = useState(true);
 
-  const masterKey = useKeyStore(s => s.masterKey);
+  const keys = useKeyStore(s => s.keys);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -231,7 +231,7 @@ export const SendInvoiceForm: FC<{
     if (
       !result.data?.pay.lightning_invoice ||
       !walletInfo.protected_mnemonic ||
-      !masterKey
+      !keys
     ) {
       setLoading(false);
       return;
@@ -249,7 +249,7 @@ export const SendInvoiceForm: FC<{
         mnemonic: walletInfo.protected_mnemonic,
         descriptor: result.data.pay.lightning_invoice.wallet_account.descriptor,
         pset: result.data.pay.lightning_invoice.base_64,
-        masterKey,
+        keys,
       },
     };
 
@@ -285,7 +285,7 @@ export const SendInvoiceForm: FC<{
             <Decoded invoice={watchInvoice[0]} />
 
             <div className="flex items-center justify-center">
-              {masterKey ? (
+              {!!keys ? (
                 <Button type="submit" disabled={loading} className="w-full">
                   {loading ? (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />

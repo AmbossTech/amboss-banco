@@ -1,15 +1,17 @@
+import { KeysType } from '@/stores/keys';
+
 export type CryptoWorkerMessage =
   | {
       type: 'newWallet';
       payload: {
-        masterKey: string;
+        keys: KeysType;
       };
     }
   | {
       type: 'restoreWallet';
       payload: {
         mnemonic: string;
-        masterKey: string;
+        keys: KeysType;
       };
     }
   | {
@@ -18,7 +20,7 @@ export type CryptoWorkerMessage =
         wallet_account_id: string;
         mnemonic: string;
         descriptor: string;
-        masterKey: string;
+        keys: KeysType;
         pset: string;
       };
     }
@@ -26,7 +28,7 @@ export type CryptoWorkerMessage =
       type: 'decryptMnemonic';
       payload: {
         protectedMnemonic: string;
-        masterKey: string;
+        keys: KeysType;
       };
     }
   | {
@@ -34,7 +36,7 @@ export type CryptoWorkerMessage =
       payload: {
         contact_id: string;
         protectedPrivateKey: string;
-        masterKey: string;
+        keys: KeysType;
         receiver_pubkey: string | null | undefined;
         receiver_money_address: string;
         message: string;
@@ -44,7 +46,7 @@ export type CryptoWorkerMessage =
       type: 'decryptMessages';
       payload: {
         protectedPrivateKey: string;
-        masterKey: string;
+        keys: KeysType;
         messages: {
           id: string;
           contact_is_sender: boolean;

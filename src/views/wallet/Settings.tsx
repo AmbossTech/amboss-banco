@@ -114,7 +114,7 @@ const WalletMnemonic: FC<{ walletId: string }> = ({ walletId }) => {
   const [protectedMnemonic, setProtectedMnemonic] = useState('');
   const [mnemonic, setMnemonic] = useState('');
 
-  const masterKey = useKeyStore(s => s.masterKey);
+  const keys = useKeyStore(s => s.keys);
 
   const { data, loading: walletLoading } = useGetWalletDetailsQuery({
     variables: { id: walletId },
@@ -142,6 +142,14 @@ const WalletMnemonic: FC<{ walletId: string }> = ({ walletId }) => {
         case 'decryptMnemonic':
           setMnemonic(message.payload.mnemonic);
           break;
+        case 'error':
+          toast({
+            variant: 'destructive',
+            title: 'Error decrypting mnemonic.',
+            description: `Please reach out to support. ${message.msg}`,
+          });
+
+          break;
       }
 
       setLoading(false);
@@ -158,7 +166,7 @@ const WalletMnemonic: FC<{ walletId: string }> = ({ walletId }) => {
   }, []);
 
   const handleDecrypt = () => {
-    if (!masterKey) return;
+    if (!keys) return;
     if (!data?.wallets.find_one.details.protected_mnemonic) return;
 
     setLoading(true);
@@ -168,7 +176,7 @@ const WalletMnemonic: FC<{ walletId: string }> = ({ walletId }) => {
         type: 'decryptMnemonic',
         payload: {
           protectedMnemonic: data.wallets.find_one.details.protected_mnemonic,
-          masterKey,
+          keys,
         },
       };
 
@@ -190,12 +198,12 @@ const WalletMnemonic: FC<{ walletId: string }> = ({ walletId }) => {
             readOnly
             defaultValue={protectedMnemonic}
           />
-          {!masterKey ? (
+          {!keys ? (
             <VaultButton lockedTitle="Unlock to Decrypt" />
           ) : (
             <Button
               className="w-40"
-              disabled={loading || !!mnemonic || !masterKey}
+              disabled={loading || !!mnemonic || !keys}
               onClick={() => handleDecrypt()}
             >
               Decrypt
@@ -214,7 +222,7 @@ const WalletMnemonic: FC<{ walletId: string }> = ({ walletId }) => {
             placeholder="Clear text Mnemonic"
           />
           <Button
-            disabled={loading || !mnemonic || !masterKey}
+            disabled={loading || !mnemonic || !keys}
             onClick={() => copyMnemonic(mnemonic)}
             size={'icon'}
             className="px-2"
@@ -228,7 +236,7 @@ const WalletMnemonic: FC<{ walletId: string }> = ({ walletId }) => {
           </Button>
           <Button
             className="w-40"
-            disabled={loading || !mnemonic || !masterKey}
+            disabled={loading || !mnemonic || !keys}
             onClick={() => setMnemonic('')}
           >
             Clear Memory

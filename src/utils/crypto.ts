@@ -5,6 +5,8 @@ import { wordlist } from '@scure/bip39/wordlists/english';
 import argon2 from 'argon2-browser';
 import { nip44 } from 'nostr-tools';
 
+import { KeysType } from '@/stores/keys';
+
 export const ARGON_DEFAULTS = {
   hash_length: 32,
   iterations: 3,
@@ -28,7 +30,30 @@ export const uint8arrayToUtf8 = (str: Uint8Array): string => {
   return decoder.decode(str);
 };
 
-export const secp256k1GenerateProtectedKeyPair = (masterKey: string) => {
+export const generateMasterKeyAndHash = async ({
+  email,
+  password,
+}: {
+  email: string;
+  password: string;
+}): Promise<{ masterKey: string; masterPasswordHash: string }> => {
+  const masterKey = await argon2Hash({ key: password, salt: email });
+  const masterPasswordHash = await argon2Hash({
+    key: masterKey,
+    salt: password,
+  });
+
+  return {
+    masterKey,
+    masterPasswordHash,
+  };
+};
+
+export const secp256k1GenerateProtectedKeyPair = ({
+  symmetricKey,
+}: {
+  symmetricKey: string;
+}) => {
   const privateKey = utils.randomPrivateKey();
   const publicKey = getPublicKey(privateKey);
 
@@ -36,7 +61,7 @@ export const secp256k1GenerateProtectedKeyPair = (masterKey: string) => {
 
   const protectedPrivateKey = nip44.v2.encrypt(
     privateKeyHex,
-    hexToBytes(masterKey)
+    hexToBytes(symmetricKey)
   );
 
   return {
@@ -45,9 +70,16 @@ export const secp256k1GenerateProtectedKeyPair = (masterKey: string) => {
   };
 };
 
-export const generateNewMnemonic = (masterKey: string) => {
+export const generateNewMnemonic = ({
+  symmetricKey,
+}: {
+  symmetricKey: string;
+}) => {
   const mnemonic = generateMnemonic(wordlist);
-  const protectedMnemonic = nip44.v2.encrypt(mnemonic, hexToBytes(masterKey));
+  const protectedMnemonic = nip44.v2.encrypt(
+    mnemonic,
+    hexToBytes(symmetricKey)
+  );
 
   return {
     mnemonic,
@@ -55,8 +87,17 @@ export const generateNewMnemonic = (masterKey: string) => {
   };
 };
 
-export const restoreMnemonic = (mnemonic: string, masterKey: string) => {
-  const protectedMnemonic = nip44.v2.encrypt(mnemonic, hexToBytes(masterKey));
+export const restoreMnemonic = ({
+  mnemonic,
+  symmetricKey,
+}: {
+  mnemonic: string;
+  symmetricKey: string;
+}) => {
+  const protectedMnemonic = nip44.v2.encrypt(
+    mnemonic,
+    hexToBytes(symmetricKey)
+  );
 
   return {
     mnemonic,
@@ -64,10 +105,13 @@ export const restoreMnemonic = (mnemonic: string, masterKey: string) => {
   };
 };
 
-export const argon2Hash = async (
-  key: string,
-  salt: string
-): Promise<string> => {
+export const argon2Hash = async ({
+  key,
+  salt,
+}: {
+  key: string;
+  salt: string;
+}): Promise<string> => {
   const hashedPasswordHash = await argon2.hash({
     pass: key,
     salt,
@@ -81,13 +125,24 @@ export const argon2Hash = async (
   return hashedPasswordHash.hashHex;
 };
 
-export const createProtectedSymmetricKey = (masterKey: string): string => {
-  const symmetricKey = Buffer.from(randomBytes(64));
+export const createProtectedSymmetricKey = ({
+  masterKey,
+}: {
+  masterKey: string;
+}): { symmetricKey: string; protectedSymmetricKey: string } => {
+  const symmetricKey = Buffer.from(randomBytes(64)).toString('hex');
 
   const protectedSymmetricKey = nip44.v2.encrypt(
-    symmetricKey.toString('hex'),
+    symmetricKey,
     hexToBytes(masterKey)
   );
 
-  return protectedSymmetricKey;
+  return { symmetricKey, protectedSymmetricKey };
+};
+
+export const decryptSymmetricKey = (keys: KeysType): string => {
+  return nip44.v2.decrypt(
+    keys.protectedSymmetricKey,
+    hexToBytes(keys.masterKey)
+  );
 };

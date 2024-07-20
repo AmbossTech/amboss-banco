@@ -74,7 +74,7 @@ export const PayMessageBox: FC<{
 
   const [loading, setLoading] = useState<boolean>(false);
 
-  const masterKey = useKeyStore(s => s.masterKey);
+  const keys = useKeyStore(s => s.keys);
   const currentContact = useContactStore(s => s.currentContact);
 
   const setCurrentPaymentOption = useChat(s => s.setCurrentPaymentOption);
@@ -193,7 +193,7 @@ export const PayMessageBox: FC<{
     if (
       !result.data?.pay.money_address ||
       !walletInfo.protected_mnemonic ||
-      !masterKey
+      !keys
     ) {
       setLoading(false);
       return;
@@ -211,7 +211,7 @@ export const PayMessageBox: FC<{
         mnemonic: walletInfo.protected_mnemonic,
         descriptor: result.data.pay.money_address.wallet_account.descriptor,
         pset: result.data.pay.money_address.base_64,
-        masterKey,
+        keys,
       },
     };
 
@@ -261,12 +261,7 @@ export const PayMessageBox: FC<{
             description: `Money has been sent to this contact.`,
           });
 
-          if (
-            !currentContact?.id ||
-            !masterKey ||
-            !money_address ||
-            !currentAsset
-          ) {
+          if (!currentContact?.id || !keys || !money_address || !currentAsset) {
             cbk();
             return;
           }
@@ -286,7 +281,7 @@ export const PayMessageBox: FC<{
           sendMessage({
             contact_id: currentContact.id,
             protectedPrivateKey: protected_encryption_private_key,
-            masterKey,
+            keys,
             receiver_pubkey: encryption_pubkey,
             receiver_money_address: money_address,
             message: `${fiatAmount} (${amount})`,
@@ -308,7 +303,7 @@ export const PayMessageBox: FC<{
     client,
     toast,
     currentContact,
-    masterKey,
+    keys,
     sendMessage,
     encryption_pubkey,
     money_address,
@@ -450,7 +445,7 @@ export const PayMessageBox: FC<{
         <div className="flex items-center p-3 pt-0">
           {iconOptions}
 
-          {masterKey ? (
+          {!!keys ? (
             <Button
               type="submit"
               disabled={isLoading || !currentPaymentOption || !inputValue}

@@ -5,6 +5,7 @@ export const User = gql`
     user {
       id
       email
+      protected_symmetric_key
       default_wallet_id
     }
   }

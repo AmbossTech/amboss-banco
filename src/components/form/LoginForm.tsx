@@ -18,7 +18,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useLoginMutation } from '@/graphql/mutations/__generated__/login.generated';
-import { argon2Hash } from '@/utils/crypto';
+import { generateMasterKeyAndHash } from '@/utils/crypto';
 import { handleApolloError } from '@/utils/error';
 import { ROUTES } from '@/utils/routes';
 
@@ -72,8 +72,10 @@ export function LoginForm() {
 
     setLoading(true);
     try {
-      const masterKey = await argon2Hash(data.password, data.email);
-      const masterPasswordHash = await argon2Hash(masterKey, data.password);
+      const { masterPasswordHash } = await generateMasterKeyAndHash({
+        email: data.email,
+        password: data.password,
+      });
 
       login({
         variables: {

@@ -40,7 +40,7 @@ const NewWalletButton = () => {
   const workerRef = useRef<Worker>();
   const { push } = useRouter();
 
-  const masterKey = useKeyStore(s => s.masterKey);
+  const keys = useKeyStore(s => s.keys);
 
   const [createWallet, { loading: createLoading }] = useCreateWalletMutation({
     onCompleted: data => {
@@ -72,7 +72,7 @@ const NewWalletButton = () => {
 
   const handleCreate = async () => {
     if (isLoading) return;
-    if (!masterKey) {
+    if (!keys) {
       return;
     }
 
@@ -82,7 +82,7 @@ const NewWalletButton = () => {
       const message: CryptoWorkerMessage = {
         type: 'newWallet',
         payload: {
-          masterKey,
+          keys,
         },
       };
 
@@ -141,9 +141,9 @@ const NewWalletButton = () => {
 };
 
 export function NewWallet() {
-  const masterKey = useKeyStore(s => s.masterKey);
+  const keys = useKeyStore(s => s.keys);
 
-  if (!masterKey) {
+  if (!keys) {
     return (
       <div>
         <h1 className="mx-2 mb-2 font-semibold">Create New Wallet</h1>
