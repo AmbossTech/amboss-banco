@@ -1,14 +1,20 @@
 'use client';
 
+import { ApolloError, useApolloClient } from '@apollo/client';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2, Lock, Unlock } from 'lucide-react';
 import { FC, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import { useCheckPasswordMutation } from '@/graphql/mutations/__generated__/checkPassword.generated';
+import {
+  CheckPasswordDocument,
+  CheckPasswordMutation,
+  CheckPasswordMutationVariables,
+} from '@/graphql/mutations/__generated__/checkPassword.generated';
 import { useUserQuery } from '@/graphql/queries/__generated__/user.generated';
 import { useKeyStore } from '@/stores/keys';
+import { toWithError } from '@/utils/async';
 import { cn } from '@/utils/cn';
 import { handleApolloError } from '@/utils/error';
 import { WorkerMessage, WorkerResponse } from '@/workers/account/types';
@@ -42,6 +48,8 @@ const formSchema = z.object({
 const UnlockDialogContent: FC<{ callback: () => void }> = ({ callback }) => {
   const workerRef = useRef<Worker>();
 
+  const client = useApolloClient();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -51,35 +59,24 @@ const UnlockDialogContent: FC<{ callback: () => void }> = ({ callback }) => {
 
   const { toast } = useToast();
 
-  const setMasterKey = useKeyStore(s => s.setMasterKey);
+  const setKeys = useKeyStore(s => s.setKeys);
 
   const [loading, setLoading] = useState(true);
-  const [tempMasterKey, setTempMasterKey] = useState('');
 
-  const { data } = useUserQuery({ errorPolicy: 'ignore' });
-
-  const [checkPassword] = useCheckPasswordMutation({
-    onCompleted: () => {
-      setMasterKey(tempMasterKey);
-      callback();
-    },
-    onError: error => {
-      const messages = handleApolloError(error);
-
-      toast({
-        variant: 'destructive',
-        title: 'Unable to unlock.',
-        description: messages.join(', '),
-      });
-
-      setTempMasterKey('');
-      form.reset();
-    },
-  });
+  const { data, loading: userLoading, error } = useUserQuery();
 
   const handleSubmit = (values: z.infer<typeof formSchema>) => {
     setLoading(true);
-    if (loading || !data?.user.email || !workerRef.current) {
+
+    if (
+      loading ||
+      userLoading ||
+      error ||
+      !data?.user.email ||
+      !data?.user.protected_symmetric_key ||
+      !workerRef.current
+    ) {
+      setLoading(false);
       return;
     }
 
@@ -88,6 +85,7 @@ const UnlockDialogContent: FC<{ callback: () => void }> = ({ callback }) => {
       payload: {
         email: data.user.email,
         password: values.password,
+        protectedSymmetricKey: data.user.protected_symmetric_key,
       },
     };
 
@@ -99,18 +97,41 @@ const UnlockDialogContent: FC<{ callback: () => void }> = ({ callback }) => {
       new URL('../../workers/account/account.ts', import.meta.url)
     );
 
-    workerRef.current.onmessage = event => {
+    workerRef.current.onmessage = async event => {
       const message: WorkerResponse = event.data;
 
       switch (message.type) {
-        case 'generateMaster':
-          setTempMasterKey(message.payload.masterKey);
+        case 'generateMaster': {
+          const [, error] = await toWithError(
+            client.mutate<
+              CheckPasswordMutation,
+              CheckPasswordMutationVariables
+            >({
+              mutation: CheckPasswordDocument,
+              variables: { password: message.payload.masterPasswordHash },
+            })
+          );
 
-          checkPassword({
-            variables: { password: message.payload.masterPasswordHash },
-          });
+          if (error) {
+            const messages = handleApolloError(error as ApolloError);
+
+            toast({
+              variant: 'destructive',
+              title: 'Unable to unlock.',
+              description: messages.join(', '),
+            });
+
+            form.reset();
+          } else {
+            setKeys({
+              masterKey: message.payload.masterKey,
+              protectedSymmetricKey: message.payload.protectedSymmetricKey,
+            });
+            callback();
+          }
 
           break;
+        }
 
         case 'loaded':
           setLoading(false);
@@ -128,7 +149,7 @@ const UnlockDialogContent: FC<{ callback: () => void }> = ({ callback }) => {
     return () => {
       if (workerRef.current) workerRef.current.terminate();
     };
-  }, [checkPassword]);
+  }, [client, toast, callback, form, setKeys]);
 
   return (
     <>
@@ -189,7 +210,7 @@ export const VaultButton: FC<{
   className?: string;
   size?: 'sm';
 }> = ({ lockedTitle = 'Locked', className, size }) => {
-  const masterKey = useKeyStore(s => s.masterKey);
+  const keys = useKeyStore(s => s.keys);
 
   const clearKeys = useKeyStore(s => s.clear);
 
@@ -203,7 +224,7 @@ export const VaultButton: FC<{
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        {!!masterKey ? (
+        {!!keys ? (
           <Button
             type="button"
             variant="outline"
@@ -226,7 +247,7 @@ export const VaultButton: FC<{
         )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
-        {!!masterKey ? (
+        {!!keys ? (
           <>
             <DialogHeader>
               <DialogTitle>Lock your vault</DialogTitle>

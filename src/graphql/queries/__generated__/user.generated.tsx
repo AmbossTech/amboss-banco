@@ -14,6 +14,7 @@ export type UserQuery = {
     __typename?: 'User';
     id: string;
     email: string;
+    protected_symmetric_key: string;
     default_wallet_id?: string | null;
   };
 };
@@ -23,6 +24,7 @@ export const UserDocument = gql`
     user {
       id
       email
+      protected_symmetric_key
       default_wallet_id
     }
   }

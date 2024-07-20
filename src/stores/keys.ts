@@ -1,13 +1,15 @@
 import { create } from 'zustand';
 
+export type KeysType = { masterKey: string; protectedSymmetricKey: string };
+
 type KeyState = {
-  masterKey: string | undefined;
-  setMasterKey: (masterKey: string) => void;
+  keys: KeysType | undefined;
+  setKeys: (keys: KeysType) => void;
   clear: () => void;
 };
 
 export const useKeyStore = create<KeyState>()(set => ({
-  masterKey: undefined,
-  setMasterKey: (masterKey: string) => set({ masterKey }),
-  clear: () => set({ masterKey: undefined }),
+  keys: undefined,
+  setKeys: (keys: KeysType) => set({ keys }),
+  clear: () => set({ keys: undefined }),
 }));

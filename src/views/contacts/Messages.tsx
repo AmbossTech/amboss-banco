@@ -34,7 +34,7 @@ export const Messages = () => {
 
   const [workerLoaded, setWorkerLoaded] = useState<boolean>(false);
 
-  const masterKey = useKeyStore(s => s.masterKey);
+  const keys = useKeyStore(s => s.keys);
 
   const [value] = useLocalStorage(LOCALSTORAGE_KEYS.currentWalletId, '');
 
@@ -69,7 +69,7 @@ export const Messages = () => {
   }, [messages]);
 
   useEffect(() => {
-    if (!masterKey) return;
+    if (!keys) return;
     if (!workerLoaded) return;
     if (loading || error) return;
     if (!data?.wallets.find_one.contacts.find_one.messages.length) return;
@@ -80,7 +80,7 @@ export const Messages = () => {
       const workerMessage: CryptoWorkerMessage = {
         type: 'decryptMessages',
         payload: {
-          masterKey,
+          keys,
           messages: contacts.find_one.messages,
           protectedPrivateKey:
             secp256k1_key_pair.protected_encryption_private_key,
@@ -89,7 +89,7 @@ export const Messages = () => {
 
       workerRef.current.postMessage(workerMessage);
     }
-  }, [loading, error, data, workerLoaded, masterKey]);
+  }, [loading, error, data, workerLoaded, keys]);
 
   useEffect(() => {
     workerRef.current = new Worker(

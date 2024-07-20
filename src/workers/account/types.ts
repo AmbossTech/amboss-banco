@@ -7,11 +7,6 @@ export type CreateAccount = {
   referral_code?: string;
 };
 
-export type GenerateMasterKeyAndHash = {
-  email: string;
-  password: string;
-};
-
 export type WorkerMessage =
   | {
       type: 'create';
@@ -19,7 +14,11 @@ export type WorkerMessage =
     }
   | {
       type: 'generateMaster';
-      payload: GenerateMasterKeyAndHash;
+      payload: {
+        email: string;
+        password: string;
+        protectedSymmetricKey: string;
+      };
     };
 
 export type CreateAccountResult = {
@@ -35,11 +34,6 @@ export type CreateAccountResult = {
   wallet: CryptoNewWalletPayload;
 };
 
-export type GenerateMasterKeyAndHashResult = {
-  masterKey: string;
-  masterPasswordHash: string;
-};
-
 export type WorkerResponse =
   | {
       type: 'create';
@@ -47,6 +41,11 @@ export type WorkerResponse =
     }
   | {
       type: 'generateMaster';
-      payload: GenerateMasterKeyAndHashResult;
+      payload: {
+        masterKey: string;
+        masterPasswordHash: string;
+        protectedSymmetricKey: string;
+      };
     }
-  | { type: 'loaded' };
+  | { type: 'loaded' }
+  | { type: 'error'; msg: string };

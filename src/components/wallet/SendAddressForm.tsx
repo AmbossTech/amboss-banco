@@ -96,7 +96,7 @@ export const SendAddressForm: FC<{
 
   const [stateLoading, setStateLoading] = useState(false);
 
-  const masterKey = useKeyStore(s => s.masterKey);
+  const keys = useKeyStore(s => s.keys);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -290,7 +290,7 @@ export const SendAddressForm: FC<{
       return;
     }
 
-    if (!result.data?.pay.liquid_address || !protected_mnemonic || !masterKey) {
+    if (!result.data?.pay.liquid_address || !protected_mnemonic || !keys) {
       setStateLoading(false);
       return;
     }
@@ -307,7 +307,7 @@ export const SendAddressForm: FC<{
         mnemonic: protected_mnemonic,
         descriptor: result.data.pay.liquid_address.wallet_account.descriptor,
         pset: result.data.pay.liquid_address.base_64,
-        masterKey,
+        keys,
       },
     };
 
@@ -454,7 +454,7 @@ export const SendAddressForm: FC<{
             ) : null}
 
             <div className="flex items-center justify-center pt-2">
-              {masterKey ? (
+              {!!keys ? (
                 <Button type="submit" disabled={loading} className="w-full">
                   {loading ? (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />

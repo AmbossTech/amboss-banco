@@ -75,7 +75,7 @@ const RestoreWalletButton = () => {
     },
   });
 
-  const masterKey = useKeyStore(s => s.masterKey);
+  const keys = useKeyStore(s => s.keys);
 
   const [createWallet, { loading: createLoading }] = useCreateWalletMutation({
     onCompleted: data => {
@@ -107,7 +107,7 @@ const RestoreWalletButton = () => {
 
   const handleSubmit = async (formData: z.infer<typeof formSchema>) => {
     if (isLoading) return;
-    if (!masterKey || !formData.mnemonic) {
+    if (!keys || !formData.mnemonic) {
       return;
     }
 
@@ -118,7 +118,7 @@ const RestoreWalletButton = () => {
         type: 'restoreWallet',
         payload: {
           mnemonic: formData.mnemonic,
-          masterKey,
+          keys,
         },
       };
 
@@ -215,9 +215,9 @@ const RestoreWalletButton = () => {
 };
 
 export function RestoreWallet() {
-  const masterKey = useKeyStore(s => s.masterKey);
+  const keys = useKeyStore(s => s.keys);
 
-  if (!masterKey) {
+  if (!keys) {
     return (
       <div>
         <h1 className="mx-4 mb-2 font-semibold">Restore Wallet</h1>
