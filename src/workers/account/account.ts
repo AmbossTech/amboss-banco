@@ -13,18 +13,20 @@ async function generateAccount(
   password_hint?: string,
   referral_code?: string
 ): Promise<CreateAccountResult> {
-  const { masterKey, masterPasswordHash } = await generateMasterKeyAndHash(
+  const { masterKey, masterPasswordHash } = await generateMasterKeyAndHash({
     email,
-    password
-  );
+    password,
+  });
 
-  const { symmetricKey, protectedSymmetricKey } =
-    createProtectedSymmetricKey(masterKey);
+  const { symmetricKey, protectedSymmetricKey } = createProtectedSymmetricKey({
+    masterKey,
+  });
 
-  const { publicKey, protectedPrivateKey } =
-    secp256k1GenerateProtectedKeyPair(symmetricKey);
+  const { publicKey, protectedPrivateKey } = secp256k1GenerateProtectedKeyPair({
+    symmetricKey,
+  });
 
-  const wallet = await createNewWallet(symmetricKey);
+  const wallet = await createNewWallet({ symmetricKey });
 
   return {
     email,
@@ -72,7 +74,7 @@ self.onmessage = async e => {
           payload: { email, password, protectedSymmetricKey },
         } = message;
 
-        const result = await generateMasterKeyAndHash(email, password);
+        const result = await generateMasterKeyAndHash({ email, password });
 
         const response: WorkerResponse = {
           type: 'generateMaster',

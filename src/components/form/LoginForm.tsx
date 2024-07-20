@@ -72,10 +72,10 @@ export function LoginForm() {
 
     setLoading(true);
     try {
-      const { masterPasswordHash } = await generateMasterKeyAndHash(
-        data.email,
-        data.password
-      );
+      const { masterPasswordHash } = await generateMasterKeyAndHash({
+        email: data.email,
+        password: data.password,
+      });
 
       login({
         variables: {

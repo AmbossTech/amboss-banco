@@ -27,13 +27,16 @@ import {
   CryptoWorkerResponse,
 } from './types';
 
-export const createNewWallet = async (
-  symmetricKey: string
-): Promise<CryptoNewWalletPayload> => {
-  const { mnemonic, protectedMnemonic } = generateNewMnemonic(symmetricKey);
+export const createNewWallet = async ({
+  symmetricKey,
+}: {
+  symmetricKey: string;
+}): Promise<CryptoNewWalletPayload> => {
+  const { mnemonic, protectedMnemonic } = generateNewMnemonic({ symmetricKey });
 
-  const { publicKey, protectedPrivateKey } =
-    secp256k1GenerateProtectedKeyPair(symmetricKey);
+  const { publicKey, protectedPrivateKey } = secp256k1GenerateProtectedKeyPair({
+    symmetricKey,
+  });
 
   const liquidDescriptor = await generateLiquidDescriptor(mnemonic);
 
@@ -83,7 +86,7 @@ self.onmessage = async e => {
 
         const symmetricKey = decryptSymmetricKey(keys);
 
-        const payload = await createNewWallet(symmetricKey);
+        const payload = await createNewWallet({ symmetricKey });
 
         const response: CryptoWorkerResponse = {
           type: 'newWallet',
@@ -100,13 +103,13 @@ self.onmessage = async e => {
 
         const symmetricKey = decryptSymmetricKey(keys);
 
-        const { mnemonic, protectedMnemonic } = restoreMnemonic(
-          message.payload.mnemonic,
-          symmetricKey
-        );
+        const { mnemonic, protectedMnemonic } = restoreMnemonic({
+          mnemonic: message.payload.mnemonic,
+          symmetricKey,
+        });
 
         const { publicKey, protectedPrivateKey } =
-          secp256k1GenerateProtectedKeyPair(symmetricKey);
+          secp256k1GenerateProtectedKeyPair({ symmetricKey });
 
         const [liquidDescriptor, error] = await toWithError(
           generateLiquidDescriptor(mnemonic)

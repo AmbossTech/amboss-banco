@@ -34,7 +34,7 @@ export default function Page() {
     setLoading(true);
 
     try {
-      const { masterKey } = await generateMasterKeyAndHash(email, password);
+      const { masterKey } = await generateMasterKeyAndHash({ email, password });
 
       const decrypted = nip44.v2.decrypt(
         protectedMnemonic,
