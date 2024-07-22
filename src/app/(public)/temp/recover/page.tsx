@@ -2,18 +2,15 @@
 
 import { hexToBytes } from '@noble/hashes/utils';
 import { nip44 } from 'nostr-tools';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
-import { useUserQuery } from '@/graphql/queries/__generated__/user.generated';
 import { generateMasterKeyAndHash } from '@/utils/crypto';
 
 export default function Page() {
-  const { data } = useUserQuery();
-
   const { toast } = useToast();
 
   const [email, setEmail] = useState<string>('');
@@ -21,12 +18,6 @@ export default function Page() {
   const [protectedMnemonic, setProtectedMnemonic] = useState<string>('');
   const [mnemonic, setMnemonic] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
-
-  useEffect(() => {
-    if (!!email) return;
-    if (!data?.user.email) return;
-    setEmail(data.user.email);
-  }, [data, email]);
 
   const decrypt = useCallback(async () => {
     if (loading) return;
@@ -56,7 +47,8 @@ export default function Page() {
   }, [email, loading, password, protectedMnemonic, toast]);
 
   return (
-    <div className="my-4 flex flex-col gap-4">
+    <div className="my-4 flex w-full flex-col gap-4">
+      <h1 className="font-semibold">Recover your Mnemonic</h1>
       <div>
         <Label>Email</Label>
         <Input
