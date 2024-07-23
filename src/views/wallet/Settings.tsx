@@ -312,6 +312,39 @@ export const WalletSettings: FC<{ walletId: string }> = ({ walletId }) => {
       </Section>
 
       <WalletMnemonic walletId={walletId} />
+
+      <Section
+        title="Details"
+        description="Technical information about your wallet, helpful for advanced recovery."
+      >
+        {!data?.wallets.find_one.accounts.length ? (
+          <p className="text-sm text-muted-foreground">No accounts found.</p>
+        ) : (
+          data.wallets.find_one.accounts.map((a, i) => {
+            return (
+              <div key={i}>
+                <Label htmlFor="descriptor">
+                  <span className="capitalize">
+                    {a.account_type.toLowerCase()}
+                  </span>{' '}
+                  Descriptor
+                </Label>
+                <div className="flex gap-2">
+                  <Input id="descriptor" readOnly defaultValue={a.descriptor} />
+                  <Button onClick={() => copy(a.descriptor)}>
+                    {copiedText === a.descriptor ? 'Copied' : 'Copy'}
+                    {copiedText === a.descriptor ? (
+                      <CopyCheck className="ml-2 size-4" color="green" />
+                    ) : (
+                      <Copy className="ml-2 size-4" />
+                    )}
+                  </Button>
+                </div>
+              </div>
+            );
+          })
+        )}
+      </Section>
     </div>
   );
 };
