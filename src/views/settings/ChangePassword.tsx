@@ -247,7 +247,7 @@ export const ChangePassword = () => {
         }}
       >
         <DialogTrigger asChild>
-          <Button className="mx-auto w-full md:w-fit">Change Password</Button>
+          <Button className="w-full md:w-fit">Change Password</Button>
         </DialogTrigger>
 
         <DialogContent className="sm:max-w-md">
