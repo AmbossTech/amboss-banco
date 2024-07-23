@@ -111,9 +111,10 @@ self.onmessage = async e => {
           },
         } = message;
 
-        const keys = { protectedSymmetricKey, masterKey };
-
-        const symmetricKey = decryptSymmetricKey(keys);
+        const symmetricKey = decryptSymmetricKey({
+          protectedSymmetricKey,
+          masterKey,
+        });
 
         const result = await generateMasterKeyAndHash({
           email,
