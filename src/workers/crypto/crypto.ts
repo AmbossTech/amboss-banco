@@ -54,9 +54,9 @@ const generateLiquidDescriptor = async (mnemonic: string) => {
   const network = Network.mainnet();
 
   const signer = new Signer(new Mnemonic(mnemonic), network);
-  const wolletDescriptor = signer.wpkhSlip77Descriptor().toString();
+  const walletDescriptor = signer.wpkhSlip77Descriptor().toString();
 
-  return wolletDescriptor;
+  return walletDescriptor;
 };
 
 const signPset = (mnemonic: string, descriptor: string, pset: string) => {
@@ -67,11 +67,11 @@ const signPset = (mnemonic: string, descriptor: string, pset: string) => {
   const psetFromBase64 = new Pset(pset);
   const signedPset = signer.sign(psetFromBase64);
 
-  const wolletDescriptor = new WolletDescriptor(descriptor);
+  const walletDescriptor = new WolletDescriptor(descriptor);
 
-  const wollet = new Wollet(network, wolletDescriptor);
+  const wallet = new Wollet(network, walletDescriptor);
 
-  const finalizedPset = wollet.finalize(signedPset);
+  const finalizedPset = wallet.finalize(signedPset);
 
   return finalizedPset.toString();
 };

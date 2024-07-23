@@ -3,6 +3,7 @@ export const ROUTES = {
   signup: '/sign-up',
   login: '/login',
   dashboard: '/dashboard',
+  settings: '/settings',
   wallet: {
     home: '/wallet',
     settings: (id: string) => `/wallet/${id}/settings`,

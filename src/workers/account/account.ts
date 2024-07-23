@@ -1,5 +1,7 @@
 import {
+  changeProtectedSymmetricKey,
   createProtectedSymmetricKey,
+  decryptSymmetricKey,
   generateMasterKeyAndHash,
   secp256k1GenerateProtectedKeyPair,
 } from '@/utils/crypto';
@@ -71,14 +73,66 @@ self.onmessage = async e => {
 
       case 'generateMaster': {
         const {
-          payload: { email, password, protectedSymmetricKey },
+          payload: {
+            email,
+            password,
+            protectedSymmetricKey,
+            newPassword,
+            passwordHint,
+          },
         } = message;
 
         const result = await generateMasterKeyAndHash({ email, password });
 
         const response: WorkerResponse = {
           type: 'generateMaster',
-          payload: { ...result, protectedSymmetricKey },
+          payload: {
+            ...result,
+            protectedSymmetricKey,
+            newPassword,
+            passwordHint,
+          },
+        };
+
+        self.postMessage(response);
+
+        break;
+      }
+
+      case 'changePassword': {
+        const {
+          payload: {
+            email,
+            newPassword,
+            passwordHint,
+            protectedSymmetricKey,
+            masterKey,
+            masterKeyHash,
+          },
+        } = message;
+
+        const keys = { protectedSymmetricKey, masterKey };
+
+        const symmetricKey = decryptSymmetricKey(keys);
+
+        const result = await generateMasterKeyAndHash({
+          email,
+          password: newPassword,
+        });
+
+        const newProtectedSymmetricKey = changeProtectedSymmetricKey({
+          symmetricKey,
+          masterKey: result.masterKey,
+        });
+
+        const response: WorkerResponse = {
+          type: 'changePassword',
+          payload: {
+            masterPasswordHash: masterKeyHash,
+            newMasterPasswordHash: result.masterPasswordHash,
+            newProtectedSymmetricKey,
+            passwordHint,
+          },
         };
 
         self.postMessage(response);

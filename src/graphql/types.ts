@@ -45,6 +45,13 @@ export type BroadcastLiquidTransactionInput = {
   wallet_account_id: Scalars['String']['input'];
 };
 
+export type ChangePasswordInput = {
+  current_master_password_hash: Scalars['String']['input'];
+  new_master_password_hash: Scalars['String']['input'];
+  new_password_hint?: InputMaybe<Scalars['String']['input']>;
+  new_protected_symmetric_key: Scalars['String']['input'];
+};
+
 export type ContactMessage = {
   __typename?: 'ContactMessage';
   contact_is_sender: Scalars['Boolean']['output'];
@@ -211,18 +218,14 @@ export type MoneyAddress = {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  checkPassword: Scalars['Boolean']['output'];
   contacts: ContactMutations;
   login: NewAccount;
   logout: Scalars['Boolean']['output'];
+  password: PasswordMutations;
   pay: PayMutations;
   refreshToken: RefreshToken;
   signUp: NewAccount;
   wallets: WalletMutations;
-};
-
-export type MutationCheckPasswordArgs = {
-  password: Scalars['String']['input'];
 };
 
 export type MutationLoginArgs = {
@@ -242,6 +245,20 @@ export type NewAccount = {
   access_token: Scalars['String']['output'];
   id: Scalars['String']['output'];
   refresh_token: Scalars['String']['output'];
+};
+
+export type PasswordMutations = {
+  __typename?: 'PasswordMutations';
+  change: Scalars['Boolean']['output'];
+  check: Scalars['Boolean']['output'];
+};
+
+export type PasswordMutationsChangeArgs = {
+  input: ChangePasswordInput;
+};
+
+export type PasswordMutationsCheckArgs = {
+  password: Scalars['String']['input'];
 };
 
 export type PayInput = {
