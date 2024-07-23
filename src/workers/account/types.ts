@@ -18,19 +18,16 @@ export type WorkerMessage =
         email: string;
         password: string;
         protectedSymmetricKey: string;
-        newPassword?: string;
-        passwordHint?: string;
       };
     }
   | {
       type: 'changePassword';
       payload: {
         email: string;
+        currentPassword: string;
         newPassword: string;
-        passwordHint?: string;
-        protectedSymmetricKey: string;
-        masterKey: string;
-        masterKeyHash: string;
+        newPasswordHint?: string;
+        currentProtectedSymmetricKey: string;
       };
     };
 
@@ -58,17 +55,15 @@ export type WorkerResponse =
         masterKey: string;
         masterPasswordHash: string;
         protectedSymmetricKey: string;
-        newPassword?: string;
-        passwordHint?: string;
       };
     }
   | {
       type: 'changePassword';
       payload: {
-        masterPasswordHash: string;
-        newMasterPasswordHash: string;
+        currentMasterKeyHash: string;
+        newMasterKeyHash: string;
         newProtectedSymmetricKey: string;
-        passwordHint?: string;
+        newPasswordHint?: string;
       };
     }
   | { type: 'loaded' }

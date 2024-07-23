@@ -73,13 +73,7 @@ self.onmessage = async e => {
 
       case 'generateMaster': {
         const {
-          payload: {
-            email,
-            password,
-            protectedSymmetricKey,
-            newPassword,
-            passwordHint,
-          },
+          payload: { email, password, protectedSymmetricKey },
         } = message;
 
         const result = await generateMasterKeyAndHash({ email, password });
@@ -89,8 +83,6 @@ self.onmessage = async e => {
           payload: {
             ...result,
             protectedSymmetricKey,
-            newPassword,
-            passwordHint,
           },
         };
 
@@ -103,17 +95,21 @@ self.onmessage = async e => {
         const {
           payload: {
             email,
+            currentPassword,
             newPassword,
-            passwordHint,
-            protectedSymmetricKey,
-            masterKey,
-            masterKeyHash,
+            newPasswordHint,
+            currentProtectedSymmetricKey,
           },
         } = message;
 
+        const current = await generateMasterKeyAndHash({
+          email,
+          password: currentPassword,
+        });
+
         const symmetricKey = decryptSymmetricKey({
-          protectedSymmetricKey,
-          masterKey,
+          protectedSymmetricKey: currentProtectedSymmetricKey,
+          masterKey: current.masterKey,
         });
 
         const result = await generateMasterKeyAndHash({
@@ -123,16 +119,16 @@ self.onmessage = async e => {
 
         const newProtectedSymmetricKey = changeProtectedSymmetricKey({
           symmetricKey,
-          masterKey: result.masterKey,
+          newMasterKey: result.masterKey,
         });
 
         const response: WorkerResponse = {
           type: 'changePassword',
           payload: {
-            masterPasswordHash: masterKeyHash,
-            newMasterPasswordHash: result.masterPasswordHash,
+            currentMasterKeyHash: current.masterPasswordHash,
+            newMasterKeyHash: result.masterPasswordHash,
             newProtectedSymmetricKey,
-            passwordHint,
+            newPasswordHint,
           },
         };
 

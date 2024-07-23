@@ -36,7 +36,6 @@ import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/components/ui/use-toast';
 import { useChangePasswordMutation } from '@/graphql/mutations/__generated__/changePassword.generated';
-import { useCheckPasswordMutation } from '@/graphql/mutations/__generated__/checkPassword.generated';
 import { useLogoutMutation } from '@/graphql/mutations/__generated__/logout.generated';
 import { useUserQuery } from '@/graphql/queries/__generated__/user.generated';
 import { handleApolloError } from '@/utils/error';
@@ -105,20 +104,6 @@ export const ChangePassword = () => {
     setClickedGenerate(true);
   };
 
-  const [checkPassword] = useCheckPasswordMutation({
-    onError: error => {
-      const messages = handleApolloError(error);
-
-      toast({
-        variant: 'destructive',
-        title: 'Could not change password.',
-        description: messages.join(', '),
-      });
-
-      setLoading(false);
-    },
-  });
-
   const [changePassword] = useChangePasswordMutation({
     onCompleted: () => {
       toast({
@@ -171,13 +156,13 @@ export const ChangePassword = () => {
     }
 
     const message: WorkerMessage = {
-      type: 'generateMaster',
+      type: 'changePassword',
       payload: {
         email: data.user.email,
-        password: values.current_password,
-        protectedSymmetricKey: data.user.protected_symmetric_key,
+        currentPassword: values.current_password,
         newPassword: values.new_password,
-        passwordHint: values.password_hint,
+        newPasswordHint: values.password_hint,
+        currentProtectedSymmetricKey: data.user.protected_symmetric_key,
       },
     };
 
@@ -193,47 +178,14 @@ export const ChangePassword = () => {
       const message: WorkerResponse = event.data;
 
       switch (message.type) {
-        case 'generateMaster': {
-          const check = await checkPassword({
-            variables: { password: message.payload.masterPasswordHash },
-          });
-
-          if (check.data?.password.check) {
-            if (
-              !data?.user.email ||
-              !data.user.protected_symmetric_key ||
-              !workerRef.current
-            ) {
-              setLoading(false);
-              return;
-            }
-
-            const newMessage: WorkerMessage = {
-              type: 'changePassword',
-              payload: {
-                email: data.user.email,
-                newPassword: message.payload.newPassword || '',
-                passwordHint: message.payload.passwordHint,
-                protectedSymmetricKey: data.user.protected_symmetric_key,
-                masterKey: message.payload.masterKey,
-                masterKeyHash: message.payload.masterPasswordHash,
-              },
-            };
-
-            workerRef.current.postMessage(newMessage);
-          }
-
-          break;
-        }
-
         case 'changePassword': {
           changePassword({
             variables: {
               input: {
                 current_master_password_hash:
-                  message.payload.masterPasswordHash,
-                new_master_password_hash: message.payload.newMasterPasswordHash,
-                new_password_hint: message.payload.passwordHint,
+                  message.payload.currentMasterKeyHash,
+                new_master_password_hash: message.payload.newMasterKeyHash,
+                new_password_hint: message.payload.newPasswordHint,
                 new_protected_symmetric_key:
                   message.payload.newProtectedSymmetricKey,
               },
@@ -244,6 +196,20 @@ export const ChangePassword = () => {
         }
 
         case 'error': {
+          if (message.msg === 'invalid MAC') {
+            toast({
+              variant: 'destructive',
+              title: 'Could not change password.',
+              description: 'Invalid current password.',
+            });
+          } else {
+            toast({
+              variant: 'destructive',
+              title: 'Could not change password.',
+              description: message.msg,
+            });
+          }
+
           setLoading(false);
 
           break;
@@ -259,12 +225,7 @@ export const ChangePassword = () => {
     return () => {
       if (workerRef.current) workerRef.current.terminate();
     };
-  }, [
-    checkPassword,
-    changePassword,
-    data?.user.email,
-    data?.user.protected_symmetric_key,
-  ]);
+  }, [changePassword, toast]);
 
   return (
     <Section

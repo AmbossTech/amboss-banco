@@ -149,14 +149,14 @@ export const decryptSymmetricKey = (keys: KeysType): string => {
 
 export const changeProtectedSymmetricKey = ({
   symmetricKey,
-  masterKey,
+  newMasterKey,
 }: {
   symmetricKey: string;
-  masterKey: string;
+  newMasterKey: string;
 }) => {
   const protectedSymmetricKey = nip44.v2.encrypt(
     symmetricKey,
-    hexToBytes(masterKey)
+    hexToBytes(newMasterKey)
   );
 
   return protectedSymmetricKey;
