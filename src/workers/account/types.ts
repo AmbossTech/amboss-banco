@@ -19,6 +19,16 @@ export type WorkerMessage =
         password: string;
         protectedSymmetricKey: string;
       };
+    }
+  | {
+      type: 'changePassword';
+      payload: {
+        email: string;
+        currentPassword: string;
+        newPassword: string;
+        newPasswordHint?: string;
+        currentProtectedSymmetricKey: string;
+      };
     };
 
 export type CreateAccountResult = {
@@ -45,6 +55,15 @@ export type WorkerResponse =
         masterKey: string;
         masterPasswordHash: string;
         protectedSymmetricKey: string;
+      };
+    }
+  | {
+      type: 'changePassword';
+      payload: {
+        currentMasterKeyHash: string;
+        newMasterKeyHash: string;
+        newProtectedSymmetricKey: string;
+        newPasswordHint?: string;
       };
     }
   | { type: 'loaded' }

@@ -3,6 +3,7 @@ export const ROUTES = {
   signup: '/sign-up',
   login: '/login',
   dashboard: '/dashboard',
+  settings: '/settings',
   wallet: {
     home: '/wallet',
     settings: (id: string) => `/wallet/${id}/settings`,
@@ -26,6 +27,10 @@ export const ROUTES = {
       new: '/setup/wallet/new',
       restore: '/setup/wallet/restore',
     },
+  },
+  docs: {
+    privacyPolicy: '/docs/privacy-policy',
+    termsOfService: '/docs/terms-of-service',
   },
   external: {
     github: 'https://github.com/AmbossTech/amboss-banco',

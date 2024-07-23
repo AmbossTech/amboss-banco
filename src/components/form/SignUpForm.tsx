@@ -365,8 +365,23 @@ export function SignUpForm() {
                   </FormControl>
                   <div className="flex flex-col gap-2">
                     <FormLabel>
-                      By checking this box you agree to the Terms of Service and
-                      the Privacy Policy.
+                      By checking this box you agree to the{' '}
+                      <Link
+                        href={ROUTES.docs.termsOfService}
+                        target="_blank"
+                        className="text-primary"
+                      >
+                        Terms of Service
+                      </Link>{' '}
+                      and the{' '}
+                      <Link
+                        href={ROUTES.docs.privacyPolicy}
+                        target="_blank"
+                        className="text-primary"
+                      >
+                        Privacy Policy
+                      </Link>
+                      .
                     </FormLabel>
 
                     <FormMessage />
