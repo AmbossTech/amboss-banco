@@ -41,7 +41,7 @@ export const Why = () => {
           image={why2}
         />
         <Card
-          title="Total Control"
+          title="Self Custody"
           subtitle="No third parties can access or control your funds without your explicit permission."
           image={why1}
         />
