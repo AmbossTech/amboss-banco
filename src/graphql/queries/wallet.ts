@@ -34,6 +34,10 @@ export const GetWalletDetails = gql`
           type
           protected_mnemonic
         }
+        accounts {
+          descriptor
+          account_type
+        }
       }
     }
   }

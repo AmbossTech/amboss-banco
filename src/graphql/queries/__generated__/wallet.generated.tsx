@@ -52,6 +52,11 @@ export type GetWalletDetailsQuery = {
         type: Types.WalletType;
         protected_mnemonic?: string | null;
       };
+      accounts: Array<{
+        __typename?: 'WalletAccount';
+        descriptor: string;
+        account_type: Types.WalletAccountType;
+      }>;
     };
   };
 };
@@ -237,6 +242,10 @@ export const GetWalletDetailsDocument = gql`
           id
           type
           protected_mnemonic
+        }
+        accounts {
+          descriptor
+          account_type
         }
       }
     }
