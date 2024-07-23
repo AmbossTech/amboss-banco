@@ -5,6 +5,7 @@ import {
   Menu,
   MessageCircle,
   Settings,
+  Settings2,
   Vault,
 } from 'lucide-react';
 import Link from 'next/link';
@@ -85,6 +86,24 @@ export const AppLayout: FC<{ children: ReactNode }> = ({ children }) => {
                   variant="ghost"
                   size="icon"
                   className="mt-auto rounded-lg"
+                  aria-label="Settings"
+                  asChild
+                >
+                  <Link href={ROUTES.settings}>
+                    <Settings2 className="size-5" />
+                  </Link>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="right" sideOffset={5}>
+                Settings
+              </TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="mt-auto rounded-lg"
                   aria-label="Help"
                   asChild
                 >
@@ -135,6 +154,18 @@ export const AppLayout: FC<{ children: ReactNode }> = ({ children }) => {
                   </Link>
                 </nav>
                 <div className="mt-auto space-y-2">
+                  <Button
+                    asChild
+                    variant="outline"
+                    className="mt-auto w-full rounded-lg"
+                    aria-label="Settings"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <Link href={ROUTES.settings}>
+                      <Settings2 className="mr-2 h-5 w-5" />
+                      Settings
+                    </Link>
+                  </Button>
                   <Button
                     asChild
                     variant="outline"

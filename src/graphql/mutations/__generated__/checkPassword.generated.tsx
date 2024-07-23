@@ -12,12 +12,14 @@ export type CheckPasswordMutationVariables = Types.Exact<{
 
 export type CheckPasswordMutation = {
   __typename?: 'Mutation';
-  checkPassword: boolean;
+  password: { __typename?: 'PasswordMutations'; check: boolean };
 };
 
 export const CheckPasswordDocument = gql`
   mutation CheckPassword($password: String!) {
-    checkPassword(password: $password)
+    password {
+      check(password: $password)
+    }
   }
 `;
 export type CheckPasswordMutationFn = Apollo.MutationFunction<

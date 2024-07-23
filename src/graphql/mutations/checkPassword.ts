@@ -1,7 +1,9 @@
 import { gql } from '@apollo/client';
 
-export const Login = gql`
+export const CheckPassword = gql`
   mutation CheckPassword($password: String!) {
-    checkPassword(password: $password)
+    password {
+      check(password: $password)
+    }
   }
 `;
