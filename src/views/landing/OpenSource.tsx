@@ -12,7 +12,8 @@ export const OpenSource = () => {
         <div className="flex w-full flex-col justify-between">
           <div>
             <h3 className="mb-10 text-5xl font-bold text-black/85">
-              Join our open source community
+              Want to build on Banco? <br />
+              <br /> Join our open source community
             </h3>
 
             <a
