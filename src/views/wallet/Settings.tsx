@@ -258,20 +258,18 @@ export const WalletSettings: FC<{ walletId: string }> = ({ walletId }) => {
     <div className="flex max-w-screen-lg flex-col gap-10 pt-4 md:gap-16">
       <WalletName walletId={walletId} />
       <Section
-        title="Lightning Address"
-        description="This is your lightning address. You can share this with other users to
+        title="MIBAN Code"
+        description="This is your MIBAN Code. You can share this with other users to
             receive money."
       >
         {!data?.wallets.find_one.money_address.length ? (
-          <p className="text-sm text-muted-foreground">
-            No lightning address found.
-          </p>
+          <p className="text-sm text-muted-foreground">No MIBAN Code found.</p>
         ) : (
           data.wallets.find_one.money_address.map(a => {
             return a.domains.map(d => {
               return (
                 <div key={d}>
-                  <Label htmlFor="address">Lightning Address</Label>
+                  <Label htmlFor="address">MIBAN Code</Label>
                   <div className="flex gap-2">
                     <Input
                       id="address"

@@ -48,8 +48,8 @@ export const Believe = () => {
           image={manPhone}
         />
         <Card
-          title="2. Share your lightning address"
-          subtitle="Connect with friends and family."
+          title="2. Connect with friends and family"
+          subtitle="Generate a MIBAN Code to chat and receive payments."
           image={groupPhone}
         />
         <Card

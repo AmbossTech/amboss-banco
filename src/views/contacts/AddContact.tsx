@@ -31,7 +31,8 @@ import { handleApolloError } from '@/utils/error';
 
 const formSchema = z.object({
   money_address: z.string().min(1, {
-    message: 'A lightning address is required to create a new contact.',
+    message:
+      'A MIBAN Code or Lightning Address is required to create a new contact.',
   }),
 });
 
@@ -115,7 +116,7 @@ export const AddContact: FC<{
             name="money_address"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Lightning Address</FormLabel>
+                <FormLabel>Address</FormLabel>
                 <FormControl>
                   <Input
                     type="money_address"
@@ -126,7 +127,8 @@ export const AddContact: FC<{
                 </FormControl>
                 <FormMessage />
                 <FormDescription>
-                  Input the lightning address from the new contact.
+                  Input the MIBAN Code or Lightning Address from the new
+                  contact.
                 </FormDescription>
               </FormItem>
             )}
