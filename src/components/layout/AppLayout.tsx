@@ -184,7 +184,7 @@ export const AppLayout: FC<{ children: ReactNode }> = ({ children }) => {
             </Sheet>
 
             <div className="flex items-center justify-center gap-4">
-              <h1 className="text-xl font-black">BANCO</h1>
+              <h1 className="text-xl font-black">MIBANCO</h1>
 
               <Badge variant={'destructive'} className="hidden md:block">
                 Alpha - Limit funds and use at your own risk.

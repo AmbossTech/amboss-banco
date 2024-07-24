@@ -343,7 +343,7 @@ export function SignUpForm() {
                   </FormControl>
                   <FormMessage />
                   <FormDescription>
-                    Banco signups are currently available by invitation only.
+                    MiBanco signups are currently available by invitation only.
                     <br />
                     Please enter your invite code to complete the signup
                     process.

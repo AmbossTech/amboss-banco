@@ -15,7 +15,7 @@ export const ExternalHeader = () => {
   return (
     <div className="mt-1 flex w-full max-w-5xl flex-wrap items-center justify-between text-sm">
       <Link href={ROUTES.home}>
-        <p className="text-xl font-bold">Banco</p>
+        <p className="text-xl font-bold">MiBanco</p>
       </Link>
       <div className="flex items-center justify-center gap-2">
         {loading ? null : data?.user.id ? (

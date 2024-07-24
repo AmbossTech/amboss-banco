@@ -15,7 +15,7 @@ export const Footer = () => {
     <footer className="w-full px-4 pb-20 pt-4 lg:px-14 lg:pb-16 lg:pt-6">
       <div className="mb-20 flex w-full flex-col justify-between gap-20 py-4 lg:mb-12 lg:flex-row lg:items-center lg:gap-4 lg:py-6">
         <Link href={ROUTES.home} className="text-2xl font-bold text-black">
-          Banco
+          MiBanco
         </Link>
 
         <nav className="flex flex-col gap-10 text-lg font-semibold text-black lg:flex-row lg:items-center lg:gap-16 lg:text-base">
@@ -50,7 +50,7 @@ export const Footer = () => {
       </div>
 
       <p className="text-center text-sm font-semibold text-black/65">
-        Copyright © {year} Banco
+        Copyright © {year} MiBanco
       </p>
     </footer>
   );

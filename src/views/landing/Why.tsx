@@ -30,14 +30,14 @@ export const Why = () => {
       <h2 className="mb-10 text-5xl font-semibold text-black/45 lg:text-[88px]">
         Why choose{' '}
         <span className="mt-4 block text-7xl font-medium text-black lg:mt-0 lg:inline lg:text-9xl">
-          Banco?
+          MiBanco?
         </span>
       </h2>
 
       <div className="grid w-full gap-4 lg:grid-cols-2">
         <Card
           title="Simple Security"
-          subtitle="Banco is designed to be user-friendly. No complicated hoops to jump through. Banking made easy for everyone."
+          subtitle="MiBanco is designed to be user-friendly. No complicated hoops to jump through. Banking made easy for everyone."
           image={why2}
         />
         <Card
@@ -47,12 +47,12 @@ export const Why = () => {
         />
         <Card
           title="Instant Payments"
-          subtitle="Receive and send payments with ease. Your Banco account comes with a 'Lightning Address' for simple and quick transactions."
+          subtitle="Receive and send payments with ease. Your MiBanco account comes with a 'Lightning Address' for simple and quick transactions."
           image={why3}
         />
         <Card
           title="Private Messaging"
-          subtitle="Send encrypted messages to your contacts securely through Banco."
+          subtitle="Send encrypted messages to your contacts securely through MiBanco."
           image={why4}
         />
       </div>
