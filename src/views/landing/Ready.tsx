@@ -22,7 +22,7 @@ export const Ready = () => {
           </h2>
 
           <h3 className="mb-8 mt-4 text-center text-xl font-semibold text-black/85 lg:text-2xl">
-            Join Banco today and take control of your financial future.
+            Join MiBanco today and take control of your financial future.
           </h3>
 
           <Link

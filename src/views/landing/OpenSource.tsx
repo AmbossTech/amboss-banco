@@ -12,7 +12,7 @@ export const OpenSource = () => {
         <div className="flex w-full flex-col justify-between">
           <div>
             <h3 className="mb-10 text-5xl font-bold text-black/85">
-              Want to build on Banco? <br />
+              Want to build on MiBanco? <br />
               <br /> Join our open source community
             </h3>
 
@@ -36,7 +36,7 @@ export const OpenSource = () => {
           />
 
           <p className="absolute bottom-16 left-4 right-4 text-2xl font-semibold text-white lg:left-16 lg:right-16">
-            Banco is built by the community, for the community. Contribute to
+            MiBanco is built by the community, for the community. Contribute to
             our code, suggest features, and be a part of a banking revolution.
             Visit our GitHub repository to get involved.
           </p>

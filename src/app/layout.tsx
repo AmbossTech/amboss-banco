@@ -16,8 +16,8 @@ const font = Noto_Sans({
 });
 
 export const metadata: Metadata = {
-  title: 'Banco',
-  description: 'Banco',
+  title: 'MiBanco',
+  description: 'MiBanco',
 };
 
 export default async function RootLayout({
