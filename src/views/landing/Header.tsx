@@ -19,7 +19,7 @@ export const Header = () => {
   return (
     <header className="mx-auto flex w-full max-w-screen-2xl items-center justify-between gap-4 px-4 py-6 lg:px-14">
       <Link href={ROUTES.home} className="text-2xl font-bold text-black">
-        Banco
+        MiBanco
       </Link>
 
       <nav className="hidden items-center gap-8 text-base font-semibold text-black lg:flex xl:gap-16">

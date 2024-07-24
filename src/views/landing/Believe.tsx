@@ -33,7 +33,7 @@ export const Believe = () => {
     <section className="mt-28 w-full px-4 lg:px-14">
       <div className="mb-6 flex w-full flex-col gap-4 lg:flex-row lg:items-center">
         <h2 className="text-7xl font-semibold text-primary lg:w-1/2 lg:text-9xl 2xl:text-[200px]">
-          Banco
+          MiBanco
         </h2>
 
         <h3 className="max-w-2xl text-4xl font-semibold text-black/65 lg:w-1/2 lg:text-5xl">

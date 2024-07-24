@@ -1,8 +1,8 @@
-# Mi Banco
+# MiBanco
 
 **Banking for the Unbanked.**
 
-This is the frontend of the Banco tech stack which can be self-hosted.
+This is the frontend of the MiBanco tech stack which can be self-hosted.
 
 ## Running locally for development
 
