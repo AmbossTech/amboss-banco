@@ -47,7 +47,7 @@ export const Why = () => {
         />
         <Card
           title="Instant Payments"
-          subtitle="Receive and send payments with ease. Your MiBanco account comes with a 'Lightning Address' for simple and quick transactions."
+          subtitle="Receive and send payments with ease. Your MiBanco account comes with a 'MIBAN Code' for simple and quick transactions."
           image={why3}
         />
         <Card
