@@ -28,6 +28,7 @@ export const ROUTES = {
       restore: '/setup/wallet/restore',
     },
   },
+  success: '/success',
   docs: {
     privacyPolicy: '/docs/privacy-policy',
     termsOfService: '/docs/terms-of-service',

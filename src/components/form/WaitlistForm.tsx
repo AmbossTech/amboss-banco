@@ -1,9 +1,13 @@
+'use client';
+
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Dispatch, FC, SetStateAction, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+
+import { ROUTES } from '@/utils/routes';
 
 import { Button } from '../ui/button';
 import {
@@ -37,6 +41,7 @@ export const WaitlistForm: FC<{
   const searchParams = useSearchParams();
   const emailParam = searchParams.get('email');
 
+  const { push } = useRouter();
   const { toast } = useToast();
 
   const [loading, setLoading] = useState(false);
@@ -75,12 +80,12 @@ export const WaitlistForm: FC<{
       const response = await result.json();
 
       if (response.data) {
-        toast({
-          title: 'Joined waitlist!',
-          description: 'You will hear from us soon.',
-        });
-
-        form.reset();
+        push(
+          ROUTES.success +
+            `?text=${encodeURIComponent(
+              'Thank you for joining the waitlist! We will inform you when you can create an account.'
+            )}`
+        );
       } else {
         toast({
           variant: 'destructive',
