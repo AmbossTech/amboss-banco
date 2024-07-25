@@ -16,6 +16,7 @@ export type UserQuery = {
     email: string;
     protected_symmetric_key: string;
     default_wallet_id?: string | null;
+    wallet: { __typename?: 'UserWalletInfo'; id: string; wallet_limit: number };
   };
 };
 
@@ -26,6 +27,10 @@ export const UserDocument = gql`
       email
       protected_symmetric_key
       default_wallet_id
+      wallet {
+        id
+        wallet_limit
+      }
     }
   }
 `;

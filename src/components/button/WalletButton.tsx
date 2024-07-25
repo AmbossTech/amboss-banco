@@ -19,6 +19,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import { useUserQuery } from '@/graphql/queries/__generated__/user.generated';
 import { useGetAllWalletsQuery } from '@/graphql/queries/__generated__/wallet.generated';
 import { useChat, useContactStore } from '@/stores/contacts';
 import { cn } from '@/utils/cn';
@@ -35,7 +36,14 @@ export function WalletButton() {
 
   const { push } = useRouter();
 
-  const { data, error } = useGetAllWalletsQuery();
+  const { data, error, loading } = useGetAllWalletsQuery();
+  const { data: userData } = useUserQuery();
+
+  const reachedWalletLimit = useMemo(() => {
+    if (!data?.wallets.find_many || !userData?.user.wallet) return true;
+
+    return data.wallets.find_many.length >= userData.user.wallet.wallet_limit;
+  }, [data?.wallets.find_many, userData?.user.wallet]);
 
   const [value, setValue] = useLocalStorage(
     LOCALSTORAGE_KEYS.currentWalletId,
@@ -58,11 +66,12 @@ export function WalletButton() {
   }, [data]);
 
   const buttonText = useMemo(() => {
+    if (loading) return 'Loading...';
     if (!wallets.length) return 'Create a wallet';
     if (value) {
       return wallets.find(w => w.value === value)?.label || 'Select wallet...';
     }
-  }, [wallets, value]);
+  }, [loading, wallets, value]);
 
   if (error) return null;
   if (!buttonText) return null;
@@ -140,36 +149,38 @@ export function WalletButton() {
               </CommandGroup>
             ) : null}
 
-            <CommandGroup heading="Actions">
-              <CommandItem
-                className="cursor-pointer"
-                onSelect={() => {
-                  setOpen(false);
-                }}
-              >
-                <Link
-                  href={ROUTES.setup.wallet.new}
-                  className="flex w-full items-center justify-between"
+            {!reachedWalletLimit ? (
+              <CommandGroup heading="Actions">
+                <CommandItem
+                  className="cursor-pointer"
+                  onSelect={() => {
+                    setOpen(false);
+                  }}
                 >
-                  New Wallet
-                  <PlusCircle className={cn('ml-auto h-4 w-4')} />
-                </Link>
-              </CommandItem>
-              <CommandItem
-                className="cursor-pointer"
-                onSelect={() => {
-                  setOpen(false);
-                }}
-              >
-                <Link
-                  href={ROUTES.setup.wallet.restore}
-                  className="flex w-full items-center justify-between"
+                  <Link
+                    href={ROUTES.setup.wallet.new}
+                    className="flex w-full items-center justify-between"
+                  >
+                    New Wallet
+                    <PlusCircle className={cn('ml-auto h-4 w-4')} />
+                  </Link>
+                </CommandItem>
+                <CommandItem
+                  className="cursor-pointer"
+                  onSelect={() => {
+                    setOpen(false);
+                  }}
                 >
-                  Restore Wallet
-                  <CircleEqual className={cn('ml-auto h-4 w-4')} />
-                </Link>
-              </CommandItem>
-            </CommandGroup>
+                  <Link
+                    href={ROUTES.setup.wallet.restore}
+                    className="flex w-full items-center justify-between"
+                  >
+                    Restore Wallet
+                    <CircleEqual className={cn('ml-auto h-4 w-4')} />
+                  </Link>
+                </CommandItem>
+              </CommandGroup>
+            ) : null}
           </CommandList>
         </Command>
       </PopoverContent>
