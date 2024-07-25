@@ -28,7 +28,9 @@ export const ROUTES = {
       restore: '/setup/wallet/restore',
     },
   },
-  success: '/success',
+  success: {
+    waitlist: '/success?variant=waitlist',
+  },
   docs: {
     privacyPolicy: '/docs/privacy-policy',
     termsOfService: '/docs/terms-of-service',

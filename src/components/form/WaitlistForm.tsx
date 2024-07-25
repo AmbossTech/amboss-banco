@@ -13,6 +13,7 @@ import { Button } from '../ui/button';
 import {
   Card,
   CardContent,
+  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -80,12 +81,7 @@ export const WaitlistForm: FC<{
       const response = await result.json();
 
       if (response.data) {
-        push(
-          ROUTES.success +
-            `?text=${encodeURIComponent(
-              'Thank you for joining the waitlist! We will inform you when you can create an account.'
-            )}`
-        );
+        push(ROUTES.success.waitlist);
       } else {
         toast({
           variant: 'destructive',
@@ -111,7 +107,8 @@ export const WaitlistForm: FC<{
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Join waitlist</CardTitle>
+        <CardTitle>The MiBanco Waitlist</CardTitle>
+        <CardDescription>Join us . No bank required.</CardDescription>
       </CardHeader>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -127,7 +124,7 @@ export const WaitlistForm: FC<{
                   </FormControl>
                   <FormMessage />
                   <FormDescription>
-                    Get notified about the General release.
+                    {"We'll notify you as soon as we're ready for you."}
                   </FormDescription>
                 </FormItem>
               )}
