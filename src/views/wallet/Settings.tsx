@@ -255,7 +255,7 @@ export const WalletSettings: FC<{ walletId: string }> = ({ walletId }) => {
   }
 
   return (
-    <div className="flex max-w-screen-lg flex-col gap-10 pt-4 md:gap-16">
+    <div className="flex max-w-screen-lg flex-col gap-10 py-4 md:gap-16">
       <WalletName walletId={walletId} />
       <Section
         title="MIBAN Code"
