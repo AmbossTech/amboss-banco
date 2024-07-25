@@ -7,6 +7,10 @@ export const User = gql`
       email
       protected_symmetric_key
       default_wallet_id
+      wallet {
+        id
+        wallet_limit
+      }
     }
   }
 `;
