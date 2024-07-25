@@ -72,7 +72,9 @@ export const WaitlistForm: FC<{
         }),
       });
 
-      if (result.ok) {
+      const response = await result.json();
+
+      if (response.data) {
         toast({
           title: 'Joined waitlist!',
           description: 'You will hear from us soon.',
@@ -80,8 +82,6 @@ export const WaitlistForm: FC<{
 
         form.reset();
       } else {
-        const response = await result.json();
-
         toast({
           variant: 'destructive',
           title: 'Error joining waitlist.',
