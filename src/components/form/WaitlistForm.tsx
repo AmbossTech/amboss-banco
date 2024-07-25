@@ -1,0 +1,156 @@
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Loader2 } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
+import { Dispatch, FC, SetStateAction, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+
+import { Button } from '../ui/button';
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '../ui/card';
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '../ui/form';
+import { Input } from '../ui/input';
+import { useToast } from '../ui/use-toast';
+
+const FormSchema = z.object({
+  email: z.string().email().min(5, {
+    message: 'Invalid email.',
+  }),
+});
+
+export const WaitlistForm: FC<{
+  setView: Dispatch<SetStateAction<'waitlist' | 'sign-up'>>;
+}> = ({ setView }) => {
+  const searchParams = useSearchParams();
+  const emailParam = searchParams.get('email');
+
+  const { toast } = useToast();
+
+  const [loading, setLoading] = useState(false);
+
+  const form = useForm<z.infer<typeof FormSchema>>({
+    reValidateMode: 'onChange',
+    resolver: zodResolver(FormSchema),
+    defaultValues: {
+      email: emailParam || '',
+    },
+  });
+
+  const onSubmit = async (values: z.infer<typeof FormSchema>) => {
+    setLoading(true);
+
+    try {
+      const result = await fetch('https://reflex.amboss.space/graphql', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          variables: { input: { email: values.email, interest: 'BANCO' } },
+          query: `mutation Add_interest($input: WaitlistInput!) {
+                    public {
+                        waitlist {
+                            add_interest(input: $input) {
+                                email
+                            }
+                        }
+                    }
+                }`,
+        }),
+      });
+
+      if (result.ok) {
+        toast({
+          title: 'Joined waitlist!',
+          description: 'You will hear from us soon.',
+        });
+
+        form.reset();
+      } else {
+        const response = await result.json();
+
+        toast({
+          variant: 'destructive',
+          title: 'Error joining waitlist.',
+          description: response.errors
+            .map((e: { message: string }) => e.message)
+            .join(', '),
+        });
+      }
+    } catch (error) {
+      console.log(error);
+
+      toast({
+        variant: 'destructive',
+        title: 'Error joining waitlist.',
+        description: 'Please try again.',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Join waitlist</CardTitle>
+      </CardHeader>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)}>
+          <CardContent className="flex flex-col gap-4">
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input placeholder="satoshi@nakamoto.com" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                  <FormDescription>
+                    Get notified about the General release.
+                  </FormDescription>
+                </FormItem>
+              )}
+            />
+          </CardContent>
+
+          <CardFooter>
+            <div className="w-full">
+              <Button type="submit" disabled={loading} className="w-full">
+                {loading ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : null}
+                Join Waitlist
+              </Button>
+
+              <Button
+                type="button"
+                onClick={() => setView('sign-up')}
+                disabled={loading}
+                variant={'ghost'}
+                className="mt-4 w-full"
+              >
+                I have a Referral Code
+              </Button>
+            </div>
+          </CardFooter>
+        </form>
+      </Form>
+    </Card>
+  );
+};

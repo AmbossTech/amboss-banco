@@ -46,6 +46,7 @@ import {
 import { Checkbox } from '../ui/checkbox';
 import { Progress } from '../ui/progress';
 import { useToast } from '../ui/use-toast';
+import { WaitlistForm } from './WaitlistForm';
 
 const FormSchema = z
   .object({
@@ -87,6 +88,9 @@ export function SignUpForm() {
 
   const workerRef = useRef<Worker>();
 
+  const [view, setView] = useState<'waitlist' | 'sign-up'>(
+    referralParam ? 'sign-up' : 'waitlist'
+  );
   const [loading, setLoading] = useState(true);
   const [clickedGenerate, setClickedGenerate] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -207,7 +211,9 @@ export function SignUpForm() {
     setClickedGenerate(true);
   };
 
-  return (
+  return view === 'waitlist' ? (
+    <WaitlistForm setView={setView} />
+  ) : (
     <Card>
       <CardHeader>
         <CardTitle>Sign up</CardTitle>
