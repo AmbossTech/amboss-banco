@@ -7,11 +7,15 @@ export const ROUTES = {
   wallet: {
     home: '/wallet',
     settings: (id: string) => `/wallet/${id}/settings`,
-    receive: (walletId: string, accountId: string) =>
-      `/wallet/${walletId}/account/${accountId}/receive`,
+    // receive: (walletId: string, accountId: string) =>
+    //   `/wallet/${walletId}/account/${accountId}/receive`,
+    receive: {
+      home: (walletId: string) => `/wallet/${walletId}/receive`,
+    },
     send: {
-      home: (walletId: string, accountId: string, assetId: string) =>
-        `/wallet/${walletId}/account/${accountId}/send?assetId=${assetId}`,
+      home: (walletId: string) => `/wallet/${walletId}/send`,
+      // home: (walletId: string, accountId: string, assetId: string) =>
+      //   `/wallet/${walletId}/account/${accountId}/send?assetId=${assetId}`,
       address: (walletId: string, accountId: string, assetId: string) =>
         `/wallet/${walletId}/account/${accountId}/send/address?assetId=${assetId}`,
       invoice: (walletId: string, accountId: string, assetId: string) =>

@@ -2,6 +2,8 @@
 
 import {
   AlertTriangle,
+  ArrowDownToLine,
+  ArrowUpFromLine,
   Copy,
   CopyCheck,
   Handshake,
@@ -70,7 +72,7 @@ const WalletDetails: FC<{ id: string }> = ({ id }) => {
             className="flex gap-2"
             onClick={() => refresh()}
           >
-            Refresh
+            Refresh Balances
             {loading ? (
               <Loader2 className="ml-auto size-3 animate-spin" />
             ) : (
@@ -82,6 +84,23 @@ const WalletDetails: FC<{ id: string }> = ({ id }) => {
           </Button>
         </div>
       </div>
+
+      <div className="mb-4 flex gap-4">
+        <Button asChild className="w-full md:w-auto">
+          <Link href={ROUTES.wallet.receive.home(id)} className="flex">
+            <ArrowDownToLine className="mr-2 size-4" />
+            Receive
+          </Link>
+        </Button>
+
+        <Button variant={'secondary'} asChild className="w-full md:w-auto">
+          <Link href={ROUTES.wallet.send.home(id)} className="flex">
+            <ArrowUpFromLine className="mr-2 size-4" />
+            Send
+          </Link>
+        </Button>
+      </div>
+
       <div className="md:flex">
         {!addresses.length ? null : (
           <Card>

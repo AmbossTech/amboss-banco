@@ -1,29 +1,14 @@
 'use client';
 
 import { sortBy } from 'lodash';
-import {
-  ArrowDownToLine,
-  ArrowUpToLine,
-  Bitcoin,
-  DollarSign,
-  Loader2,
-} from 'lucide-react';
-import Link from 'next/link';
+import { Bitcoin, DollarSign, Loader2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { FC, useMemo } from 'react';
 
-import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useGetWalletQuery } from '@/graphql/queries/__generated__/wallet.generated';
 import { cryptoToUsd } from '@/utils/fiat';
 import { numberWithPrecisionAndDecimals } from '@/utils/numbers';
-import { ROUTES } from '@/utils/routes';
 import { TransactionTable } from '@/views/wallet/TxTable';
 
 type AssetBalance = {
@@ -33,7 +18,6 @@ type AssetBalance = {
   balance: string;
   formatted_balance: string;
   precision: number;
-  assetId: string;
 };
 
 export type TransactionEntry = {
@@ -63,44 +47,18 @@ const BalanceIcon: FC<{ ticker: string }> = ({ ticker }) => {
 };
 
 const BalanceCard: FC<{
-  walletId: string;
-  accountId: string;
   input: AssetBalance;
-}> = ({
-  walletId,
-  accountId,
-  input: { balance, name, precision, ticker, assetId, formatted_balance },
-}) => {
+}> = ({ input: { balance, name, precision, ticker, formatted_balance } }) => {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">{name}</CardTitle>
+        <CardTitle className="mr-4 text-sm font-medium">{name}</CardTitle>
         <BalanceIcon ticker={ticker} />
       </CardHeader>
       <CardContent>
         <div className="text-2xl font-bold">{formatted_balance}</div>
         <p className="text-xs text-muted-foreground">{`${numberWithPrecisionAndDecimals(balance, precision)} ${ticker}`}</p>
       </CardContent>
-      <CardFooter className="flex w-full gap-2">
-        <Button size={'sm'} className="w-full">
-          <Link
-            href={ROUTES.wallet.receive(walletId, accountId)}
-            className="flex"
-          >
-            <ArrowDownToLine className="mr-2 h-4 w-4" />
-            Receive
-          </Link>
-        </Button>
-        <Button variant="secondary" size={'sm'} className="w-full">
-          <Link
-            href={ROUTES.wallet.send.home(walletId, accountId, assetId)}
-            className="flex"
-          >
-            <ArrowUpToLine className="mr-2 h-4 w-4" />
-            Send
-          </Link>
-        </Button>
-      </CardFooter>
     </Card>
   );
 };
@@ -124,7 +82,6 @@ export const WalletInfo: FC<{ id: string }> = ({ id }) => {
       a.liquid.assets.forEach(l => {
         mapped.push({
           accountId: a.id,
-          assetId: l.asset_id,
           name: l.asset_info.name,
           ticker: l.asset_info.ticker,
           balance: l.balance,
@@ -196,12 +153,7 @@ export const WalletInfo: FC<{ id: string }> = ({ id }) => {
       </h2>
       <div className="flex w-full flex-col gap-4 md:flex-row">
         {balances.map((b, index) => (
-          <BalanceCard
-            walletId={id}
-            accountId={b.accountId}
-            input={b}
-            key={`${b.ticker}${index}`}
-          />
+          <BalanceCard input={b} key={`${b.ticker}${index}`} />
         ))}
       </div>
       <h2 className="scroll-m-20 pb-2 pt-6 text-xl font-semibold tracking-tight first:mt-0">
