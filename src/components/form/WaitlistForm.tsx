@@ -108,7 +108,7 @@ export const WaitlistForm: FC<{
     <Card>
       <CardHeader>
         <CardTitle>The MiBanco Waitlist</CardTitle>
-        <CardDescription>Join us . No bank required.</CardDescription>
+        <CardDescription>Join us. No bank required.</CardDescription>
       </CardHeader>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
