@@ -16,6 +16,7 @@ const font = Noto_Sans({
 });
 
 export const metadata: Metadata = {
+  metadataBase: process.env.URL ? new URL(process.env.URL) : undefined,
   title: 'MiBanco',
   description: 'MiBanco',
 };
