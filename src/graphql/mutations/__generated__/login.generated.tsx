@@ -12,7 +12,7 @@ export type LoginMutationVariables = Types.Exact<{
 
 export type LoginMutation = {
   __typename?: 'Mutation';
-  login: { __typename?: 'NewAccount'; id: string };
+  login: { __typename?: 'Login'; id: string };
 };
 
 export const LoginDocument = gql`
