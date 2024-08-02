@@ -44,6 +44,7 @@
     "cmdk": "^1.0.0",
     "date-fns": "^3.6.0",
     "fast-password-entropy": "^1.1.1",
+    "framer-motion": "^11.3.21",
     "graphql": "^16.9.0",
     "lodash": "^4.17.21",
     "lucide-react": "^0.400.0",
