@@ -24,7 +24,10 @@ const config = {
         ring: 'hsl(var(--ring))',
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
-        primaryV2: { DEFAULT: '#98B1F9', hover: '#C7D6FF' },
+        ['primary-v2']: {
+          DEFAULT: 'hsl(var(--primary-v2))',
+          hover: 'hsl(var(--primary-v2-hover))',
+        },
         primary: {
           DEFAULT: 'hsl(var(--primary))',
           foreground: 'hsl(var(--primary-foreground))',
@@ -44,10 +47,9 @@ const config = {
         accent: {
           DEFAULT: 'hsl(var(--accent))',
           foreground: 'hsl(var(--accent-foreground))',
-          blue: '#98B1F9',
-          green: '#B1F998',
-          gray: '#EDEDED',
-          black: '#1F1F1F',
+          green: 'hsl(var(--accent-green))',
+          gray: 'hsl(var(--accent-gray))',
+          black: 'hsl(var(--accent-black))',
         },
         popover: {
           DEFAULT: 'hsl(var(--popover))',

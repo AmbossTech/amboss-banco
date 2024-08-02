@@ -85,7 +85,7 @@ export default function Page() {
 
           <div className="mb-6 grid gap-6 xl:grid-cols-2">
             <CardSection
-              bg="bg-accent-blue"
+              bg="bg-primary-v2"
               accent="bg-white"
               icon="1"
               title={p('signup')}
@@ -165,7 +165,7 @@ export default function Page() {
 
           <div className="space-y-6">
             <CardSection
-              bg="bg-accent-blue"
+              bg="bg-primary-v2"
               accent="bg-white"
               icon={<ShieldCheck className="w-[22px] lg:w-[32px]" />}
               title={l('friendly-secure')}
@@ -183,7 +183,7 @@ export default function Page() {
 
             <CardSection
               bg="bg-white"
-              accent="bg-accent-blue"
+              accent="bg-primary-v2"
               icon={<KeyRound className="w-[22px] lg:w-[32px]" />}
               title={l('self-custody')}
               subtitle={l('no-parties')}
@@ -218,7 +218,7 @@ export default function Page() {
 
             <CardSection
               bg="bg-accent-black"
-              accent="bg-accent-blue"
+              accent="bg-primary-v2"
               icon={<LockKeyhole className="w-[22px] lg:w-[32px]" />}
               title={l('private-messaging')}
               subtitle={l('send-messages')}
