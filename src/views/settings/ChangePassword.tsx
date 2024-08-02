@@ -40,6 +40,7 @@ import { useLogoutMutation } from '@/graphql/mutations/__generated__/logout.gene
 import { useUserQuery } from '@/graphql/queries/__generated__/user.generated';
 import { LOCALSTORAGE_KEYS } from '@/utils/constants';
 import { handleApolloError } from '@/utils/error';
+import { ROUTES } from '@/utils/routes';
 import { WorkerMessage, WorkerResponse } from '@/workers/account/types';
 
 import { Section } from './Section';
@@ -129,7 +130,7 @@ export const ChangePassword = () => {
   const [logout] = useLogoutMutation({
     onCompleted: () => {
       localStorage.removeItem(LOCALSTORAGE_KEYS.currentWalletId);
-      window.location.reload();
+      window.location.assign(ROUTES.home);
     },
     onError: error => {
       const messages = handleApolloError(error);

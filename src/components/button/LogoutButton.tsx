@@ -4,6 +4,7 @@ import { LogOut } from 'lucide-react';
 
 import { useLogoutMutation } from '@/graphql/mutations/__generated__/logout.generated';
 import { LOCALSTORAGE_KEYS } from '@/utils/constants';
+import { ROUTES } from '@/utils/routes';
 
 import { Button } from '../ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
@@ -15,7 +16,7 @@ export const LogoutButtonWithTooltip = () => {
   const [logout] = useLogoutMutation({
     onCompleted: () => {
       localStorage.removeItem(LOCALSTORAGE_KEYS.currentWalletId);
-      window.location.reload();
+      window.location.assign(ROUTES.home);
     },
     onError: () =>
       toast({
@@ -50,7 +51,7 @@ export const LogoutButton = () => {
   const [logout] = useLogoutMutation({
     onCompleted: () => {
       localStorage.removeItem(LOCALSTORAGE_KEYS.currentWalletId);
-      window.location.reload();
+      window.location.assign(ROUTES.home);
     },
     onError: () =>
       toast({
