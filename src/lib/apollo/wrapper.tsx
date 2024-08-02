@@ -96,7 +96,7 @@ const makeClient = (
               });
 
             default:
-              console.log(`[GraphQL error]: ${err}`);
+              console.log(`[GraphQL error]: ${err.message}`);
           }
         }
       }
