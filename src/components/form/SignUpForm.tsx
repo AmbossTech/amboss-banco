@@ -124,7 +124,7 @@ export function SignUpForm() {
         type: 'create',
         payload: {
           email: data.email,
-          password,
+          password: data.password,
           password_hint: data.password_hint,
           referral_code: data.referral_code,
         },
