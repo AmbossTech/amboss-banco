@@ -131,7 +131,7 @@ export default function Page() {
                   hidden: { opacity: 0, y: 60 },
                   visible: { opacity: 1, y: 0 },
                 }}
-                className="absolute bottom-0 right-1/2 translate-x-1/2 lg:right-[10%] lg:-translate-x-0"
+                className="absolute bottom-0 right-0 sm:right-[10%] lg:right-0 xl:right-[10%]"
               >
                 <Image src={four} alt="iphone" />
               </motion.div>
