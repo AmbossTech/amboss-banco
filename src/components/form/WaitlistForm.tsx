@@ -146,6 +146,16 @@ export const WaitlistForm: FC<{
               >
                 I have a Referral Code
               </Button>
+
+              <Button
+                type="button"
+                onClick={() => setView('sign-up')}
+                disabled={loading}
+                variant={'ghost'}
+                className="mt-4 w-full"
+              >
+                I am an Amboss Subscriber
+              </Button>
             </div>
           </CardFooter>
         </form>

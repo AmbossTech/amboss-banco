@@ -56,7 +56,7 @@ const FormSchema = z
     password: z.string(),
     confirm_password: z.string(),
     password_hint: z.string().optional(),
-    referral_code: z.string().min(1, { message: 'Required.' }),
+    referral_code: z.string().optional(),
     accept_tos_and_pp: z.boolean(),
     accept_condition_1: z.boolean(),
   })
@@ -348,10 +348,8 @@ export function SignUpForm() {
                   </FormControl>
                   <FormMessage />
                   <FormDescription>
-                    MiBanco signups are currently available by invitation only.
-                    <br />
-                    Please enter your invite code to complete the signup
-                    process.
+                    If you have an invite code please enter to complete the
+                    signup process.
                   </FormDescription>
                 </FormItem>
               )}
