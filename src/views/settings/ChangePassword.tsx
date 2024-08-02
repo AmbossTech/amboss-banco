@@ -38,8 +38,8 @@ import { useToast } from '@/components/ui/use-toast';
 import { useChangePasswordMutation } from '@/graphql/mutations/__generated__/changePassword.generated';
 import { useLogoutMutation } from '@/graphql/mutations/__generated__/logout.generated';
 import { useUserQuery } from '@/graphql/queries/__generated__/user.generated';
+import { LOCALSTORAGE_KEYS } from '@/utils/constants';
 import { handleApolloError } from '@/utils/error';
-import { ROUTES } from '@/utils/routes';
 import { WorkerMessage, WorkerResponse } from '@/workers/account/types';
 
 import { Section } from './Section';
@@ -128,7 +128,8 @@ export const ChangePassword = () => {
 
   const [logout] = useLogoutMutation({
     onCompleted: () => {
-      window.location.href = ROUTES.login;
+      localStorage.removeItem(LOCALSTORAGE_KEYS.currentWalletId);
+      window.location.reload();
     },
     onError: error => {
       const messages = handleApolloError(error);
@@ -138,8 +139,6 @@ export const ChangePassword = () => {
         title: 'Error logging out.',
         description: messages.join(', '),
       });
-
-      window.location.reload();
     },
   });
 
