@@ -2,7 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { Dispatch, FC, SetStateAction, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -39,9 +39,6 @@ const FormSchema = z.object({
 export const WaitlistForm: FC<{
   setView: Dispatch<SetStateAction<'waitlist' | 'sign-up'>>;
 }> = ({ setView }) => {
-  const searchParams = useSearchParams();
-  const emailParam = searchParams.get('email');
-
   const { push } = useRouter();
   const { toast } = useToast();
 
@@ -51,7 +48,7 @@ export const WaitlistForm: FC<{
     reValidateMode: 'onChange',
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      email: emailParam || '',
+      email: '',
     },
   });
 
