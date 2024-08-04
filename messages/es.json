@@ -5,5 +5,42 @@
     "settings": "Configuración",
     "transactions": "Transacciones",
     "wallet": "Billetera"
+  },
+  "Public": {
+    "Footer": {
+      "contact": "Contacto",
+      "copyright": "Derechos de Autor",
+      "docs": "Documentación",
+      "faq": "Preguntas Frecuentes"
+    },
+    "Landing": {
+      "access": "Accede a las finanzas globales en 3 sencillos pasos",
+      "banco-works": "MiBanco trabaja para ti",
+      "connect-friends": "Conéctate con amigos y familiares",
+      "create-account": "Crea tu cuenta con solo un correo electrónico y una contraseña.",
+      "designed": "Diseñado y construido para ser simple, moderno y conveniente.",
+      "ease-payments": "Recibe y envía pagos fácilmente. Tu cuenta de MiBanco viene con una Dirección Lightning para transacciones simples y rápidas.",
+      "experience": "Experimenta el futuro de la banca con MiBanco",
+      "friendly-secure": "Amigable y Seguro",
+      "generate-miban": "Genera un código MIBAN para chatear y recibir pagos.",
+      "get-paid": "Recibe pagos",
+      "get-started": "Comienza",
+      "hero-sub-one": "Paga y recibe pagos en dólares y bitcoin.",
+      "hero-sub-two": "Simple, seguro y siempre bajo tu control.",
+      "instant-payments": "Pagos Instantáneos",
+      "join": "Únete a MiBanco hoy y toma el control de tu futuro financiero.",
+      "no-parties": "Ningún tercero puede acceder o controlar tus fondos sin tu permiso explícito.",
+      "private-messaging": "Mensajería Privada",
+      "receive-dollars": "Recibe dólares o bitcoin en segundos. Encuentra seguridad en la estabilidad del dólar mientras accedes al potencial del bitcoin.",
+      "self-custody": "Autocustodia",
+      "send-messages": "Envía mensajes cifrados a tus contactos de forma segura a través de MiBanco.",
+      "user-friendly": "MiBanco está diseñado para ser fácil de usar y seguro. Sin complicaciones. Banca fácil para todos.",
+      "your-money": "Tu Dinero.",
+      "your-way": "Tu Manera."
+    },
+    "login": "Iniciar Sesión",
+    "privacy": "Política de Privacidad",
+    "signup": "Registrarse",
+    "terms": "Términos y Condiciones"
   }
 }
