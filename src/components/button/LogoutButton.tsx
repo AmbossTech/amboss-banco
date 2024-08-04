@@ -15,7 +15,8 @@ export const LogoutButtonWithTooltip = () => {
 
   const [logout] = useLogoutMutation({
     onCompleted: () => {
-      window.location.href = ROUTES.home;
+      localStorage.removeItem(LOCALSTORAGE_KEYS.currentWalletId);
+      window.location.assign(ROUTES.home);
     },
     onError: () =>
       toast({
@@ -50,7 +51,7 @@ export const LogoutButton = () => {
   const [logout] = useLogoutMutation({
     onCompleted: () => {
       localStorage.removeItem(LOCALSTORAGE_KEYS.currentWalletId);
-      window.location.href = ROUTES.home;
+      window.location.assign(ROUTES.home);
     },
     onError: () =>
       toast({
