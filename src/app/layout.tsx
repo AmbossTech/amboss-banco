@@ -1,7 +1,7 @@
 import './globals.css';
 
 import type { Metadata } from 'next';
-import { Noto_Sans } from 'next/font/google';
+import { IBM_Plex_Sans } from 'next/font/google';
 import { cookies } from 'next/headers';
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getMessages } from 'next-intl/server';
@@ -11,7 +11,9 @@ import { Toaster } from '@/components/ui/toaster';
 import { ApolloWrapper } from '@/lib/apollo/wrapper';
 import { ThemeProvider } from '@/lib/themes/wrapper';
 
-const font = Noto_Sans({
+const font = IBM_Plex_Sans({
+  weight: ['100', '200', '300', '400', '500', '600', '700'],
+  style: ['normal', 'italic'],
   subsets: ['latin'],
 });
 

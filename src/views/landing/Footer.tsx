@@ -1,57 +1,70 @@
-'use client';
-
+import { Send } from 'lucide-react';
 import Image from 'next/image';
-import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 
+import github from '/public/icons/github.svg';
 import x from '/public/icons/x.svg';
-import { elementScroll } from '@/utils/elementScroll';
+import { Logo } from '@/components/Logo';
 import { ROUTES } from '@/utils/routes';
 
-const links = ['about', 'features', 'community', 'security', 'support'];
-const year = new Date().getFullYear();
-
 export const Footer = () => {
+  const f = useTranslations('Public.Footer');
+  const p = useTranslations('Public');
+
+  const year = new Date().getFullYear();
+
+  const links = [
+    { title: p('privacy'), link: ROUTES.docs.privacyPolicy },
+    { title: p('terms'), link: ROUTES.docs.termsOfService },
+    { title: f('docs'), link: ROUTES.docs.home },
+    { title: f('faq'), link: ROUTES.docs.faq },
+    { title: f('contact'), link: ROUTES.external.support },
+  ];
+
+  const socials = [
+    { icon: <Image src={github} alt="github" />, link: ROUTES.external.github },
+    { icon: <Image src={x} alt="x" />, link: ROUTES.external.x },
+    {
+      icon: <Send size={24} className="text-white" />,
+      link: ROUTES.external.telegram,
+    },
+  ];
+
   return (
-    <footer className="w-full px-4 pb-20 pt-4 lg:px-14 lg:pb-16 lg:pt-6">
-      <div className="mb-20 flex w-full flex-col justify-between gap-20 py-4 lg:mb-12 lg:flex-row lg:items-center lg:gap-4 lg:py-6">
-        <Link href={ROUTES.home} className="text-2xl font-bold text-black">
-          MiBanco
-        </Link>
+    <footer className="flex w-full flex-col items-center justify-between gap-6 rounded-3xl bg-[#2E2E2E] px-4 py-8 2xl:flex-row 2xl:gap-4 2xl:px-8 2xl:py-6">
+      <div className="flex flex-col items-center gap-4 2xl:flex-row">
+        <Logo className="fill-white" />
 
-        <nav className="flex flex-col gap-10 text-lg font-semibold text-black lg:flex-row lg:items-center lg:gap-16 lg:text-base">
-          {links.map(l =>
-            l !== 'support' ? (
-              <button
-                key={l}
-                className="w-fit capitalize"
-                onClick={() => elementScroll('#' + l)}
-              >
-                {l}
-              </button>
-            ) : (
-              <a
-                key={l}
-                href={ROUTES.external.support}
-                className="w-fit capitalize"
-              >
-                {l}
-              </a>
-            )
-          )}
-        </nav>
-
-        <a
-          href={ROUTES.external.x}
-          target="_blank"
-          className="flex h-10 w-10 items-center justify-center rounded-lg bg-neutral-950 transition-colors hover:bg-neutral-950/90"
-        >
-          <Image src={x} alt="x" />
-        </a>
+        <p className="text-base font-semibold text-[#909090]">
+          {f('copyright')} © {year}
+        </p>
       </div>
 
-      <p className="text-center text-sm font-semibold text-black/65">
-        Copyright © {year} MiBanco
-      </p>
+      <div className="flex flex-col items-center gap-4 2xl:flex-row 2xl:gap-10">
+        {links.map(l => (
+          <a
+            key={l.title}
+            href={l.link}
+            target="_blank"
+            className="text-base font-semibold text-white"
+          >
+            {l.title}
+          </a>
+        ))}
+
+        <div className="flex gap-4">
+          {socials.map(s => (
+            <a
+              key={s.link}
+              href={s.link}
+              target="_blank"
+              className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/5"
+            >
+              {s.icon}
+            </a>
+          ))}
+        </div>
+      </div>
     </footer>
   );
 };
