@@ -1,8 +1,8 @@
+import { generateMasterKeyAndHash } from '@/utils/argon';
 import {
   changeProtectedSymmetricKey,
   createProtectedSymmetricKey,
   decryptSymmetricKey,
-  generateMasterKeyAndHash,
   secp256k1GenerateProtectedKeyPair,
 } from '@/utils/crypto';
 

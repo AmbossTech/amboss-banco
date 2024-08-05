@@ -79,7 +79,6 @@ const FormSchema = z
 
 export function SignUpForm() {
   const searchParams = useSearchParams();
-  const emailParam = searchParams.get('email');
   const referralParam = searchParams.get('referral');
 
   const { toast } = useToast();
@@ -101,7 +100,7 @@ export function SignUpForm() {
     reValidateMode: 'onChange',
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      email: emailParam || '',
+      email: '',
       password: '',
       password_hint: '',
       confirm_password: '',
@@ -125,7 +124,7 @@ export function SignUpForm() {
         type: 'create',
         payload: {
           email: data.email,
-          password,
+          password: data.password,
           password_hint: data.password_hint,
           referral_code: data.referral_code,
         },

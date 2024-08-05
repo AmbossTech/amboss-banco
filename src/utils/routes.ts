@@ -35,12 +35,15 @@ export const ROUTES = {
     waitlist: '/success?variant=waitlist',
   },
   docs: {
-    privacyPolicy: '/docs/privacy-policy',
-    termsOfService: '/docs/terms-of-service',
+    home: '/docs',
+    faq: '/docs#faq',
+    privacyPolicy: '/docs/legal/privacy-policy',
+    termsOfService: '/docs/legal/terms-of-service',
   },
   external: {
     github: 'https://github.com/AmbossTech/amboss-banco',
     x: 'https://x.com/ambosstech',
+    telegram: 'https://t.me/+FrzdhJw4piAzMzgx',
     support: 'mailto:support@amboss.tech',
   },
 };

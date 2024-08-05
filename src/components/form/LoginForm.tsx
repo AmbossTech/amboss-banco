@@ -18,7 +18,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useLoginMutation } from '@/graphql/mutations/__generated__/login.generated';
-import { generateMasterKeyAndHash } from '@/utils/crypto';
+import { generateMasterKeyAndHash } from '@/utils/argon';
 import { handleApolloError } from '@/utils/error';
 import { ROUTES } from '@/utils/routes';
 
@@ -71,6 +71,19 @@ export function LoginForm() {
     if (loading) return;
 
     setLoading(true);
+
+    if (data.email.trim().toLowerCase() !== data.email) {
+      setLoading(false);
+
+      toast({
+        title: 'Email Mismatch!',
+        description:
+          'Please use only lowercase letters in your email. If you signed up with an email that contains uppercase letters, contact support for assistance.',
+      });
+
+      return;
+    }
+
     try {
       const { masterPasswordHash } = await generateMasterKeyAndHash({
         email: data.email,
