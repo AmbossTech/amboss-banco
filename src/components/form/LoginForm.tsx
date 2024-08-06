@@ -3,7 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
 import Link from 'next/link';
-import { useState } from 'react';
+import { FC, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -17,7 +17,10 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { useLoginMutation } from '@/graphql/mutations/__generated__/login.generated';
+import {
+  LoginMutation,
+  useLoginMutation,
+} from '@/graphql/mutations/__generated__/login.generated';
 import { generateMasterKeyAndHash } from '@/utils/argon';
 import { handleApolloError } from '@/utils/error';
 import { ROUTES } from '@/utils/routes';
@@ -38,14 +41,22 @@ const FormSchema = z.object({
   password: z.string(),
 });
 
-export function LoginForm() {
+export const LoginForm: FC<{
+  twoFACallback: (
+    payload: LoginMutation['login']['initial']['two_factor']
+  ) => void;
+}> = ({ twoFACallback }) => {
   const { toast } = useToast();
 
   const [loading, setLoading] = useState(false);
 
   const [login] = useLoginMutation({
-    onCompleted: () => {
-      window.location.href = ROUTES.dashboard;
+    onCompleted: data => {
+      if (!!data.login.initial.two_factor?.session_id) {
+        twoFACallback(data.login.initial.two_factor);
+      } else {
+        window.location.href = ROUTES.dashboard;
+      }
     },
     onError: err => {
       const messages = handleApolloError(err);
@@ -174,4 +185,4 @@ export function LoginForm() {
       </Form>
     </Card>
   );
-}
+};

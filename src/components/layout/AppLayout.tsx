@@ -89,7 +89,7 @@ export const AppLayout: FC<{ children: ReactNode }> = ({ children }) => {
                   aria-label="Settings"
                   asChild
                 >
-                  <Link href={ROUTES.settings}>
+                  <Link href={ROUTES.settings.home}>
                     <Settings2 className="size-5" />
                   </Link>
                 </Button>
@@ -161,7 +161,7 @@ export const AppLayout: FC<{ children: ReactNode }> = ({ children }) => {
                     aria-label="Settings"
                     onClick={() => setMobileMenuOpen(false)}
                   >
-                    <Link href={ROUTES.settings}>
+                    <Link href={ROUTES.settings.home}>
                       <Settings2 className="mr-2 h-5 w-5" />
                       Settings
                     </Link>

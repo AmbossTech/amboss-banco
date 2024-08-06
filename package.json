@@ -48,6 +48,7 @@
     "fast-password-entropy": "^1.1.1",
     "framer-motion": "^11.3.21",
     "graphql": "^16.9.0",
+    "input-otp": "^1.2.4",
     "lodash": "^4.17.21",
     "lucide-react": "^0.400.0",
     "lwk_wasm": "^0.7.0",

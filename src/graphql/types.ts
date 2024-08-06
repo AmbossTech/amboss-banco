@@ -106,6 +106,12 @@ export type CreateOnchainAddressInput = {
   wallet_account_id: Scalars['String']['input'];
 };
 
+export type CreateTwoFactorOtp = {
+  __typename?: 'CreateTwoFactorOTP';
+  otp_secret: Scalars['String']['output'];
+  otp_url: Scalars['String']['output'];
+};
+
 export type CreateWallet = {
   __typename?: 'CreateWallet';
   id: Scalars['String']['output'];
@@ -204,9 +210,27 @@ export type LnUrlInfoInput = {
   money_address: Scalars['String']['input'];
 };
 
+export type Login = {
+  __typename?: 'Login';
+  access_token?: Maybe<Scalars['String']['output']>;
+  id: Scalars['String']['output'];
+  refresh_token?: Maybe<Scalars['String']['output']>;
+  two_factor?: Maybe<TwoFactorLogin>;
+};
+
 export type LoginInput = {
   email: Scalars['String']['input'];
   master_password_hash: Scalars['String']['input'];
+};
+
+export type LoginMutations = {
+  __typename?: 'LoginMutations';
+  initial: Login;
+  two_factor: TwoFactorLoginMutations;
+};
+
+export type LoginMutationsInitialArgs = {
+  input: LoginInput;
 };
 
 export type MoneyAddress = {
@@ -219,17 +243,14 @@ export type MoneyAddress = {
 export type Mutation = {
   __typename?: 'Mutation';
   contacts: ContactMutations;
-  login: NewAccount;
+  login: LoginMutations;
   logout: Scalars['Boolean']['output'];
   password: PasswordMutations;
   pay: PayMutations;
   refreshToken: RefreshToken;
   signUp: NewAccount;
+  two_factor: TwoFactorMutations;
   wallets: WalletMutations;
-};
-
-export type MutationLoginArgs = {
-  input: LoginInput;
 };
 
 export type MutationPayArgs = {
@@ -361,6 +382,7 @@ export type Query = {
   __typename?: 'Query';
   hello: Scalars['String']['output'];
   pay: PayQueries;
+  two_factor: TwoFactorQueries;
   user: User;
   wallets: WalletQueries;
 };
@@ -426,6 +448,12 @@ export type SendMessageInput = {
   sender_payload: Scalars['String']['input'];
 };
 
+export type SetupOtp = {
+  __typename?: 'SetupOTP';
+  otp_secret: Scalars['String']['output'];
+  otp_url: Scalars['String']['output'];
+};
+
 export type SignUpInput = {
   email: Scalars['String']['input'];
   master_password_hash: Scalars['String']['input'];
@@ -439,6 +467,14 @@ export type SignUpInput = {
 export type SimpleSwap = {
   __typename?: 'SimpleSwap';
   id: Scalars['String']['output'];
+};
+
+export type SimpleTwoFactor = {
+  __typename?: 'SimpleTwoFactor';
+  created_at: Scalars['String']['output'];
+  enabled: Scalars['Boolean']['output'];
+  id: Scalars['String']['output'];
+  method: TwoFactorMethod;
 };
 
 export type SimpleWallet = {
@@ -496,6 +532,56 @@ export type SwapQuoteInput = {
 export type SwapRecipientInput = {
   address: Scalars['String']['input'];
   amount: Scalars['String']['input'];
+};
+
+export type TwoFactorLogin = {
+  __typename?: 'TwoFactorLogin';
+  methods: Array<SimpleTwoFactor>;
+  session_id: Scalars['String']['output'];
+};
+
+export type TwoFactorLoginMutations = {
+  __typename?: 'TwoFactorLoginMutations';
+  otp: Login;
+};
+
+export type TwoFactorLoginMutationsOtpArgs = {
+  input: TwoFactorOtpLogin;
+};
+
+export enum TwoFactorMethod {
+  Otp = 'OTP',
+  Passkey = 'PASSKEY',
+}
+
+export type TwoFactorMutations = {
+  __typename?: 'TwoFactorMutations';
+  otp: TwoFactorOtpMutations;
+};
+
+export type TwoFactorOtpLogin = {
+  code: Scalars['String']['input'];
+  session_id: Scalars['String']['input'];
+};
+
+export type TwoFactorOtpMutations = {
+  __typename?: 'TwoFactorOTPMutations';
+  add: CreateTwoFactorOtp;
+  verify: Scalars['Boolean']['output'];
+};
+
+export type TwoFactorOtpMutationsVerifyArgs = {
+  input: TwoFactorOtpVerifyInput;
+};
+
+export type TwoFactorOtpVerifyInput = {
+  code: Scalars['String']['input'];
+};
+
+export type TwoFactorQueries = {
+  __typename?: 'TwoFactorQueries';
+  find_many: Array<SimpleTwoFactor>;
+  id: Scalars['String']['output'];
 };
 
 export type User = {

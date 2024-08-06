@@ -25,7 +25,7 @@ export const ExternalHeader = () => {
         ) : (
           <>
             <Button variant="ghost" asChild>
-              <Link href={ROUTES.login}>Login</Link>
+              <Link href={ROUTES.login.home}>Login</Link>
             </Button>
             <Button asChild>
               <Link href={ROUTES.signup}>Sign Up</Link>

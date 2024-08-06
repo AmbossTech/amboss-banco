@@ -17,7 +17,7 @@ export default function Layout({
   }
 
   if (error || !data?.user.id) {
-    redirect(ROUTES.login);
+    redirect(ROUTES.login.home);
   }
 
   return <>{children}</>;

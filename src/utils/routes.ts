@@ -1,9 +1,14 @@
 export const ROUTES = {
   home: '/',
   signup: '/sign-up',
-  login: '/login',
+  login: {
+    home: '/login',
+  },
   dashboard: '/dashboard',
-  settings: '/settings',
+  settings: {
+    home: '/settings',
+    twofa: '/settings/2fa',
+  },
   wallet: {
     home: '/wallet',
     settings: (id: string) => `/wallet/${id}/settings`,

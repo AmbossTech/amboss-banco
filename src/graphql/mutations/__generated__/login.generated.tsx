@@ -12,13 +12,41 @@ export type LoginMutationVariables = Types.Exact<{
 
 export type LoginMutation = {
   __typename?: 'Mutation';
-  login: { __typename?: 'NewAccount'; id: string };
+  login: {
+    __typename?: 'LoginMutations';
+    initial: {
+      __typename?: 'Login';
+      id: string;
+      two_factor?: {
+        __typename?: 'TwoFactorLogin';
+        session_id: string;
+        methods: Array<{
+          __typename?: 'SimpleTwoFactor';
+          id: string;
+          created_at: string;
+          method: Types.TwoFactorMethod;
+          enabled: boolean;
+        }>;
+      } | null;
+    };
+  };
 };
 
 export const LoginDocument = gql`
   mutation Login($input: LoginInput!) {
-    login(input: $input) {
-      id
+    login {
+      initial(input: $input) {
+        id
+        two_factor {
+          session_id
+          methods {
+            id
+            created_at
+            method
+            enabled
+          }
+        }
+      }
     }
   }
 `;
