@@ -146,7 +146,7 @@ const WalletMnemonic: FC<{ walletId: string }> = ({ walletId }) => {
     return () => {
       if (workerRef.current) workerRef.current.terminate();
     };
-  }, []);
+  }, [toast]);
 
   const handleDecrypt = () => {
     if (!keys) return;

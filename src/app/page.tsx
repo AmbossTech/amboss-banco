@@ -42,10 +42,10 @@ export default function Page() {
 
             <div className="flex space-x-4">
               <Button variant="primary" asChild className="lg:hidden">
-                <Link href={ROUTES.login}>{p('login')}</Link>
+                <Link href={ROUTES.login.home}>{p('login')}</Link>
               </Button>
               <Button variant="secondary" asChild className="hidden lg:block">
-                <Link href={ROUTES.login}>{p('login')}</Link>
+                <Link href={ROUTES.login.home}>{p('login')}</Link>
               </Button>
 
               <Button asChild className="hidden lg:inline">

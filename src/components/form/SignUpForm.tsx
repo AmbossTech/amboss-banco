@@ -425,7 +425,7 @@ export function SignUpForm() {
                 Sign Up
               </Button>
 
-              <Link href={ROUTES.login} className="w-full">
+              <Link href={ROUTES.login.home} className="w-full">
                 <Button
                   type="button"
                   disabled={loading}
