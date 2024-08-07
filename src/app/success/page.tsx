@@ -26,7 +26,7 @@ export default function Page({
         return {
           title: "You're On the List!",
           description:
-            "You're one step closer to experiencing MiBanco. We'll notify you as soon as we're ready for you.",
+            "You're one step closer to experiencing BancoLibre. We'll notify you as soon as we're ready for you.",
           button: (
             <Link
               href={ROUTES.home}

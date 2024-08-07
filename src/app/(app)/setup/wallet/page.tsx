@@ -16,7 +16,7 @@ export default function Page() {
     <div className="flex justify-center p-4">
       <Card>
         <CardHeader>
-          <CardTitle>Welcome to MiBanco.</CardTitle>
+          <CardTitle>Welcome to BancoLibre.</CardTitle>
 
           <CardDescription>
             Setup your first wallet to start your journey.

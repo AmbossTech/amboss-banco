@@ -104,7 +104,7 @@ export const WaitlistForm: FC<{
   return (
     <Card>
       <CardHeader>
-        <CardTitle>The MiBanco Waitlist</CardTitle>
+        <CardTitle>The BancoLibre Waitlist</CardTitle>
         <CardDescription>Join us. No bank required.</CardDescription>
       </CardHeader>
       <Form {...form}>

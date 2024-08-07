@@ -19,8 +19,8 @@ const font = IBM_Plex_Sans({
 
 export const metadata: Metadata = {
   metadataBase: process.env.URL ? new URL(process.env.URL) : undefined,
-  title: 'MiBanco',
-  description: 'MiBanco',
+  title: 'BancoLibre',
+  description: 'BancoLibre',
 };
 
 export default async function RootLayout({
