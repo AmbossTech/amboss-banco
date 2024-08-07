@@ -19,4 +19,4 @@ This is a [Next.js](https://nextjs.org/docs/app/building-your-application/deploy
 
 ## Deployed apps
 
-- [mibanco.app](https://mibanco.app/)
+- [bancolibre.com](https://bancolibre.com/)

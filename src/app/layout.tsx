@@ -32,7 +32,7 @@ export default async function RootLayout({
 
   const serverUrl = `${process.env.URL}/api/graphql`;
   const enablePlausible = process.env.ENABLE_PLAUSIBLE === 'true';
-  const plausibleURL = process.env.PLAUSIBLE_DOMAIN || 'mibanco.app';
+  const plausibleURL = process.env.PLAUSIBLE_DOMAIN || 'bancolibre.com';
 
   const accessToken = cookieStore.get('amboss_banco_access_token')?.value;
   const refreshToken = cookieStore.get('amboss_banco_refresh_token')?.value;
