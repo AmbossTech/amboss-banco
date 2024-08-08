@@ -9,6 +9,7 @@ export const GetWalletSwaps = gql`
         created_at
         method
         enabled
+        passkey_name
       }
     }
   }

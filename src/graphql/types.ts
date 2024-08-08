@@ -112,6 +112,11 @@ export type CreateTwoFactorOtp = {
   otp_url: Scalars['String']['output'];
 };
 
+export type CreateTwoFactorPasskey = {
+  __typename?: 'CreateTwoFactorPasskey';
+  options: Scalars['String']['output'];
+};
+
 export type CreateWallet = {
   __typename?: 'CreateWallet';
   id: Scalars['String']['output'];
@@ -475,6 +480,7 @@ export type SimpleTwoFactor = {
   enabled: Scalars['Boolean']['output'];
   id: Scalars['String']['output'];
   method: TwoFactorMethod;
+  passkey_name: Scalars['String']['output'];
 };
 
 export type SimpleWallet = {
@@ -543,6 +549,7 @@ export type TwoFactorLogin = {
 export type TwoFactorLoginMutations = {
   __typename?: 'TwoFactorLoginMutations';
   otp: Login;
+  passkey: TwoFactorPasskeyLoginMutations;
 };
 
 export type TwoFactorLoginMutationsOtpArgs = {
@@ -557,6 +564,7 @@ export enum TwoFactorMethod {
 export type TwoFactorMutations = {
   __typename?: 'TwoFactorMutations';
   otp: TwoFactorOtpMutations;
+  passkey: TwoFactorPasskeyMutations;
 };
 
 export type TwoFactorOtpLogin = {
@@ -576,6 +584,39 @@ export type TwoFactorOtpMutationsVerifyArgs = {
 
 export type TwoFactorOtpVerifyInput = {
   code: Scalars['String']['input'];
+};
+
+export type TwoFactorPasskeyAuthInput = {
+  session_id: Scalars['String']['input'];
+};
+
+export type TwoFactorPasskeyAuthLoginInput = {
+  options: Scalars['String']['input'];
+  session_id: Scalars['String']['input'];
+};
+
+export type TwoFactorPasskeyLoginMutations = {
+  __typename?: 'TwoFactorPasskeyLoginMutations';
+  login: Login;
+  options: Scalars['String']['output'];
+};
+
+export type TwoFactorPasskeyLoginMutationsLoginArgs = {
+  input: TwoFactorPasskeyAuthLoginInput;
+};
+
+export type TwoFactorPasskeyLoginMutationsOptionsArgs = {
+  input: TwoFactorPasskeyAuthInput;
+};
+
+export type TwoFactorPasskeyMutations = {
+  __typename?: 'TwoFactorPasskeyMutations';
+  add: CreateTwoFactorPasskey;
+  verify: Scalars['Boolean']['output'];
+};
+
+export type TwoFactorPasskeyMutationsVerifyArgs = {
+  options: Scalars['String']['input'];
 };
 
 export type TwoFactorQueries = {
