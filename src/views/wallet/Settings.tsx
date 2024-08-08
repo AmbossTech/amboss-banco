@@ -2,7 +2,6 @@
 
 import { Copy, CopyCheck, Loader2 } from 'lucide-react';
 import { FC, useEffect, useRef, useState } from 'react';
-import { useCopyToClipboard } from 'usehooks-ts';
 
 import { VaultButton } from '@/components/button/VaultButton';
 import { Button } from '@/components/ui/button';
@@ -11,6 +10,7 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
 import { useChangeWalletNameMutation } from '@/graphql/mutations/__generated__/wallet.generated';
 import { useGetWalletDetailsQuery } from '@/graphql/queries/__generated__/wallet.generated';
+import useCopyClipboard from '@/hooks/useClipboardCopy';
 import { useKeyStore } from '@/stores/keys';
 import { handleApolloError } from '@/utils/error';
 import {
@@ -167,7 +167,7 @@ const WalletMnemonic: FC<{ walletId: string }> = ({ walletId }) => {
     }
   };
 
-  const [copiedMnemonic, copyMnemonic] = useCopyToClipboard();
+  const [copiedMnemonic, copyMnemonic] = useCopyClipboard();
 
   const loading = stateLoading || walletLoading;
 
@@ -236,7 +236,7 @@ export const WalletSettings: FC<{ walletId: string }> = ({ walletId }) => {
     errorPolicy: 'ignore',
   });
 
-  const [copiedText, copy] = useCopyToClipboard();
+  const [copiedText, copy] = useCopyClipboard();
 
   if (loading) {
     return (

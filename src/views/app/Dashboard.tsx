@@ -12,7 +12,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { FC, useEffect, useMemo, useState } from 'react';
-import { useCopyToClipboard, useLocalStorage } from 'usehooks-ts';
+import { useLocalStorage } from 'usehooks-ts';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -23,6 +23,7 @@ import {
   useGetAllWalletsQuery,
   useGetWalletDetailsQuery,
 } from '@/graphql/queries/__generated__/wallet.generated';
+import useCopyClipboard from '@/hooks/useClipboardCopy';
 import { useWalletInfo } from '@/hooks/wallet';
 import { LOCALSTORAGE_KEYS } from '@/utils/constants';
 import { ROUTES } from '@/utils/routes';
@@ -55,7 +56,7 @@ const WalletDetails: FC<{ id: string }> = ({ id }) => {
     return data.wallets.find_one.money_address;
   }, [data]);
 
-  const [copiedText, copy] = useCopyToClipboard();
+  const [copiedText, copy] = useCopyClipboard();
 
   return (
     <div className="w-full">

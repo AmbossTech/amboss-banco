@@ -7,7 +7,6 @@ import stringEntropy from 'fast-password-entropy';
 import { Copy, CopyCheck, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useCopyToClipboard } from 'usehooks-ts';
 import { z } from 'zod';
 
 import { Badge } from '@/components/ui/badge';
@@ -38,6 +37,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { useChangePasswordMutation } from '@/graphql/mutations/__generated__/changePassword.generated';
 import { useLogoutMutation } from '@/graphql/mutations/__generated__/logout.generated';
 import { useUserQuery } from '@/graphql/queries/__generated__/user.generated';
+import useCopyClipboard from '@/hooks/useClipboardCopy';
 import { LOCALSTORAGE_KEYS } from '@/utils/constants';
 import { handleApolloError } from '@/utils/error';
 import { ROUTES } from '@/utils/routes';
@@ -80,7 +80,7 @@ export const ChangePassword = () => {
   const [clickedGenerate, setClickedGenerate] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  const [copiedPassword, copyPassword] = useCopyToClipboard();
+  const [copiedPassword, copyPassword] = useCopyClipboard();
 
   const form = useForm<z.infer<typeof FormSchema>>({
     reValidateMode: 'onChange',

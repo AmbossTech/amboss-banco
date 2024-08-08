@@ -10,7 +10,6 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useCopyToClipboard } from 'usehooks-ts';
 import { z } from 'zod';
 
 import { Button } from '@/components/ui/button';
@@ -30,6 +29,7 @@ import {
   SignUpMutationVariables,
 } from '@/graphql/mutations/__generated__/signUp.generated';
 import { WalletAccountType, WalletType } from '@/graphql/types';
+import useCopyClipboard from '@/hooks/useClipboardCopy';
 import { toWithError } from '@/utils/async';
 import { handleApolloError } from '@/utils/error';
 import { ROUTES } from '@/utils/routes';
@@ -94,7 +94,7 @@ export function SignUpForm() {
   const [clickedGenerate, setClickedGenerate] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  const [copiedPassword, copyPassword] = useCopyToClipboard();
+  const [copiedPassword, copyPassword] = useCopyClipboard();
 
   const form = useForm<z.infer<typeof FormSchema>>({
     reValidateMode: 'onChange',
