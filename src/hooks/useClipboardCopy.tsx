@@ -6,27 +6,27 @@ type CopyParams = {
 
 export default function useCopyClipboard(
   options: CopyParams = { successDuration: 2000 }
-): [boolean, (text: string) => void] {
-  const [isCopied, setIsCopied] = useState(false);
+): [string | undefined, (text: string) => void] {
+  const [copiedText, setCopiedText] = useState<string | undefined>();
   const successDuration = options.successDuration;
 
   useEffect(() => {
-    if (!isCopied || !successDuration) return;
+    if (!copiedText || !successDuration) return;
 
     const id = setTimeout(() => {
-      setIsCopied(false);
+      setCopiedText(undefined);
     }, successDuration);
 
     return () => {
       clearTimeout(id);
     };
-  }, [isCopied, successDuration]);
+  }, [copiedText, successDuration]);
 
   return [
-    isCopied,
+    copiedText,
     (text: string) => {
       navigator.clipboard.writeText(text);
-      setIsCopied(true);
+      setCopiedText(text);
     },
   ];
 }
