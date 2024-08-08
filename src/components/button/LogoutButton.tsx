@@ -3,6 +3,7 @@
 import { LogOut } from 'lucide-react';
 
 import { useLogoutMutation } from '@/graphql/mutations/__generated__/logout.generated';
+import { useKeyStore } from '@/stores/keys';
 import { LOCALSTORAGE_KEYS } from '@/utils/constants';
 import { ROUTES } from '@/utils/routes';
 
@@ -13,8 +14,11 @@ import { useToast } from '../ui/use-toast';
 export const LogoutButtonWithTooltip = () => {
   const { toast } = useToast();
 
+  const clearKeys = useKeyStore(s => s.clear);
+
   const [logout] = useLogoutMutation({
     onCompleted: () => {
+      clearKeys();
       localStorage.removeItem(LOCALSTORAGE_KEYS.currentWalletId);
       window.location.assign(ROUTES.home);
     },
@@ -48,8 +52,11 @@ export const LogoutButtonWithTooltip = () => {
 export const LogoutButton = () => {
   const { toast } = useToast();
 
+  const clearKeys = useKeyStore(s => s.clear);
+
   const [logout] = useLogoutMutation({
     onCompleted: () => {
+      clearKeys();
       localStorage.removeItem(LOCALSTORAGE_KEYS.currentWalletId);
       window.location.assign(ROUTES.home);
     },
