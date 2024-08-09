@@ -61,7 +61,7 @@ export default function Page() {
         <Label>Password</Label>
         <Input
           type="password"
-          autoComplete="false"
+          autoComplete="off"
           value={password}
           onChange={value => setPassword(value.target.value)}
           placeholder="Type your password"

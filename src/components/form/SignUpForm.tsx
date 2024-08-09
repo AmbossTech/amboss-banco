@@ -255,6 +255,7 @@ export function SignUpForm() {
                       <Input
                         placeholder="super secret password"
                         type={showPassword ? undefined : 'password'}
+                        autoComplete="off"
                         {...field}
                       />
                       <Button
