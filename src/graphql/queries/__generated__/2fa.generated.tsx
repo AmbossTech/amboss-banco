@@ -21,6 +21,7 @@ export type GetAccountTwoFactorMethodsQuery = {
       created_at: string;
       method: Types.TwoFactorMethod;
       enabled: boolean;
+      passkey_name: string;
     }>;
   };
 };
@@ -34,6 +35,7 @@ export const GetAccountTwoFactorMethodsDocument = gql`
         created_at
         method
         enabled
+        passkey_name
       }
     }
   }

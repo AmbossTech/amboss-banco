@@ -1,113 +1,58 @@
 'use client';
 
-import { REGEXP_ONLY_DIGITS } from 'input-otp';
-import { Loader2 } from 'lucide-react';
-import { FC, useState } from 'react';
+import { ChevronRight } from 'lucide-react';
+import { FC, useMemo, useState } from 'react';
 
-import {
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSeparator,
-  InputOTPSlot,
-} from '@/components/ui/input-otp';
-import { Label } from '@/components/ui/label';
-import { useToast } from '@/components/ui/use-toast';
+import { Button } from '@/components/ui/button';
 import { LoginMutation } from '@/graphql/mutations/__generated__/login.generated';
-import { useTwoFactorOtpLoginMutation } from '@/graphql/mutations/__generated__/otp.generated';
 import { TwoFactorMethod } from '@/graphql/types';
-import { handleApolloError } from '@/utils/error';
-import { ROUTES } from '@/utils/routes';
 
-const OTPForm: FC<{ session_id: string }> = ({ session_id }) => {
-  const [value, setValue] = useState('');
-
-  const { toast } = useToast();
-
-  const [login, { loading }] = useTwoFactorOtpLoginMutation({
-    onCompleted: () => {
-      window.location.href = ROUTES.dashboard;
-    },
-    onError: err => {
-      const messages = handleApolloError(err);
-
-      toast({
-        variant: 'destructive',
-        title: 'Error logging in.',
-        description: messages.join(', '),
-      });
-
-      setValue('');
-    },
-  });
-
-  const handleOTPChange = (value: string) => {
-    if (loading) return;
-    setValue(value);
-
-    if (value.length >= 6) {
-      login({ variables: { input: { code: value, session_id } } });
-    }
-  };
-
-  return (
-    <div className="flex flex-col items-center justify-center">
-      <div className="mb-2 mt-4">
-        {loading ? (
-          <div className="flex h-[22px] w-full items-center justify-center">
-            <Loader2 className="size-4 animate-spin" />
-          </div>
-        ) : (
-          <Label>Please enter the one-time password</Label>
-        )}
-      </div>
-      <div className="flex w-full justify-center">
-        <InputOTP
-          maxLength={6}
-          pattern={REGEXP_ONLY_DIGITS}
-          value={value}
-          onChange={handleOTPChange}
-        >
-          <InputOTPGroup>
-            <InputOTPSlot index={0} />
-            <InputOTPSlot index={1} />
-            <InputOTPSlot index={2} />
-          </InputOTPGroup>
-          <InputOTPSeparator />
-          <InputOTPGroup>
-            <InputOTPSlot index={3} />
-            <InputOTPSlot index={4} />
-            <InputOTPSlot index={5} />
-          </InputOTPGroup>
-        </InputOTP>
-      </div>
-    </div>
-  );
-};
+import { OTPForm } from './OTPForm';
+import { PasskeyForm } from './PasskeyForm';
 
 export const TwoFASteps: FC<{
   methods: LoginMutation['login']['initial']['two_factor'];
 }> = ({ methods }) => {
-  const getMethodForm = (
-    method: NonNullable<
-      LoginMutation['login']['initial']['two_factor']
-    >['methods'][0]
-  ) => {
+  const [form, setForm] = useState<TwoFactorMethod | undefined>();
+
+  const methodInfo = useMemo(() => {
+    const methodList = methods?.methods || [];
+
+    const hasOTP = methodList.some(m => m.method === TwoFactorMethod.Otp);
+    const hasPasskey = methodList.some(
+      m => m.method === TwoFactorMethod.Passkey
+    );
+
+    const differentAvailableTypes = [hasOTP ? 1 : 0, hasPasskey ? 1 : 0].reduce(
+      (p, c) => p + c,
+      0
+    );
+
+    return {
+      hasOTP,
+      hasPasskey,
+      differentAvailableTypes,
+    };
+  }, [methods]);
+
+  const getMethodForm = (method: TwoFactorMethod) => {
     if (!methods?.session_id) {
       return (
         <p className="text-sm text-muted-foreground">
-          {`Error loading ${method.method} form.`}
+          {`Error loading ${method} form.`}
         </p>
       );
     }
 
-    switch (method.method) {
+    switch (method) {
       case TwoFactorMethod.Otp:
         return <OTPForm session_id={methods.session_id} />;
       case TwoFactorMethod.Passkey:
+        return <PasskeyForm session_id={methods.session_id} />;
       default:
         return (
           <p className="text-sm text-muted-foreground">
-            {`Error loading ${method.method} form.`}
+            {`Error loading ${method} form.`}
           </p>
         );
     }
@@ -121,13 +66,57 @@ export const TwoFASteps: FC<{
     );
   }
 
-  if (methods.methods.length === 1) {
-    return getMethodForm(methods.methods[0]);
+  if (methodInfo.differentAvailableTypes === 1) {
+    return getMethodForm(methods.methods[0].method);
+  }
+
+  if (!!form) {
+    return (
+      <div className="flex flex-col gap-4">
+        {getMethodForm(form)}
+        <Button variant={'link'} onClick={() => setForm(undefined)}>
+          More Methods <ChevronRight className="size-4" />
+        </Button>
+      </div>
+    );
   }
 
   return (
-    <p className="text-sm text-muted-foreground">
-      Error loading account 2FA methods.
-    </p>
+    <div className="flex w-full max-w-md flex-col items-center gap-4">
+      <h1 className="font-bold">Two Factor Methods</h1>
+      {methodInfo.hasOTP ? (
+        <Button
+          variant={'outline'}
+          className="w-full p-6"
+          onClick={() => {
+            setForm(TwoFactorMethod.Otp);
+          }}
+        >
+          <div className="flex w-full items-center justify-between">
+            <h3 className="font-semibold leading-none tracking-tight">
+              One-Time Password
+            </h3>
+            <ChevronRight className="size-5" />
+          </div>
+        </Button>
+      ) : null}
+
+      {methodInfo.hasPasskey ? (
+        <Button
+          variant={'outline'}
+          className="w-full p-6"
+          onClick={() => {
+            setForm(TwoFactorMethod.Passkey);
+          }}
+        >
+          <div className="flex w-full items-center justify-between">
+            <h3 className="font-semibold leading-none tracking-tight">
+              Passkey
+            </h3>
+            <ChevronRight className="size-5" />
+          </div>
+        </Button>
+      ) : null}
+    </div>
   );
 };
