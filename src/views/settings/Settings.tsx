@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { ROUTES } from '@/utils/routes';
 
 import { ChangePassword } from './ChangePassword';
+import { PasskeySettings } from './Passkey';
 import { Section } from './Section';
 
 export const Settings = () => {
@@ -24,6 +25,7 @@ export const Settings = () => {
             <Link href={ROUTES.settings.twofa}>Setup 2FA</Link>
           </Button>
         </Section>
+        <PasskeySettings />
       </div>
     </div>
   );

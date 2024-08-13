@@ -98,6 +98,7 @@ self.onmessage = async e => {
             currentPassword,
             newPassword,
             newPasswordHint,
+            currentMasterKey,
             currentProtectedSymmetricKey,
           },
         } = message;
@@ -109,7 +110,7 @@ self.onmessage = async e => {
 
         const symmetricKey = decryptSymmetricKey({
           protectedSymmetricKey: currentProtectedSymmetricKey,
-          masterKey: current.masterKey,
+          masterKey: currentMasterKey,
         });
 
         const result = await generateMasterKeyAndHash({
@@ -129,6 +130,29 @@ self.onmessage = async e => {
             newMasterKeyHash: result.masterPasswordHash,
             newProtectedSymmetricKey,
             newPasswordHint,
+          },
+        };
+
+        self.postMessage(response);
+
+        break;
+      }
+
+      case 'enablePasskeyEncryption': {
+        const { keys, prfSecret, options } = message.payload;
+
+        const symmetricKey = decryptSymmetricKey(keys);
+
+        const newProtectedSymmetricKey = changeProtectedSymmetricKey({
+          symmetricKey,
+          newMasterKey: prfSecret,
+        });
+
+        const response: WorkerResponse = {
+          type: 'enablePasskeyEncryption',
+          payload: {
+            protected_symmetric_key: newProtectedSymmetricKey,
+            options,
           },
         };
 

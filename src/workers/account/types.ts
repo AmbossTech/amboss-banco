@@ -1,3 +1,5 @@
+import { KeysType } from '@/stores/keys';
+
 import { CryptoNewWalletPayload } from '../crypto/types';
 
 export type CreateAccount = {
@@ -27,7 +29,16 @@ export type WorkerMessage =
         currentPassword: string;
         newPassword: string;
         newPasswordHint?: string;
+        currentMasterKey: string;
         currentProtectedSymmetricKey: string;
+      };
+    }
+  | {
+      type: 'enablePasskeyEncryption';
+      payload: {
+        keys: KeysType;
+        prfSecret: string;
+        options: string;
       };
     };
 
@@ -64,6 +75,13 @@ export type WorkerResponse =
         newMasterKeyHash: string;
         newProtectedSymmetricKey: string;
         newPasswordHint?: string;
+      };
+    }
+  | {
+      type: 'enablePasskeyEncryption';
+      payload: {
+        protected_symmetric_key: string;
+        options: string;
       };
     }
   | { type: 'loaded' }

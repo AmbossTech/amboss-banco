@@ -73,6 +73,80 @@ export type TwoFactorPasskeyAuthLoginMutation = {
   };
 };
 
+export type LoginPasskeyAddMutationVariables = Types.Exact<{
+  [key: string]: never;
+}>;
+
+export type LoginPasskeyAddMutation = {
+  __typename?: 'Mutation';
+  passkey: { __typename?: 'PasskeyMutations'; add: string };
+};
+
+export type LoginPasskeyVerifyMutationVariables = Types.Exact<{
+  options: Types.Scalars['String']['input'];
+}>;
+
+export type LoginPasskeyVerifyMutation = {
+  __typename?: 'Mutation';
+  passkey: { __typename?: 'PasskeyMutations'; verify: boolean };
+};
+
+export type LoginPasskeyInitAuthMutationVariables = Types.Exact<{
+  id: Types.Scalars['String']['input'];
+}>;
+
+export type LoginPasskeyInitAuthMutation = {
+  __typename?: 'Mutation';
+  passkey: { __typename?: 'PasskeyMutations'; init_authenticate: string };
+};
+
+export type LoginPasskeyAuthMutationVariables = Types.Exact<{
+  input: Types.PasskeyAuthenticateInput;
+}>;
+
+export type LoginPasskeyAuthMutation = {
+  __typename?: 'Mutation';
+  passkey: { __typename?: 'PasskeyMutations'; authenticate: boolean };
+};
+
+export type LoginPasskeyInitMutationVariables = Types.Exact<{
+  [key: string]: never;
+}>;
+
+export type LoginPasskeyInitMutation = {
+  __typename?: 'Mutation';
+  login: {
+    __typename?: 'LoginMutations';
+    passkey: {
+      __typename?: 'PasskeyLoginMutations';
+      init: {
+        __typename?: 'PasskeyLoginInit';
+        options: string;
+        session_id: string;
+      };
+    };
+  };
+};
+
+export type LoginPasskeyMutationVariables = Types.Exact<{
+  input: Types.PasskeyLoginInput;
+}>;
+
+export type LoginPasskeyMutation = {
+  __typename?: 'Mutation';
+  login: {
+    __typename?: 'LoginMutations';
+    passkey: {
+      __typename?: 'PasskeyLoginMutations';
+      login: {
+        __typename?: 'Login';
+        access_token?: string | null;
+        refresh_token?: string | null;
+      };
+    };
+  };
+};
+
 export const TwoFactorPasskeyAddDocument = gql`
   mutation TwoFactorPasskeyAdd {
     two_factor {
@@ -291,3 +365,311 @@ export type TwoFactorPasskeyAuthLoginMutationOptions =
     TwoFactorPasskeyAuthLoginMutation,
     TwoFactorPasskeyAuthLoginMutationVariables
   >;
+export const LoginPasskeyAddDocument = gql`
+  mutation LoginPasskeyAdd {
+    passkey {
+      add
+    }
+  }
+`;
+export type LoginPasskeyAddMutationFn = Apollo.MutationFunction<
+  LoginPasskeyAddMutation,
+  LoginPasskeyAddMutationVariables
+>;
+
+/**
+ * __useLoginPasskeyAddMutation__
+ *
+ * To run a mutation, you first call `useLoginPasskeyAddMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useLoginPasskeyAddMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [loginPasskeyAddMutation, { data, loading, error }] = useLoginPasskeyAddMutation({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useLoginPasskeyAddMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    LoginPasskeyAddMutation,
+    LoginPasskeyAddMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    LoginPasskeyAddMutation,
+    LoginPasskeyAddMutationVariables
+  >(LoginPasskeyAddDocument, options);
+}
+export type LoginPasskeyAddMutationHookResult = ReturnType<
+  typeof useLoginPasskeyAddMutation
+>;
+export type LoginPasskeyAddMutationResult =
+  Apollo.MutationResult<LoginPasskeyAddMutation>;
+export type LoginPasskeyAddMutationOptions = Apollo.BaseMutationOptions<
+  LoginPasskeyAddMutation,
+  LoginPasskeyAddMutationVariables
+>;
+export const LoginPasskeyVerifyDocument = gql`
+  mutation LoginPasskeyVerify($options: String!) {
+    passkey {
+      verify(options: $options)
+    }
+  }
+`;
+export type LoginPasskeyVerifyMutationFn = Apollo.MutationFunction<
+  LoginPasskeyVerifyMutation,
+  LoginPasskeyVerifyMutationVariables
+>;
+
+/**
+ * __useLoginPasskeyVerifyMutation__
+ *
+ * To run a mutation, you first call `useLoginPasskeyVerifyMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useLoginPasskeyVerifyMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [loginPasskeyVerifyMutation, { data, loading, error }] = useLoginPasskeyVerifyMutation({
+ *   variables: {
+ *      options: // value for 'options'
+ *   },
+ * });
+ */
+export function useLoginPasskeyVerifyMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    LoginPasskeyVerifyMutation,
+    LoginPasskeyVerifyMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    LoginPasskeyVerifyMutation,
+    LoginPasskeyVerifyMutationVariables
+  >(LoginPasskeyVerifyDocument, options);
+}
+export type LoginPasskeyVerifyMutationHookResult = ReturnType<
+  typeof useLoginPasskeyVerifyMutation
+>;
+export type LoginPasskeyVerifyMutationResult =
+  Apollo.MutationResult<LoginPasskeyVerifyMutation>;
+export type LoginPasskeyVerifyMutationOptions = Apollo.BaseMutationOptions<
+  LoginPasskeyVerifyMutation,
+  LoginPasskeyVerifyMutationVariables
+>;
+export const LoginPasskeyInitAuthDocument = gql`
+  mutation LoginPasskeyInitAuth($id: String!) {
+    passkey {
+      init_authenticate(id: $id)
+    }
+  }
+`;
+export type LoginPasskeyInitAuthMutationFn = Apollo.MutationFunction<
+  LoginPasskeyInitAuthMutation,
+  LoginPasskeyInitAuthMutationVariables
+>;
+
+/**
+ * __useLoginPasskeyInitAuthMutation__
+ *
+ * To run a mutation, you first call `useLoginPasskeyInitAuthMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useLoginPasskeyInitAuthMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [loginPasskeyInitAuthMutation, { data, loading, error }] = useLoginPasskeyInitAuthMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useLoginPasskeyInitAuthMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    LoginPasskeyInitAuthMutation,
+    LoginPasskeyInitAuthMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    LoginPasskeyInitAuthMutation,
+    LoginPasskeyInitAuthMutationVariables
+  >(LoginPasskeyInitAuthDocument, options);
+}
+export type LoginPasskeyInitAuthMutationHookResult = ReturnType<
+  typeof useLoginPasskeyInitAuthMutation
+>;
+export type LoginPasskeyInitAuthMutationResult =
+  Apollo.MutationResult<LoginPasskeyInitAuthMutation>;
+export type LoginPasskeyInitAuthMutationOptions = Apollo.BaseMutationOptions<
+  LoginPasskeyInitAuthMutation,
+  LoginPasskeyInitAuthMutationVariables
+>;
+export const LoginPasskeyAuthDocument = gql`
+  mutation LoginPasskeyAuth($input: PasskeyAuthenticateInput!) {
+    passkey {
+      authenticate(input: $input)
+    }
+  }
+`;
+export type LoginPasskeyAuthMutationFn = Apollo.MutationFunction<
+  LoginPasskeyAuthMutation,
+  LoginPasskeyAuthMutationVariables
+>;
+
+/**
+ * __useLoginPasskeyAuthMutation__
+ *
+ * To run a mutation, you first call `useLoginPasskeyAuthMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useLoginPasskeyAuthMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [loginPasskeyAuthMutation, { data, loading, error }] = useLoginPasskeyAuthMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useLoginPasskeyAuthMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    LoginPasskeyAuthMutation,
+    LoginPasskeyAuthMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    LoginPasskeyAuthMutation,
+    LoginPasskeyAuthMutationVariables
+  >(LoginPasskeyAuthDocument, options);
+}
+export type LoginPasskeyAuthMutationHookResult = ReturnType<
+  typeof useLoginPasskeyAuthMutation
+>;
+export type LoginPasskeyAuthMutationResult =
+  Apollo.MutationResult<LoginPasskeyAuthMutation>;
+export type LoginPasskeyAuthMutationOptions = Apollo.BaseMutationOptions<
+  LoginPasskeyAuthMutation,
+  LoginPasskeyAuthMutationVariables
+>;
+export const LoginPasskeyInitDocument = gql`
+  mutation LoginPasskeyInit {
+    login {
+      passkey {
+        init {
+          options
+          session_id
+        }
+      }
+    }
+  }
+`;
+export type LoginPasskeyInitMutationFn = Apollo.MutationFunction<
+  LoginPasskeyInitMutation,
+  LoginPasskeyInitMutationVariables
+>;
+
+/**
+ * __useLoginPasskeyInitMutation__
+ *
+ * To run a mutation, you first call `useLoginPasskeyInitMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useLoginPasskeyInitMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [loginPasskeyInitMutation, { data, loading, error }] = useLoginPasskeyInitMutation({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useLoginPasskeyInitMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    LoginPasskeyInitMutation,
+    LoginPasskeyInitMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    LoginPasskeyInitMutation,
+    LoginPasskeyInitMutationVariables
+  >(LoginPasskeyInitDocument, options);
+}
+export type LoginPasskeyInitMutationHookResult = ReturnType<
+  typeof useLoginPasskeyInitMutation
+>;
+export type LoginPasskeyInitMutationResult =
+  Apollo.MutationResult<LoginPasskeyInitMutation>;
+export type LoginPasskeyInitMutationOptions = Apollo.BaseMutationOptions<
+  LoginPasskeyInitMutation,
+  LoginPasskeyInitMutationVariables
+>;
+export const LoginPasskeyDocument = gql`
+  mutation LoginPasskey($input: PasskeyLoginInput!) {
+    login {
+      passkey {
+        login(input: $input) {
+          access_token
+          refresh_token
+        }
+      }
+    }
+  }
+`;
+export type LoginPasskeyMutationFn = Apollo.MutationFunction<
+  LoginPasskeyMutation,
+  LoginPasskeyMutationVariables
+>;
+
+/**
+ * __useLoginPasskeyMutation__
+ *
+ * To run a mutation, you first call `useLoginPasskeyMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useLoginPasskeyMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [loginPasskeyMutation, { data, loading, error }] = useLoginPasskeyMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useLoginPasskeyMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    LoginPasskeyMutation,
+    LoginPasskeyMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    LoginPasskeyMutation,
+    LoginPasskeyMutationVariables
+  >(LoginPasskeyDocument, options);
+}
+export type LoginPasskeyMutationHookResult = ReturnType<
+  typeof useLoginPasskeyMutation
+>;
+export type LoginPasskeyMutationResult =
+  Apollo.MutationResult<LoginPasskeyMutation>;
+export type LoginPasskeyMutationOptions = Apollo.BaseMutationOptions<
+  LoginPasskeyMutation,
+  LoginPasskeyMutationVariables
+>;

@@ -48,3 +48,61 @@ export const TwoFactorPasskeyAuthLogin = gql`
     }
   }
 `;
+
+export const LoginPasskeyAdd = gql`
+  mutation LoginPasskeyAdd {
+    passkey {
+      add
+    }
+  }
+`;
+
+export const LoginPasskeyVerify = gql`
+  mutation LoginPasskeyVerify($options: String!) {
+    passkey {
+      verify(options: $options)
+    }
+  }
+`;
+
+export const LoginPasskeyInitAuth = gql`
+  mutation LoginPasskeyInitAuth($id: String!) {
+    passkey {
+      init_authenticate(id: $id)
+    }
+  }
+`;
+
+export const LoginPasskeyAuth = gql`
+  mutation LoginPasskeyAuth($input: PasskeyAuthenticateInput!) {
+    passkey {
+      authenticate(input: $input)
+    }
+  }
+`;
+
+export const LoginPasskeyInit = gql`
+  mutation LoginPasskeyInit {
+    login {
+      passkey {
+        init {
+          options
+          session_id
+        }
+      }
+    }
+  }
+`;
+
+export const LoginPasskey = gql`
+  mutation LoginPasskey($input: PasskeyLoginInput!) {
+    login {
+      passkey {
+        login(input: $input) {
+          access_token
+          refresh_token
+        }
+      }
+    }
+  }
+`;

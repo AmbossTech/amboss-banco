@@ -9,6 +9,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
+import { VaultButton } from '@/components/button/VaultButton';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -38,6 +39,7 @@ import { useChangePasswordMutation } from '@/graphql/mutations/__generated__/cha
 import { useLogoutMutation } from '@/graphql/mutations/__generated__/logout.generated';
 import { useUserQuery } from '@/graphql/queries/__generated__/user.generated';
 import useCopyClipboard from '@/hooks/useClipboardCopy';
+import { useKeyStore } from '@/stores/keys';
 import { LOCALSTORAGE_KEYS } from '@/utils/constants';
 import { handleApolloError } from '@/utils/error';
 import { ROUTES } from '@/utils/routes';
@@ -70,6 +72,8 @@ const FormSchema = z
 
 export const ChangePassword = () => {
   const [open, setOpen] = useState(false);
+
+  const keys = useKeyStore(s => s.keys);
 
   const workerRef = useRef<Worker>();
   const { data } = useUserQuery({ errorPolicy: 'ignore' });
@@ -149,7 +153,8 @@ export const ChangePassword = () => {
     if (
       !data?.user.email ||
       !data.user.protected_symmetric_key ||
-      !workerRef.current
+      !workerRef.current ||
+      !keys
     ) {
       setLoading(false);
       return;
@@ -162,7 +167,8 @@ export const ChangePassword = () => {
         currentPassword: values.current_password,
         newPassword: values.new_password,
         newPasswordHint: values.password_hint,
-        currentProtectedSymmetricKey: data.user.protected_symmetric_key,
+        currentMasterKey: keys.masterKey,
+        currentProtectedSymmetricKey: keys.protectedSymmetricKey,
       },
     };
 
@@ -232,201 +238,212 @@ export const ChangePassword = () => {
       title="Change Password"
       description="You can change your Master Password used to protect your funds and messages."
     >
-      <Dialog
-        open={open}
-        onOpenChange={() => {
-          if (loading) return;
+      {!keys ? (
+        <VaultButton className="w-full md:w-fit" />
+      ) : (
+        <Dialog
+          open={open}
+          onOpenChange={() => {
+            if (loading) return;
 
-          setOpen(o => !o);
+            setOpen(o => !o);
 
-          if (!open) {
-            form.reset();
-            setClickedGenerate(false);
-            setShowPassword(false);
-          }
-        }}
-      >
-        <DialogTrigger asChild>
-          <Button className="w-full md:w-fit">Change Password</Button>
-        </DialogTrigger>
+            if (!open) {
+              form.reset();
+              setClickedGenerate(false);
+              setShowPassword(false);
+            }
+          }}
+        >
+          <DialogTrigger asChild>
+            <Button className="w-full md:w-fit">Change Password</Button>
+          </DialogTrigger>
 
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Change your password</DialogTitle>
-            <DialogDescription>
-              This will change the Master Password used to protect your funds
-              and messages.
-            </DialogDescription>
-          </DialogHeader>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Change your password</DialogTitle>
+              <DialogDescription>
+                This will change the Master Password used to protect your funds
+                and messages.
+              </DialogDescription>
+            </DialogHeader>
 
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <FormField
-                control={form.control}
-                name="current_password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Current Master Password</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Enter your current password"
-                        type="password"
-                        disabled={loading}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="new_password"
-                render={({ field }) => (
-                  <FormItem>
-                    <div className="flex w-full items-center justify-between">
-                      <FormLabel>New Master Password</FormLabel>
-                      <button
-                        type="button"
-                        onClick={handleGenerateClick}
-                        disabled={loading}
-                      >
-                        <Badge variant={'secondary'}>
-                          Generate Strong Password
-                        </Badge>
-                      </button>
-                    </div>
-                    <FormControl>
-                      <div className="flex gap-2">
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-4"
+              >
+                <FormField
+                  control={form.control}
+                  name="current_password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Current Master Password</FormLabel>
+                      <FormControl>
                         <Input
-                          placeholder="Super secret password"
-                          type={showPassword ? undefined : 'password'}
+                          placeholder="Enter your current password"
+                          type="password"
                           disabled={loading}
                           {...field}
                         />
-                        <Button
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="new_password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <div className="flex w-full items-center justify-between">
+                        <FormLabel>New Master Password</FormLabel>
+                        <button
                           type="button"
-                          onClick={() => setShowPassword(p => !p)}
-                          size={'icon'}
-                          className="px-2"
-                          variant={'outline'}
+                          onClick={handleGenerateClick}
+                          disabled={loading}
                         >
-                          {showPassword ? (
-                            <EyeOff className="size-4" />
-                          ) : (
-                            <Eye className="size-4" />
-                          )}
-                        </Button>
-                        {clickedGenerate ? (
+                          <Badge variant={'secondary'}>
+                            Generate Strong Password
+                          </Badge>
+                        </button>
+                      </div>
+                      <FormControl>
+                        <div className="flex gap-2">
+                          <Input
+                            placeholder="Super secret password"
+                            type={showPassword ? undefined : 'password'}
+                            disabled={loading}
+                            {...field}
+                          />
                           <Button
                             type="button"
-                            onClick={() => copyPassword(password)}
+                            onClick={() => setShowPassword(p => !p)}
                             size={'icon'}
                             className="px-2"
                             variant={'outline'}
                           >
-                            {copiedPassword ? (
-                              <CopyCheck color="green" className="size-4" />
+                            {showPassword ? (
+                              <EyeOff className="size-4" />
                             ) : (
-                              <Copy className="size-4" />
+                              <Eye className="size-4" />
                             )}
                           </Button>
-                        ) : null}
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                    <Progress value={Math.min(100, (entropy || 0) / 2)} />
-                    <FormDescription>
-                      <strong>Important: </strong>
-                      Your account cannot be recovered if you forget it!
-                    </FormDescription>
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="confirm_password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Confirm New Master Password</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Super secret password"
-                        type="password"
-                        disabled={loading}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="password_hint"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Master Password Hint</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Hint to remember your password"
-                        autoComplete="off"
-                        disabled={loading}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                    <FormDescription>
-                      <strong>Important: </strong>
-                      The password hint will be stored in clear text.
-                    </FormDescription>
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="accept_condition_1"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 pb-4">
-                    <FormControl>
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                        disabled={loading}
-                      />
-                    </FormControl>
-                    <div className="flex flex-col gap-2">
-                      <FormLabel>
-                        I understand that if I forget the password
-                        <strong> my account cannot be recovered.</strong>
-                      </FormLabel>
+                          {clickedGenerate ? (
+                            <Button
+                              type="button"
+                              onClick={() => copyPassword(password)}
+                              size={'icon'}
+                              className="px-2"
+                              variant={'outline'}
+                            >
+                              {copiedPassword ? (
+                                <CopyCheck color="green" className="size-4" />
+                              ) : (
+                                <Copy className="size-4" />
+                              )}
+                            </Button>
+                          ) : null}
+                        </div>
+                      </FormControl>
                       <FormMessage />
-                    </div>
-                  </FormItem>
-                )}
-              />
+                      <Progress value={Math.min(100, (entropy || 0) / 2)} />
+                      <FormDescription>
+                        <strong>Important: </strong>
+                        Your account cannot be recovered if you forget it!
+                      </FormDescription>
+                    </FormItem>
+                  )}
+                />
 
-              <DialogFooter className="gap-2 sm:justify-center">
-                <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  ) : null}
-                  Change
-                </Button>
-                <DialogClose asChild>
-                  <Button type="button" variant="secondary" className="w-full">
-                    Close
+                <FormField
+                  control={form.control}
+                  name="confirm_password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Confirm New Master Password</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Super secret password"
+                          type="password"
+                          disabled={loading}
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="password_hint"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Master Password Hint</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Hint to remember your password"
+                          autoComplete="off"
+                          disabled={loading}
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                      <FormDescription>
+                        <strong>Important: </strong>
+                        The password hint will be stored in clear text.
+                      </FormDescription>
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="accept_condition_1"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 pb-4">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                          disabled={loading}
+                        />
+                      </FormControl>
+                      <div className="flex flex-col gap-2">
+                        <FormLabel>
+                          I understand that if I forget the password
+                          <strong> my account cannot be recovered.</strong>
+                        </FormLabel>
+                        <FormMessage />
+                      </div>
+                    </FormItem>
+                  )}
+                />
+
+                <DialogFooter className="gap-2 sm:justify-center">
+                  <Button type="submit" className="w-full" disabled={loading}>
+                    {loading ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : null}
+                    Change
                   </Button>
-                </DialogClose>
-              </DialogFooter>
-            </form>
-          </Form>
-        </DialogContent>
-      </Dialog>
+                  <DialogClose asChild>
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      className="w-full"
+                    >
+                      Close
+                    </Button>
+                  </DialogClose>
+                </DialogFooter>
+              </form>
+            </Form>
+          </DialogContent>
+        </Dialog>
+      )}
     </Section>
   );
 };

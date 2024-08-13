@@ -114,3 +114,15 @@ export const changeProtectedSymmetricKey = ({
 
   return protectedSymmetricKey;
 };
+
+export const getSHA256ArrayBuffer = async (
+  message: string
+): Promise<ArrayBuffer> => {
+  const msgBuffer = new TextEncoder().encode(message);
+  return crypto.subtle.digest('SHA-256', msgBuffer);
+};
+
+export const getSHA256 = async (message: string): Promise<string> => {
+  const hashBuffer = await getSHA256ArrayBuffer(message);
+  return Buffer.from(hashBuffer).toString('hex');
+};

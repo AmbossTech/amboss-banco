@@ -231,6 +231,7 @@ export type LoginInput = {
 export type LoginMutations = {
   __typename?: 'LoginMutations';
   initial: Login;
+  passkey: PasskeyLoginMutations;
   two_factor: TwoFactorLoginMutations;
 };
 
@@ -250,6 +251,7 @@ export type Mutation = {
   contacts: ContactMutations;
   login: LoginMutations;
   logout: Scalars['Boolean']['output'];
+  passkey: PasskeyMutations;
   password: PasswordMutations;
   pay: PayMutations;
   refreshToken: RefreshToken;
@@ -271,6 +273,57 @@ export type NewAccount = {
   access_token: Scalars['String']['output'];
   id: Scalars['String']['output'];
   refresh_token: Scalars['String']['output'];
+};
+
+export type PasskeyAuthenticateInput = {
+  options: Scalars['String']['input'];
+  protected_symmetric_key?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type PasskeyLoginInit = {
+  __typename?: 'PasskeyLoginInit';
+  options: Scalars['String']['output'];
+  session_id: Scalars['String']['output'];
+};
+
+export type PasskeyLoginInput = {
+  options: Scalars['String']['input'];
+  session_id: Scalars['String']['input'];
+};
+
+export type PasskeyLoginMutations = {
+  __typename?: 'PasskeyLoginMutations';
+  init: PasskeyLoginInit;
+  login: Login;
+};
+
+export type PasskeyLoginMutationsLoginArgs = {
+  input: PasskeyLoginInput;
+};
+
+export type PasskeyMutations = {
+  __typename?: 'PasskeyMutations';
+  add: Scalars['String']['output'];
+  authenticate: Scalars['Boolean']['output'];
+  init_authenticate: Scalars['String']['output'];
+  verify: Scalars['Boolean']['output'];
+};
+
+export type PasskeyMutationsAuthenticateArgs = {
+  input: PasskeyAuthenticateInput;
+};
+
+export type PasskeyMutationsInit_AuthenticateArgs = {
+  id: Scalars['String']['input'];
+};
+
+export type PasskeyMutationsVerifyArgs = {
+  options: Scalars['String']['input'];
+};
+
+export type PasskeyQueries = {
+  __typename?: 'PasskeyQueries';
+  find_many: Array<SimplePasskey>;
 };
 
 export type PasswordMutations = {
@@ -386,6 +439,7 @@ export enum PaymentOptionNetwork {
 export type Query = {
   __typename?: 'Query';
   hello: Scalars['String']['output'];
+  passkey: PasskeyQueries;
   pay: PayQueries;
   two_factor: TwoFactorQueries;
   user: User;
@@ -469,6 +523,15 @@ export type SignUpInput = {
   wallet?: InputMaybe<CreateWalletInput>;
 };
 
+export type SimplePasskey = {
+  __typename?: 'SimplePasskey';
+  created_at: Scalars['String']['output'];
+  encryption_available: Scalars['Boolean']['output'];
+  encryption_enabled: Scalars['Boolean']['output'];
+  id: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+};
+
 export type SimpleSwap = {
   __typename?: 'SimpleSwap';
   id: Scalars['String']['output'];
@@ -480,7 +543,7 @@ export type SimpleTwoFactor = {
   enabled: Scalars['Boolean']['output'];
   id: Scalars['String']['output'];
   method: TwoFactorMethod;
-  passkey_name: Scalars['String']['output'];
+  passkey_name?: Maybe<Scalars['String']['output']>;
 };
 
 export type SimpleWallet = {
@@ -633,6 +696,7 @@ export type User = {
   id: Scalars['String']['output'];
   protected_symmetric_key: Scalars['String']['output'];
   swap_info: UserSwapInfo;
+  using_passkey_id?: Maybe<Scalars['String']['output']>;
   wallet: UserWalletInfo;
 };
 

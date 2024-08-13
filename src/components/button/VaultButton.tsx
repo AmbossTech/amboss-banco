@@ -2,7 +2,9 @@
 
 import { ApolloError, useApolloClient } from '@apollo/client';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Loader2, Lock, Unlock } from 'lucide-react';
+import { startAuthentication } from '@simplewebauthn/browser';
+import { PublicKeyCredentialRequestOptionsJSON } from '@simplewebauthn/types';
+import { Loader2, Lock, Unlock, X } from 'lucide-react';
 import { FC, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -12,11 +14,21 @@ import {
   CheckPasswordMutation,
   CheckPasswordMutationVariables,
 } from '@/graphql/mutations/__generated__/checkPassword.generated';
+import {
+  LoginPasskeyAuthDocument,
+  LoginPasskeyAuthMutation,
+  LoginPasskeyAuthMutationVariables,
+  useLoginPasskeyInitAuthMutation,
+} from '@/graphql/mutations/__generated__/passkey.generated';
 import { useUserQuery } from '@/graphql/queries/__generated__/user.generated';
 import { useKeyStore } from '@/stores/keys';
 import { toWithError } from '@/utils/async';
 import { cn } from '@/utils/cn';
 import { handleApolloError } from '@/utils/error';
+import {
+  cleanupWebauthnAuthenticationResponse,
+  getPRFSalt,
+} from '@/utils/passkey';
 import { WorkerMessage, WorkerResponse } from '@/workers/account/types';
 
 import { Button } from '../ui/button';
@@ -205,11 +217,11 @@ const UnlockDialogContent: FC<{ callback: () => void }> = ({ callback }) => {
   );
 };
 
-export const VaultButton: FC<{
-  lockedTitle?: string;
+const VaultPasswordButton: FC<{
+  lockedTitle: string;
   className?: string;
   size?: 'sm';
-}> = ({ lockedTitle = 'Locked', className, size }) => {
+}> = ({ lockedTitle, className, size }) => {
   const keys = useKeyStore(s => s.keys);
 
   const clearKeys = useKeyStore(s => s.clear);
@@ -276,5 +288,205 @@ export const VaultButton: FC<{
         )}
       </DialogContent>
     </Dialog>
+  );
+};
+
+const PasskeyVaultButton: FC<{
+  lockedTitle: string;
+  className?: string;
+  size?: 'sm';
+  protectedSymmetricKey: string;
+  passkeyId: string;
+}> = ({ lockedTitle, className, size, protectedSymmetricKey, passkeyId }) => {
+  const client = useApolloClient();
+
+  const keys = useKeyStore(s => s.keys);
+  const setKeys = useKeyStore(s => s.setKeys);
+  const clearKeys = useKeyStore(s => s.clear);
+
+  const [loading, setLoading] = useState(false);
+
+  const { toast } = useToast();
+
+  const [setup, { loading: addLoading }] = useLoginPasskeyInitAuthMutation({
+    onCompleted: data => {
+      try {
+        handleAuthentication(JSON.parse(data.passkey.init_authenticate));
+      } catch (error) {
+        toast({
+          variant: 'destructive',
+          title: 'Error enabling encryption for Passkey.',
+        });
+      }
+    },
+    onError: err => {
+      const messages = handleApolloError(err);
+
+      toast({
+        variant: 'destructive',
+        title: 'Error getting Passkey details.',
+        description: messages.join(', '),
+      });
+    },
+  });
+
+  const handleAuthentication = async (
+    options: PublicKeyCredentialRequestOptionsJSON
+  ) => {
+    setLoading(true);
+
+    try {
+      const originalResponse = await startAuthentication({
+        ...options,
+        extensions: {
+          ...options.extensions,
+          prf: { eval: { first: await getPRFSalt() } },
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } as any,
+      });
+
+      const { response, prfSecretHash } =
+        await cleanupWebauthnAuthenticationResponse(originalResponse);
+
+      if (!prfSecretHash) {
+        throw new Error('This passkey does not have encryption capabilities.');
+      }
+
+      if ('prf' in response.clientExtensionResults) {
+        alert(
+          'PRF result should never be sent to the server. This should only happen if a developer made a mistake.'
+        );
+        return;
+      }
+
+      const [, error] = await toWithError(
+        client.mutate<
+          LoginPasskeyAuthMutation,
+          LoginPasskeyAuthMutationVariables
+        >({
+          mutation: LoginPasskeyAuthDocument,
+          variables: {
+            input: {
+              options: JSON.stringify(response),
+            },
+          },
+        })
+      );
+
+      if (error) {
+        const messages = handleApolloError(error as ApolloError);
+
+        toast({
+          variant: 'destructive',
+          title: 'Unable to unlock.',
+          description: messages.join(', '),
+        });
+      }
+
+      setKeys({
+        masterKey: prfSecretHash,
+        protectedSymmetricKey,
+      });
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        title: 'Error Unlocking.',
+        description: error instanceof Error ? error.message : undefined,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (!keys) {
+    return (
+      <Button
+        type="button"
+        variant="outline"
+        size={size}
+        className={cn(className)}
+        disabled={loading || addLoading}
+        onClick={() => {
+          setup({ variables: { id: passkeyId } });
+        }}
+      >
+        <Lock className="mr-2 h-4 w-4" color="red" />
+        {lockedTitle}
+      </Button>
+    );
+  }
+
+  return (
+    <Button
+      type="button"
+      variant="outline"
+      size={size}
+      className={cn(className)}
+      disabled={loading || addLoading}
+      onClick={() => {
+        clearKeys();
+      }}
+    >
+      <Unlock className="mr-2 h-4 w-4" color="green" />
+      Unlocked
+    </Button>
+  );
+};
+
+export const VaultButton: FC<{
+  lockedTitle?: string;
+  className?: string;
+  size?: 'sm';
+}> = ({ lockedTitle = 'Locked', className, size }) => {
+  const { data, loading, error } = useUserQuery();
+
+  if (loading) {
+    return (
+      <Button
+        type="button"
+        variant="outline"
+        size={size}
+        className={cn(className)}
+        disabled
+      >
+        <Loader2 className="mr-2 h-4 w-4 animate-spin" color="red" />
+        {lockedTitle}
+      </Button>
+    );
+  }
+
+  if (error || !data?.user.protected_symmetric_key) {
+    return (
+      <Button
+        type="button"
+        variant="outline"
+        size={size}
+        className={cn(className)}
+        disabled
+      >
+        <X className="mr-2 h-4 w-4" color="red" />
+        Error
+      </Button>
+    );
+  }
+
+  if (!!data.user.using_passkey_id) {
+    return (
+      <PasskeyVaultButton
+        lockedTitle={lockedTitle}
+        className={className}
+        size={size}
+        protectedSymmetricKey={data.user.protected_symmetric_key}
+        passkeyId={data.user.using_passkey_id}
+      />
+    );
+  }
+
+  return (
+    <VaultPasswordButton
+      lockedTitle={lockedTitle}
+      className={className}
+      size={size}
+    />
   );
 };

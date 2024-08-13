@@ -21,7 +21,7 @@ export type GetAccountTwoFactorMethodsQuery = {
       created_at: string;
       method: Types.TwoFactorMethod;
       enabled: boolean;
-      passkey_name: string;
+      passkey_name?: string | null;
     }>;
   };
 };

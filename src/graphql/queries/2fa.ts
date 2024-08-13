@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client';
 
-export const GetWalletSwaps = gql`
+export const getAccountTwoFactorMethods = gql`
   query getAccountTwoFactorMethods {
     two_factor {
       id
