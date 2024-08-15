@@ -534,7 +534,13 @@ export type SimplePasskey = {
 
 export type SimpleSwap = {
   __typename?: 'SimpleSwap';
+  created_at: Scalars['String']['output'];
+  deposit_amount?: Maybe<Scalars['String']['output']>;
+  deposit_coin: Scalars['String']['output'];
   id: Scalars['String']['output'];
+  provider: SwapProvider;
+  settle_amount?: Maybe<Scalars['String']['output']>;
+  settle_coin: Scalars['String']['output'];
 };
 
 export type SimpleTwoFactor = {
@@ -576,6 +582,11 @@ export enum SwapNetwork {
   Ethereum = 'ethereum',
   Liquid = 'liquid',
   Tron = 'tron',
+}
+
+export enum SwapProvider {
+  Boltz = 'BOLTZ',
+  Sideshift = 'SIDESHIFT',
 }
 
 export type SwapQuote = {

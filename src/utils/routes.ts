@@ -9,6 +9,9 @@ export const ROUTES = {
     home: '/settings',
     twofa: '/settings/2fa',
   },
+  swaps: {
+    home: '/swaps',
+  },
   wallet: {
     home: '/wallet',
     settings: (id: string) => `/wallet/${id}/settings`,

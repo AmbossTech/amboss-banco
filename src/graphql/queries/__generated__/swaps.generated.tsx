@@ -21,7 +21,16 @@ export type GetWalletSwapsQuery = {
       swaps: {
         __typename?: 'WalletSwaps';
         id: string;
-        find_many: Array<{ __typename?: 'SimpleSwap'; id: string }>;
+        find_many: Array<{
+          __typename?: 'SimpleSwap';
+          id: string;
+          created_at: string;
+          provider: Types.SwapProvider;
+          deposit_coin: string;
+          deposit_amount?: string | null;
+          settle_coin: string;
+          settle_amount?: string | null;
+        }>;
       };
     };
   };
@@ -37,6 +46,12 @@ export const GetWalletSwapsDocument = gql`
           id
           find_many {
             id
+            created_at
+            provider
+            deposit_coin
+            deposit_amount
+            settle_coin
+            settle_amount
           }
         }
       }

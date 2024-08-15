@@ -10,6 +10,12 @@ export const GetWalletSwaps = gql`
           id
           find_many {
             id
+            created_at
+            provider
+            deposit_coin
+            deposit_amount
+            settle_coin
+            settle_amount
           }
         }
       }
