@@ -538,7 +538,7 @@ export type SimpleSwap = {
   deposit_amount?: Maybe<Scalars['String']['output']>;
   deposit_coin: Scalars['String']['output'];
   id: Scalars['String']['output'];
-  provider: Scalars['String']['output'];
+  provider: SwapProvider;
   settle_amount?: Maybe<Scalars['String']['output']>;
   settle_coin: Scalars['String']['output'];
 };
@@ -582,6 +582,11 @@ export enum SwapNetwork {
   Ethereum = 'ethereum',
   Liquid = 'liquid',
   Tron = 'tron',
+}
+
+export enum SwapProvider {
+  Boltz = 'BOLTZ',
+  Sideshift = 'SIDESHIFT',
 }
 
 export type SwapQuote = {

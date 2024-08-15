@@ -25,7 +25,7 @@ export type GetWalletSwapsQuery = {
           __typename?: 'SimpleSwap';
           id: string;
           created_at: string;
-          provider: string;
+          provider: Types.SwapProvider;
           deposit_coin: string;
           deposit_amount?: string | null;
           settle_coin: string;
