@@ -28,7 +28,7 @@ export const CardSection: FC<{
       >
         <div
           className={cn(
-            'mb-4 flex h-[42px] w-[42px] items-center justify-center rounded-full text-[22px] font-semibold text-black lg:h-12 lg:w-12 lg:text-[32px]',
+            'mb-4 flex h-14 w-14 items-center justify-center rounded-full text-[22px] font-semibold text-black lg:h-16 lg:w-16 lg:text-3xl',
             accent
           )}
         >
