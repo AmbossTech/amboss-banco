@@ -74,6 +74,7 @@ export const ChangePassword = () => {
   const [open, setOpen] = useState(false);
 
   const keys = useKeyStore(s => s.keys);
+  const clearKeys = useKeyStore(s => s.clear);
 
   const workerRef = useRef<Worker>();
   const { data } = useUserQuery({ errorPolicy: 'ignore' });
@@ -133,6 +134,7 @@ export const ChangePassword = () => {
 
   const [logout] = useLogoutMutation({
     onCompleted: () => {
+      clearKeys();
       localStorage.removeItem(LOCALSTORAGE_KEYS.currentWalletId);
       window.location.assign(ROUTES.home);
     },
