@@ -15,14 +15,14 @@ import circles from '/public/icons/circles.svg';
 import smallCircles from '/public/icons/small-circles.svg';
 import one from '/public/images/landing/1.webp';
 import two from '/public/images/landing/2.webp';
-import three from '/public/images/landing/3.webp';
-import four from '/public/images/landing/4.webp';
+import three from '/public/images/landing/3.svg';
+import four from '/public/images/landing/4.svg';
 import five from '/public/images/landing/5.webp';
 import six from '/public/images/landing/6.webp';
 import seven from '/public/images/landing/7.webp';
 import eight from '/public/images/landing/8.webp';
 import nine from '/public/images/landing/9.webp';
-import ten from '/public/images/landing/10.webp';
+import ten from '/public/images/landing/10.svg';
 import { Logo } from '@/components/Logo';
 import { Button } from '@/components/ui/button-v2';
 import { ROUTES } from '@/utils/routes';
@@ -36,9 +36,9 @@ export default function Page() {
   return (
     <main className="bg-black p-4 lg:px-12 lg:py-8">
       <div className="mx-auto max-w-screen-2xl">
-        <section className="relative grid min-h-dvh items-center gap-8 rounded-3xl bg-white p-4 lg:grid-cols-2 lg:px-6 lg:py-4">
+        <section className="relative grid items-center gap-8 rounded-3xl bg-white p-4 lg:grid-cols-2 lg:px-6 lg:py-4">
           <header className="z-10 flex w-full items-start justify-between lg:absolute lg:left-8 lg:top-10 lg:pr-[88px]">
-            <Logo className="w-28 fill-black lg:w-auto" />
+            <Logo className="w-32 fill-black lg:w-auto" />
 
             <div className="flex space-x-4">
               <Button variant="primary" asChild className="lg:hidden">
@@ -167,7 +167,9 @@ export default function Page() {
             <CardSection
               bg="bg-primary-v2"
               accent="bg-white"
-              icon={<ShieldCheck className="w-[22px] lg:w-[32px]" />}
+              icon={
+                <ShieldCheck className="h-[28px] w-[28px] lg:h-[32px] lg:w-[32px]" />
+              }
               title={l('friendly-secure')}
               subtitle={l('user-friendly')}
               image={
@@ -184,7 +186,9 @@ export default function Page() {
             <CardSection
               bg="bg-white"
               accent="bg-primary-v2"
-              icon={<KeyRound className="w-[22px] lg:w-[32px]" />}
+              icon={
+                <KeyRound className="h-[28px] w-[28px] lg:h-[32px] lg:w-[32px]" />
+              }
               title={l('self-custody')}
               subtitle={l('no-parties')}
               image={
@@ -202,7 +206,9 @@ export default function Page() {
             <CardSection
               bg="bg-accent-green"
               accent="bg-white"
-              icon={<ArrowLeftRight className="w-[22px] lg:w-[32px]" />}
+              icon={
+                <ArrowLeftRight className="h-[28px] w-[28px] lg:h-[32px] lg:w-[32px]" />
+              }
               title={l('instant-payments')}
               subtitle={l('ease-payments')}
               image={
@@ -219,7 +225,9 @@ export default function Page() {
             <CardSection
               bg="bg-accent-black"
               accent="bg-primary-v2"
-              icon={<LockKeyhole className="w-[22px] lg:w-[32px]" />}
+              icon={
+                <LockKeyhole className="h-[28px] w-[28px] lg:h-[32px] lg:w-[32px]" />
+              }
               title={l('private-messaging')}
               subtitle={l('send-messages')}
               image={
@@ -236,7 +244,7 @@ export default function Page() {
           </div>
         </section>
 
-        <section className="relative my-8 flex items-center justify-center rounded-3xl bg-white p-4 lg:my-6 lg:min-h-dvh lg:px-24 lg:py-[120px]">
+        <section className="relative my-8 flex items-center justify-center rounded-3xl bg-white p-4 lg:my-6 lg:px-24 lg:py-[120px]">
           <div className="z-10">
             <Image src={ten} alt="chat-bubbles" className="mx-auto" />
 
