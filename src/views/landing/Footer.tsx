@@ -46,7 +46,7 @@ export const Footer = () => {
             key={l.title}
             href={l.link}
             target="_blank"
-            className="text-base font-semibold text-white"
+            className="text-base font-semibold text-white transition-colors hover:text-neutral-300"
           >
             {l.title}
           </a>
