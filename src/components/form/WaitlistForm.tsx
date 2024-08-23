@@ -101,7 +101,7 @@ export const WaitlistForm: FC<{
 
   return (
     <div className="mx-auto max-w-96 px-4 py-10">
-      <Image src={hourglass} alt="hourglass" className="mx-auto" />
+      <Image src={hourglass} alt="hourglass" className="mx-auto" priority />
 
       <h1 className="my-4 text-center text-2xl font-semibold lg:text-3xl">
         {w('join')}
