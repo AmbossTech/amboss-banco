@@ -1,4 +1,11 @@
 {
+  "Common": {
+    "confirm-password": "Confirm Password",
+    "email": "Email",
+    "next": "Next",
+    "optional": "Optional",
+    "password": "Password"
+  },
   "Index": {
     "accounts": "Accounts",
     "contacts": "Contacts",
@@ -41,6 +48,28 @@
     "login": "Log In",
     "privacy": "Privacy Policy",
     "signup": "Sign up",
-    "terms": "Terms & Conditions"
+    "Signup": {
+      "accept-password": "I understand that if I forget the password my account cannot be recovered.",
+      "accept-terms": "By checking this box you agree to the <terms>Terms of Service</terms> and the <privacy>Privacy Policy</privacy>.",
+      "already": "Already have an account?",
+      "create": "Create an account",
+      "hint": "Password Hint",
+      "important": "Important: Your account cannot be recovered if you forget it!",
+      "invite": "If you have an invite code please enter to complete the signup process.",
+      "plain": "The password hint will be stored in plain text. Avoid using your full password as a hint!",
+      "referral": "Referral Code",
+      "save": "Please save your password as it cannot be recovered if lost.",
+      "set": "Set a password",
+      "submit": "Create Account"
+    },
+    "terms": "Terms & Conditions",
+    "Waitlist": {
+      "good-things": "Good things take time. We’d love for you to be the first to know when we’re live!",
+      "join": "Join our waitlist",
+      "notify": "We'll notify you as soon as we're ready for you.",
+      "referral": "I have a referral code",
+      "submit": "Join Waitlist",
+      "subscriber": "I am an Amboss subscriber"
+    }
   }
 }

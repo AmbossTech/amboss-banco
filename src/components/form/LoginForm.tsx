@@ -272,7 +272,7 @@ export const LoginForm: FC<{
   const [passkeyLogin, setPasskeyLogin] = useState<boolean>(false);
 
   return (
-    <Card className="w-full max-w-96">
+    <Card className="mx-auto my-10 w-full max-w-96">
       <CardHeader>
         <CardTitle>Login</CardTitle>
       </CardHeader>
