@@ -300,7 +300,11 @@ export default function Page() {
                     alt="status"
                     className="absolute -left-7 -top-10 z-20 transition-transform duration-500 group-hover:-translate-y-2"
                   />
-                  <Image src={person1} alt="person" className="mr-[71px]" />
+                  <Image
+                    src={person1}
+                    alt="person"
+                    className="mr-[51px] xl:mr-[71px]"
+                  />
                 </div>
 
                 <div className="group relative self-start">
@@ -309,7 +313,11 @@ export default function Page() {
                     alt="status"
                     className="absolute -left-5 -top-10 z-20 transition-transform duration-500 group-hover:-translate-y-2"
                   />
-                  <Image src={person2} alt="person" className="mr-[67px]" />
+                  <Image
+                    src={person2}
+                    alt="person"
+                    className="mr-[47px] xl:mr-[67px]"
+                  />
                 </div>
 
                 <div className="group relative">
