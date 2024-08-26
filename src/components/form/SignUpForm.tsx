@@ -1,27 +1,12 @@
 'use client';
 
 import { ApolloError, useApolloClient } from '@apollo/client';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { generateMnemonic } from '@scure/bip39';
-import { wordlist } from '@scure/bip39/wordlists/english';
-import stringEntropy from 'fast-password-entropy';
-import { Copy, CopyCheck, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { ArrowLeft, Eye, EyeOff, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
+import { useTranslations } from 'next-intl';
+import { FormEvent, useEffect, useRef, useState } from 'react';
 
-import { Button } from '@/components/ui/button';
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import {
   SignUpDocument,
@@ -29,55 +14,22 @@ import {
   SignUpMutationVariables,
 } from '@/graphql/mutations/__generated__/signUp.generated';
 import { WalletAccountType, WalletType } from '@/graphql/types';
-import useCopyClipboard from '@/hooks/useClipboardCopy';
 import { toWithError } from '@/utils/async';
 import { handleApolloError } from '@/utils/error';
 import { ROUTES } from '@/utils/routes';
 import { WorkerMessage, WorkerResponse } from '@/workers/account/types';
 
-import { Badge } from '../ui/badge';
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '../ui/card';
+import { Button } from '../ui/button-v2';
 import { Checkbox } from '../ui/checkbox';
-import { Progress } from '../ui/progress';
+import { Label } from '../ui/label';
 import { useToast } from '../ui/use-toast';
 import { WaitlistForm } from './WaitlistForm';
 
-const FormSchema = z
-  .object({
-    email: z.string().email().min(5, {
-      message: 'Invalid email.',
-    }),
-    password: z.string(),
-    confirm_password: z.string(),
-    password_hint: z.string().optional(),
-    referral_code: z.string().optional(),
-    accept_tos_and_pp: z.boolean(),
-    accept_condition_1: z.boolean(),
-  })
-  .refine(data => stringEntropy(data.password) >= 90, {
-    message: 'Password is weak.',
-    path: ['password'],
-  })
-  .refine(data => data.password === data.confirm_password, {
-    message: "Passwords don't match.",
-    path: ['confirm_password'],
-  })
-  .refine(data => !!data.accept_tos_and_pp, {
-    message: 'You must accept to sign up.',
-    path: ['accept_tos_and_pp'],
-  })
-  .refine(data => !!data.accept_condition_1, {
-    message: 'You must accept to sign up.',
-    path: ['accept_condition_1'],
-  });
-
 export function SignUpForm() {
+  const s = useTranslations('Public.Signup');
+  const c = useTranslations('Common');
+  const p = useTranslations('Public');
+
   const searchParams = useSearchParams();
   const referralParam = searchParams.get('referral');
 
@@ -90,31 +42,22 @@ export function SignUpForm() {
   const [view, setView] = useState<'waitlist' | 'sign-up'>(
     referralParam ? 'sign-up' : 'waitlist'
   );
+  const [subscriber, setSubscriber] = useState(false);
+  const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [clickedGenerate, setClickedGenerate] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  const [copiedPassword, copyPassword] = useCopyClipboard();
+  const [email, setEmail] = useState('');
+  const [referralCode, setReferralCode] = useState(referralParam || '');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordHint, setPasswordHint] = useState('');
+  const [acceptTermsAndPrivacy, setAcceptTermsAndPrivacy] = useState(false);
+  const [acceptPasswordWarning, setAcceptPasswordWarning] = useState(false);
 
-  const form = useForm<z.infer<typeof FormSchema>>({
-    reValidateMode: 'onChange',
-    resolver: zodResolver(FormSchema),
-    defaultValues: {
-      email: '',
-      password: '',
-      password_hint: '',
-      confirm_password: '',
-      referral_code: referralParam || '',
-      accept_tos_and_pp: false,
-      accept_condition_1: false,
-    },
-  });
+  const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
-  const password = form.watch('password', '');
-
-  const entropy = stringEntropy(password);
-
-  const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     if (loading) return;
 
     setLoading(true);
@@ -123,10 +66,10 @@ export function SignUpForm() {
       const message: WorkerMessage = {
         type: 'create',
         payload: {
-          email: data.email,
-          password: data.password,
-          password_hint: data.password_hint,
-          referral_code: data.referral_code,
+          email,
+          password,
+          password_hint: passwordHint,
+          referral_code: referralCode,
         },
       };
 
@@ -190,6 +133,17 @@ export function SignUpForm() {
           window.location.href = ROUTES.dashboard;
 
           break;
+
+        case 'error':
+          toast({
+            variant: 'destructive',
+            title: 'Error creating account.',
+            description: message.msg,
+          });
+
+          setLoading(false);
+
+          break;
       }
     };
 
@@ -203,243 +157,266 @@ export function SignUpForm() {
     };
   }, [client, toast]);
 
-  const handleGenerateClick = () => {
-    const mnemonic = generateMnemonic(wordlist);
-    form.setValue('password', mnemonic);
-    form.setValue('confirm_password', mnemonic);
-    setClickedGenerate(true);
-  };
-
   return view === 'waitlist' ? (
-    <WaitlistForm setView={setView} />
+    <WaitlistForm setView={setView} setSubscriber={setSubscriber} />
   ) : (
-    <Card>
-      <CardHeader>
-        <CardTitle>Sign up</CardTitle>
-      </CardHeader>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
-          <CardContent className="flex flex-col gap-4">
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input placeholder="satoshi@nakamoto.com" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                  <FormDescription>
-                    You will use your email to login.
-                  </FormDescription>
-                </FormItem>
-              )}
-            />
+    <form onSubmit={onSubmit} className="relative mx-auto my-10 max-w-96 px-4">
+      {step > 0 ? (
+        <button
+          type="button"
+          onClick={() => setStep(s => s - 1)}
+          disabled={loading}
+          className="absolute left-4 top-1 transition-opacity hover:opacity-75 lg:-left-8 lg:top-1.5"
+        >
+          <ArrowLeft size={24} />
+        </button>
+      ) : null}
 
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <div className="flex w-full items-center justify-between">
-                    <FormLabel>Master Password</FormLabel>
-                    <button type="button" onClick={handleGenerateClick}>
-                      <Badge variant={'secondary'}>
-                        Generate Strong Password
-                      </Badge>
-                    </button>
-                  </div>
-                  <FormControl>
-                    <div className="flex gap-2">
-                      <Input
-                        placeholder="super secret password"
-                        type={showPassword ? undefined : 'password'}
-                        autoComplete="off"
-                        {...field}
-                      />
-                      <Button
-                        type="button"
-                        onClick={() => setShowPassword(p => !p)}
-                        size={'icon'}
-                        className="px-2"
-                        variant={'outline'}
-                      >
-                        {showPassword ? (
-                          <EyeOff className="size-4" />
-                        ) : (
-                          <Eye className="size-4" />
-                        )}
-                      </Button>
-                      {clickedGenerate ? (
-                        <Button
-                          type="button"
-                          onClick={() => copyPassword(password)}
-                          size={'icon'}
-                          className="px-2"
-                          variant={'outline'}
-                        >
-                          {copiedPassword ? (
-                            <CopyCheck color="green" className="size-4" />
-                          ) : (
-                            <Copy className="size-4" />
-                          )}
-                        </Button>
-                      ) : null}
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                  <Progress value={Math.min(100, (entropy || 0) / 2)} />
-                  <FormDescription>
-                    <strong>Important: </strong>
-                    Your account cannot be recovered if you forget it!
-                  </FormDescription>
-                </FormItem>
-              )}
-            />
+      {step === 0 ? (
+        <>
+          <h1 className="mb-4 text-center text-2xl font-semibold lg:text-3xl">
+            {s('create')}
+          </h1>
 
-            <FormField
-              control={form.control}
-              name="confirm_password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Confirm your Master Password</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="super secret password"
-                      type="password"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          <p className="mb-6 text-center">
+            {s('already')}{' '}
+            <Link
+              href={ROUTES.login.home}
+              className="text-primary-v2 transition-colors hover:text-primary-v2-hover"
+            >
+              {p('login')}
+            </Link>
+          </p>
 
-            <FormField
-              control={form.control}
-              name="password_hint"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Master Password Hint</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Hint to remember your password"
-                      autoComplete="off"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                  <FormDescription>
-                    <strong>Important: </strong>
-                    The password hint will be stored in clear text.
-                  </FormDescription>
-                </FormItem>
-              )}
-            />
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email">{c('email')}</Label>
 
-            <FormField
-              control={form.control}
-              name="referral_code"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Referral Code</FormLabel>
-                  <FormControl>
-                    <Input placeholder="36b8f84d" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                  <FormDescription>
-                    If you have an invite code please enter to complete the
-                    signup process.
-                  </FormDescription>
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="accept_tos_and_pp"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-start space-x-3 space-y-0 pt-4">
-                  <FormControl>
-                    <Checkbox
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                  <div className="flex flex-col gap-2">
-                    <FormLabel>
-                      By checking this box you agree to the{' '}
-                      <Link
-                        href={ROUTES.docs.termsOfService}
-                        target="_blank"
-                        className="text-primary"
-                      >
-                        Terms of Service
-                      </Link>{' '}
-                      and the{' '}
-                      <Link
-                        href={ROUTES.docs.privacyPolicy}
-                        target="_blank"
-                        className="text-primary"
-                      >
-                        Privacy Policy
-                      </Link>
-                      .
-                    </FormLabel>
-
-                    <FormMessage />
-                  </div>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="accept_condition_1"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-start space-x-3 space-y-0 pb-4">
-                  <FormControl>
-                    <Checkbox
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                  <div className="flex flex-col gap-2">
-                    <FormLabel>
-                      I understand that if I forget the password
-                      <strong> my account cannot be recovered.</strong>
-                    </FormLabel>
-
-                    <FormMessage />
-                  </div>
-                </FormItem>
-              )}
-            />
-          </CardContent>
-
-          <CardFooter>
-            <div className="w-full">
-              <Button type="submit" disabled={loading} className="w-full">
-                {loading ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : null}
-                Sign Up
-              </Button>
-
-              <Link href={ROUTES.login.home} className="w-full">
-                <Button
-                  type="button"
-                  disabled={loading}
-                  variant={'ghost'}
-                  className="mt-4 w-full"
-                >
-                  Login
-                </Button>
-              </Link>
+              <Input
+                id="email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                placeholder="satoshi@nakamoto.com"
+              />
             </div>
-          </CardFooter>
-        </form>
-      </Form>
-    </Card>
+
+            {!subscriber ? (
+              <div className="space-y-2">
+                <Label htmlFor="referralCode">{s('referral')}</Label>
+
+                <Input
+                  id="referralCode"
+                  value={referralCode}
+                  onChange={e => setReferralCode(e.target.value)}
+                  placeholder="36b8f84d"
+                />
+
+                <p className="text-sm text-neutral-400">{s('invite')}</p>
+              </div>
+            ) : null}
+
+            <Button
+              type="button"
+              disabled={!email}
+              onClick={() => {
+                const emailRegex =
+                  /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+
+                if (!emailRegex.test(email)) {
+                  toast({
+                    variant: 'destructive',
+                    title: 'Invalid email.',
+                  });
+
+                  return;
+                }
+
+                if (email.length < 5) {
+                  toast({
+                    variant: 'destructive',
+                    title: 'Email too short.',
+                  });
+
+                  return;
+                }
+
+                setStep(1);
+              }}
+              className="w-full"
+            >
+              {c('next')}
+            </Button>
+          </div>
+        </>
+      ) : step === 1 ? (
+        <>
+          <h1 className="mb-6 text-center text-2xl font-semibold lg:text-3xl">
+            {s('set')}
+          </h1>
+
+          <p className="mb-6 rounded-xl border border-orange-400 px-4 py-2 text-sm">
+            {s('save')}
+          </p>
+
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="password">{c('password')}</Label>
+
+              <div className="flex items-center gap-2">
+                <Input
+                  id="password"
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  type={showPassword ? undefined : 'password'}
+                  autoComplete="off"
+                />
+
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(p => !p)}
+                  className="transition-opacity hover:opacity-75"
+                >
+                  {showPassword ? (
+                    <EyeOff className="size-6" />
+                  ) : (
+                    <Eye className="size-6" />
+                  )}
+                </button>
+              </div>
+
+              <p className="text-sm text-neutral-400">{s('important')}</p>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="confirmPassword">{c('confirm-password')}</Label>
+
+              <Input
+                id="confirmPassword"
+                value={confirmPassword}
+                onChange={e => setConfirmPassword(e.target.value)}
+                type="password"
+              />
+            </div>
+
+            <Button
+              type="button"
+              disabled={!password || !confirmPassword}
+              onClick={() => {
+                if (password.length < 8) {
+                  toast({
+                    variant: 'destructive',
+                    title: 'Password is too weak.',
+                  });
+
+                  return;
+                }
+
+                if (password !== confirmPassword) {
+                  toast({
+                    variant: 'destructive',
+                    title: "Passwords don't match.",
+                  });
+
+                  return;
+                }
+
+                setStep(2);
+              }}
+              className="w-full"
+            >
+              {c('next')}
+            </Button>
+          </div>
+        </>
+      ) : step === 2 ? (
+        <>
+          <h1 className="mb-6 text-center text-2xl font-semibold lg:text-3xl">
+            {s('hint')}
+          </h1>
+
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <Label htmlFor="passwordHint">
+                {s('hint')} ({c('optional')})
+              </Label>
+
+              <Input
+                id="passwordHint"
+                value={passwordHint}
+                onChange={e => setPasswordHint(e.target.value)}
+                autoComplete="off"
+                disabled={loading}
+              />
+
+              <p className="text-sm text-neutral-400">{s('plain')}</p>
+            </div>
+
+            <div className="flex space-x-3 space-y-0">
+              <Checkbox
+                id="acceptTermsAndPrivacy"
+                disabled={loading}
+                checked={acceptTermsAndPrivacy}
+                onCheckedChange={() => setAcceptTermsAndPrivacy(v => !v)}
+              />
+
+              <Label
+                htmlFor="acceptTermsAndPrivacy"
+                className="text-sm font-medium"
+              >
+                {s.rich('accept-terms', {
+                  terms: chunks => (
+                    <Link
+                      href={ROUTES.docs.termsOfService}
+                      target="_blank"
+                      className="text-primary-v2 transition-colors hover:text-primary-v2-hover"
+                    >
+                      {chunks}
+                    </Link>
+                  ),
+                  privacy: chunks => (
+                    <Link
+                      href={ROUTES.docs.privacyPolicy}
+                      target="_blank"
+                      className="text-primary-v2 transition-colors hover:text-primary-v2-hover"
+                    >
+                      {chunks}
+                    </Link>
+                  ),
+                })}
+              </Label>
+            </div>
+
+            <div className="flex space-x-3 space-y-0">
+              <Checkbox
+                id="acceptPasswordWarning"
+                disabled={loading}
+                checked={acceptPasswordWarning}
+                onCheckedChange={() => setAcceptPasswordWarning(v => !v)}
+              />
+
+              <Label
+                htmlFor="acceptPasswordWarning"
+                className="text-sm font-medium"
+              >
+                {s('accept-password')}
+              </Label>
+            </div>
+
+            <Button
+              type="submit"
+              disabled={
+                !acceptTermsAndPrivacy || !acceptPasswordWarning || loading
+              }
+              className="flex w-full items-center justify-center"
+            >
+              {loading ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin text-black" />
+              ) : null}
+              {s('submit')}
+            </Button>
+          </div>
+        </>
+      ) : null}
+    </form>
   );
 }

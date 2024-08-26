@@ -1,4 +1,11 @@
 {
+  "Common": {
+    "confirm-password": "Repite la Contraseña",
+    "email": "Correo",
+    "next": "Siguiente",
+    "optional": "Opcional",
+    "password": "Contraseña"
+  },
   "Index": {
     "accounts": "Cuentas",
     "contacts": "Contactos",
@@ -41,6 +48,28 @@
     "login": "Iniciar Sesión",
     "privacy": "Política de Privacidad",
     "signup": "Registrarse",
-    "terms": "Términos y Condiciones"
+    "Signup": {
+      "accept-password": "Entiendo que si olvido mi contraseña, la cuenta no se puede recuperar.",
+      "accept-terms": "Confirmo que acepto los <terms>Términos de Servicio</terms> y la <privacy>Política de Privacidad</privacy>.",
+      "already": "Ya tienes una cuenta?",
+      "create": "Crea una cuenta",
+      "hint": "Recordatorio para la contraseña",
+      "important": "Importante: Tu cuenta no se puede recuperar si lo olvidas!",
+      "invite": "Si tienes un código de invitación por favor introducelo para completar el processo de registro.",
+      "plain": "El recordatorio para la contraseña se guarda sin encripción. Evita usar la misma contraseña como recordatorio!",
+      "referral": "Código de Invitación",
+      "save": "Por favór guarda la contraseña. No se puede recuperar si se pierde.",
+      "set": "Crea una contraseña",
+      "submit": "Crea una cuenta"
+    },
+    "terms": "Términos y Condiciones",
+    "Waitlist": {
+      "good-things": "Las cosas buenas toman tiempo. Nos encantaría avisarte apenas estemos listos!",
+      "join": "Uneté a nuestra lista de espera",
+      "notify": "Te notificaremos apenas estemos listos para ti.",
+      "referral": "Tengo un código de invitación",
+      "submit": "Uneté a nuestra lista de espera",
+      "subscriber": "Tengo una subscripción de Amboss"
+    }
   }
 }
