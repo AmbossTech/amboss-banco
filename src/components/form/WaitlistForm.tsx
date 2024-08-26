@@ -33,7 +33,8 @@ const FormSchema = z.object({
 
 export const WaitlistForm: FC<{
   setView: Dispatch<SetStateAction<'waitlist' | 'sign-up'>>;
-}> = ({ setView }) => {
+  setSubscriber: Dispatch<SetStateAction<boolean>>;
+}> = ({ setView, setSubscriber }) => {
   const w = useTranslations('Public.Waitlist');
   const c = useTranslations('Common');
 
@@ -150,7 +151,10 @@ export const WaitlistForm: FC<{
 
       <button
         type="button"
-        onClick={() => setView('sign-up')}
+        onClick={() => {
+          setSubscriber(true);
+          setView('sign-up');
+        }}
         disabled={loading}
         className="w-full text-center font-medium text-primary-v2 transition-colors hover:text-primary-v2-hover"
       >

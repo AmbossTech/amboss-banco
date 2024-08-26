@@ -42,6 +42,7 @@ export function SignUpForm() {
   const [view, setView] = useState<'waitlist' | 'sign-up'>(
     referralParam ? 'sign-up' : 'waitlist'
   );
+  const [subscriber, setSubscriber] = useState(false);
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
@@ -157,7 +158,7 @@ export function SignUpForm() {
   }, [client, toast]);
 
   return view === 'waitlist' ? (
-    <WaitlistForm setView={setView} />
+    <WaitlistForm setView={setView} setSubscriber={setSubscriber} />
   ) : (
     <form onSubmit={onSubmit} className="relative mx-auto my-10 max-w-96 px-4">
       {step > 0 ? (
@@ -199,18 +200,20 @@ export function SignUpForm() {
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="referralCode">{s('referral')}</Label>
+            {!subscriber ? (
+              <div className="space-y-2">
+                <Label htmlFor="referralCode">{s('referral')}</Label>
 
-              <Input
-                id="referralCode"
-                value={referralCode}
-                onChange={e => setReferralCode(e.target.value)}
-                placeholder="36b8f84d"
-              />
+                <Input
+                  id="referralCode"
+                  value={referralCode}
+                  onChange={e => setReferralCode(e.target.value)}
+                  placeholder="36b8f84d"
+                />
 
-              <p className="text-sm text-neutral-400">{s('invite')}</p>
-            </div>
+                <p className="text-sm text-neutral-400">{s('invite')}</p>
+              </div>
+            ) : null}
 
             <Button
               type="button"
