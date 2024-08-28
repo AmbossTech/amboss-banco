@@ -83,7 +83,7 @@ const PasskeyList = () => {
     onCompleted: () => {
       toast({
         title: 'Passkey Setup',
-        description: 'Passkey encryption has been configured for this passkey.',
+        description: 'Passkey encryption has been configured for this Passkey.',
       });
     },
     onError: err => {
@@ -117,7 +117,7 @@ const PasskeyList = () => {
         await cleanupWebauthnAuthenticationResponse(originalResponse);
 
       if (!prfSecretHash) {
-        throw new Error('This passkey does not have encryption capabilities.');
+        throw new Error('This Passkey does not have encryption capabilities.');
       }
 
       if ('prf' in response.clientExtensionResults) {

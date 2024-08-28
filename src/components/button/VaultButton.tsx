@@ -349,7 +349,7 @@ const PasskeyVaultButton: FC<{
         await cleanupWebauthnAuthenticationResponse(originalResponse);
 
       if (!prfSecretHash) {
-        throw new Error('This passkey does not have encryption capabilities.');
+        throw new Error('This Passkey does not have encryption capabilities.');
       }
 
       if ('prf' in response.clientExtensionResults) {
