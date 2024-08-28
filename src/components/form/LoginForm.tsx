@@ -57,7 +57,7 @@ export const LoginForm = () => {
     onCompleted: data => {
       if (
         data.login.initial.two_factor?.methods.find(
-          m => m.method === TwoFactorMethod.Otp
+          m => m.method === TwoFactorMethod.Otp && m.enabled
         )
       ) {
         setOTP(true);
