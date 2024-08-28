@@ -1,6 +1,7 @@
 'use client';
 
 import { ApolloError, useApolloClient } from '@apollo/client';
+import stringEntropy from 'fast-password-entropy';
 import { ArrowLeft, Eye, EyeOff, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
@@ -22,6 +23,7 @@ import { WorkerMessage, WorkerResponse } from '@/workers/account/types';
 import { Button } from '../ui/button-v2';
 import { Checkbox } from '../ui/checkbox';
 import { Label } from '../ui/label';
+import { Progress } from '../ui/progress';
 import { useToast } from '../ui/use-toast';
 import { WaitlistForm } from './WaitlistForm';
 
@@ -54,6 +56,8 @@ export function SignUpForm() {
   const [passwordHint, setPasswordHint] = useState('');
   const [acceptTermsAndPrivacy, setAcceptTermsAndPrivacy] = useState(false);
   const [acceptPasswordWarning, setAcceptPasswordWarning] = useState(false);
+
+  const entropy = stringEntropy(password);
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -283,6 +287,8 @@ export function SignUpForm() {
                   )}
                 </button>
               </div>
+
+              <Progress value={Math.min(100, (entropy || 0) / 2)} />
 
               <p className="text-sm text-neutral-400">{s('important')}</p>
             </div>
