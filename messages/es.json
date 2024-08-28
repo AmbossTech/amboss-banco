@@ -46,12 +46,12 @@
       "your-way": "Tu Manera."
     },
     "Login": {
-      "code": "Enter the code from your authenticator app",
-      "no-account": "Don't have an account?",
-      "or": "OR",
-      "password": "Your password",
-      "secure": "Your account is secured with an authentication code. Open up the Authenticator app and enter the code here.",
-      "with-passkey": "Log in with Passkey"
+      "code": "Introduce el código de la app de autenticación",
+      "no-account": "No tienes una cuenta?",
+      "or": "O",
+      "password": "Tu contraseña",
+      "secure": "Tu cuenta esta asegurada con un código de autenticación. Abre la app y introduce el código acá.",
+      "with-passkey": "Iniciar sesión con un Passkey"
     },
     "login": "Iniciar Sesión",
     "privacy": "Política de Privacidad",
