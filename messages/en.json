@@ -45,6 +45,14 @@
       "your-money": "Your Money.",
       "your-way": "Your Way."
     },
+    "Login": {
+      "code": "Enter the code from your authenticator app",
+      "no-account": "Don't have an account?",
+      "or": "OR",
+      "password": "Your password",
+      "secure": "Your account is secured with an authentication code. Open up the Authenticator app and enter the code here.",
+      "with-passkey": "Log in with Passkey"
+    },
     "login": "Log In",
     "privacy": "Privacy Policy",
     "signup": "Sign up",

@@ -45,6 +45,14 @@
       "your-money": "Tu Dinero.",
       "your-way": "Tu Manera."
     },
+    "Login": {
+      "code": "Enter the code from your authenticator app",
+      "no-account": "Don't have an account?",
+      "or": "OR",
+      "password": "Your password",
+      "secure": "Your account is secured with an authentication code. Open up the Authenticator app and enter the code here.",
+      "with-passkey": "Log in with Passkey"
+    },
     "login": "Iniciar Sesión",
     "privacy": "Política de Privacidad",
     "signup": "Registrarse",
