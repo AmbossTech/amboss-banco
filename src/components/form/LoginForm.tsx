@@ -258,7 +258,7 @@ export const LoginForm = () => {
             {l('no-account')}{' '}
             <Link
               href={ROUTES.signup}
-              className="hover:text-primary-hover text-primary transition-colors"
+              className="text-primary transition-colors hover:text-primary-hover"
             >
               {p('signup')}
             </Link>

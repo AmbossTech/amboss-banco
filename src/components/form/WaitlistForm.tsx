@@ -144,7 +144,7 @@ export const WaitlistForm: FC<{
         type="button"
         onClick={() => setView('sign-up')}
         disabled={loading}
-        className="hover:text-primary-hover my-4 w-full text-center font-medium text-primary transition-colors"
+        className="my-4 w-full text-center font-medium text-primary transition-colors hover:text-primary-hover"
       >
         {w('referral')}
       </button>
@@ -156,7 +156,7 @@ export const WaitlistForm: FC<{
           setView('sign-up');
         }}
         disabled={loading}
-        className="hover:text-primary-hover w-full text-center font-medium text-primary transition-colors"
+        className="w-full text-center font-medium text-primary transition-colors hover:text-primary-hover"
       >
         {w('subscriber')}
       </button>
