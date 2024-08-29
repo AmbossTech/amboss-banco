@@ -1,11 +1,11 @@
 'use client';
 
-import { Check, Languages } from 'lucide-react';
+import { Globe } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import * as React from 'react';
 import { useState } from 'react';
+import { useIsClient } from 'usehooks-ts';
 
-import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,6 +13,9 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { SupportedLanguage } from '@/i18n';
+import { cn } from '@/utils/cn';
+
+import { Button } from '../ui/button-v2';
 
 const getCookie = () =>
   document.cookie
@@ -27,17 +30,28 @@ const deleteCookie = () =>
   (document.cookie = 'locale=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;');
 
 export function LanguageToggle() {
+  const isClient = useIsClient();
+
   const { refresh } = useRouter();
 
   const [language, setLanguage] = useState<SupportedLanguage | undefined>(
     typeof window !== 'undefined' ? getCookie() : undefined
   );
 
+  if (!isClient) return null;
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="icon">
-          <Languages className="h-[1.2rem] w-[1.2rem]" />
+        <Button
+          variant="neutral"
+          size="sm"
+          className="flex items-center space-x-1"
+        >
+          <Globe size={16} />
+          <p className="uppercase">
+            {language || document.documentElement.lang}
+          </p>
           <span className="sr-only">Toggle theme</span>
         </Button>
       </DropdownMenuTrigger>
@@ -49,7 +63,7 @@ export function LanguageToggle() {
             refresh();
           }}
         >
-          English {language === 'en' && <Check size={14} className="ml-1" />}
+          <p className={cn(language === 'en' && 'font-bold')}>English 🇬🇧</p>
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => {
@@ -58,16 +72,16 @@ export function LanguageToggle() {
             refresh();
           }}
         >
-          Español {language === 'es' && <Check size={14} className="ml-1" />}
+          <p className={cn(language === 'es' && 'font-bold')}>Español 🇪🇸</p>
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => {
             deleteCookie();
             setLanguage(undefined);
-            refresh();
+            window.location.reload();
           }}
         >
-          System {!language && <Check size={14} className="ml-1" />}
+          <p className={cn(!language && 'font-bold')}>System</p>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
