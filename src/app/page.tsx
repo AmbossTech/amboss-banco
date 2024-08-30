@@ -30,6 +30,7 @@ import status1 from '/public/images/landing/status-1.svg';
 import status2 from '/public/images/landing/status-2.svg';
 import status3 from '/public/images/landing/status-3.svg';
 import { Logo } from '@/components/Logo';
+import { LanguageToggle } from '@/components/toggle/LanguageToggle';
 import { Button } from '@/components/ui/button-v2';
 import { ROUTES } from '@/utils/routes';
 import { CardSection } from '@/views/landing/CardSection';
@@ -54,7 +55,10 @@ export default function Page() {
         >
           <section className="relative grid items-center gap-8 rounded-3xl bg-white p-4 lg:grid-cols-2 lg:px-6 lg:py-4">
             <header className="z-10 flex w-full items-start justify-between lg:absolute lg:left-8 lg:top-10 lg:pr-[88px]">
-              <Logo className="w-32 fill-black lg:w-auto" />
+              <div className="flex flex-col gap-4 sm:flex-row">
+                <Logo className="w-32 fill-black lg:w-auto" />
+                <LanguageToggle />
+              </div>
 
               <div className="flex space-x-4">
                 <Button variant="primary" asChild className="lg:hidden">
