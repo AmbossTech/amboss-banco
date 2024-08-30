@@ -1,122 +1,163 @@
-'use client';
+import { startAuthentication } from '@simplewebauthn/browser';
+import { PublicKeyCredentialRequestOptionsJSON } from '@simplewebauthn/types';
+import { ArrowLeft, ArrowRight, KeyRound, ScanText } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { Dispatch, FC, ReactNode, SetStateAction } from 'react';
 
-import { ChevronRight } from 'lucide-react';
-import { FC, useMemo, useState } from 'react';
+import { useToast } from '@/components/ui/use-toast';
+import {
+  useTwoFactorPasskeyAuthInitMutation,
+  useTwoFactorPasskeyAuthLoginMutation,
+} from '@/graphql/mutations/__generated__/passkey.generated';
+import { SimpleTwoFactor, TwoFactorMethod } from '@/graphql/types';
+import { handleApolloError } from '@/utils/error';
+import { ROUTES } from '@/utils/routes';
 
-import { Button } from '@/components/ui/button';
-import { LoginMutation } from '@/graphql/mutations/__generated__/login.generated';
-import { TwoFactorMethod } from '@/graphql/types';
+const MethodButton: FC<{
+  icon: ReactNode;
+  title: string;
+  onClick: () => void;
+  disabled: boolean;
+}> = ({ icon, title, onClick, disabled }) => {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      className="flex w-full items-center justify-between space-x-3 rounded-2xl bg-neutral-800 px-4 py-2 transition-colors hover:bg-neutral-800/80"
+    >
+      <div className="flex items-center space-x-3 text-white">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-neutral-700">
+          {icon}
+        </div>
 
-import { OTPForm } from './OTPForm';
-import { PasskeyForm } from './PasskeyForm';
+        <p className="break-all font-semibold">{title}</p>
+      </div>
+
+      <ArrowRight size={24} className="shrink-0 text-neutral-500" />
+    </button>
+  );
+};
 
 export const TwoFASteps: FC<{
-  methods: LoginMutation['login']['initial']['two_factor'];
-}> = ({ methods }) => {
-  const [form, setForm] = useState<TwoFactorMethod | undefined>();
+  session_id: string;
+  methods: SimpleTwoFactor[];
+  setView: Dispatch<SetStateAction<'default' | '2fa' | 'otp'>>;
+}> = ({ session_id, methods, setView }) => {
+  const l = useTranslations('Public.Login');
 
-  const methodInfo = useMemo(() => {
-    const methodList = methods?.methods || [];
+  const { toast } = useToast();
 
-    const hasOTP = methodList.some(m => m.method === TwoFactorMethod.Otp);
-    const hasPasskey = methodList.some(
-      m => m.method === TwoFactorMethod.Passkey
-    );
+  const [initPasskey, { loading: initPasskeyLoading }] =
+    useTwoFactorPasskeyAuthInitMutation({
+      onCompleted: data => {
+        try {
+          handleAuthentication(
+            JSON.parse(data.login.two_factor.passkey.options)
+          );
+        } catch (error) {
+          toast({
+            variant: 'destructive',
+            title: 'Error adding Passkey.',
+          });
+        }
+      },
+      onError: err => {
+        const messages = handleApolloError(err);
 
-    const differentAvailableTypes = [hasOTP ? 1 : 0, hasPasskey ? 1 : 0].reduce(
-      (p, c) => p + c,
-      0
-    );
+        toast({
+          variant: 'destructive',
+          title: 'Error getting Passkey details.',
+          description: messages.join(', '),
+        });
+      },
+    });
 
-    return {
-      hasOTP,
-      hasPasskey,
-      differentAvailableTypes,
-    };
-  }, [methods]);
+  const [verifyPasskey, { loading: verifyPasskeyLoading }] =
+    useTwoFactorPasskeyAuthLoginMutation({
+      onCompleted: () => {
+        window.location.href = ROUTES.dashboard;
+      },
+      onError: err => {
+        const messages = handleApolloError(err);
 
-  const getMethodForm = (method: TwoFactorMethod) => {
-    if (!methods?.session_id) {
-      return (
-        <p className="text-sm text-muted-foreground">
-          {`Error loading ${method} form.`}
-        </p>
-      );
-    }
+        toast({
+          variant: 'destructive',
+          title: 'Error logging in.',
+          description: messages.join(', '),
+        });
+      },
+    });
 
-    switch (method) {
-      case TwoFactorMethod.Otp:
-        return <OTPForm session_id={methods.session_id} />;
-      case TwoFactorMethod.Passkey:
-        return <PasskeyForm session_id={methods.session_id} />;
-      default:
-        return (
-          <p className="text-sm text-muted-foreground">
-            {`Error loading ${method} form.`}
-          </p>
-        );
+  const handleAuthentication = async (
+    options: PublicKeyCredentialRequestOptionsJSON
+  ) => {
+    try {
+      const response = await startAuthentication(options);
+
+      verifyPasskey({
+        variables: { input: { session_id, options: JSON.stringify(response) } },
+      });
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        title: 'Error authenticating with Passkey.',
+        description: error instanceof Error ? error.message : undefined,
+      });
     }
   };
 
-  if (!methods?.methods.length || !methods.session_id) {
-    return (
-      <p className="text-sm text-muted-foreground">
-        Error loading account 2FA methods.
-      </p>
-    );
-  }
-
-  if (methodInfo.differentAvailableTypes === 1) {
-    return getMethodForm(methods.methods[0].method);
-  }
-
-  if (!!form) {
-    return (
-      <div className="flex flex-col gap-4">
-        {getMethodForm(form)}
-        <Button variant={'link'} onClick={() => setForm(undefined)}>
-          More Methods <ChevronRight className="size-4" />
-        </Button>
-      </div>
-    );
-  }
+  const disabled = initPasskeyLoading || verifyPasskeyLoading;
 
   return (
-    <div className="flex w-full max-w-md flex-col items-center gap-4">
-      <h1 className="font-bold">Two Factor Methods</h1>
-      {methodInfo.hasOTP ? (
-        <Button
-          variant={'outline'}
-          className="w-full p-6"
-          onClick={() => {
-            setForm(TwoFactorMethod.Otp);
-          }}
-        >
-          <div className="flex w-full items-center justify-between">
-            <h3 className="font-semibold leading-none tracking-tight">
-              One-Time Password
-            </h3>
-            <ChevronRight className="size-5" />
-          </div>
-        </Button>
-      ) : null}
+    <div className="relative mx-auto my-10 max-w-96 px-4">
+      <button
+        type="button"
+        onClick={() => setView('default')}
+        disabled={disabled}
+        className="absolute left-4 top-1 transition-opacity hover:opacity-75 lg:-left-8 lg:top-1.5"
+      >
+        <ArrowLeft size={24} />
+      </button>
 
-      {methodInfo.hasPasskey ? (
-        <Button
-          variant={'outline'}
-          className="w-full p-6"
-          onClick={() => {
-            setForm(TwoFactorMethod.Passkey);
-          }}
-        >
-          <div className="flex w-full items-center justify-between">
-            <h3 className="font-semibold leading-none tracking-tight">
-              Passkey
-            </h3>
-            <ChevronRight className="size-5" />
-          </div>
-        </Button>
-      ) : null}
+      <h1 className="text-center text-2xl font-semibold lg:text-3xl">
+        {l('methods')}
+      </h1>
+
+      <p className="my-4 text-center text-neutral-400">{l('2fa')}</p>
+
+      <div className="space-y-4">
+        {methods.map(m => {
+          switch (m.method) {
+            case TwoFactorMethod.Otp:
+              return (
+                <MethodButton
+                  key={m.id}
+                  icon={<ScanText size={24} />}
+                  title={l('otp')}
+                  onClick={() => setView('otp')}
+                  disabled={disabled}
+                />
+              );
+
+            case TwoFactorMethod.Passkey:
+              return (
+                <MethodButton
+                  key={m.id}
+                  icon={<KeyRound size={24} />}
+                  title={m.passkey_name || l('passkey')}
+                  onClick={() =>
+                    initPasskey({ variables: { input: { session_id } } })
+                  }
+                  disabled={disabled}
+                />
+              );
+
+            default:
+              return null;
+          }
+        })}
+      </div>
     </div>
   );
 };

@@ -45,6 +45,18 @@
       "your-money": "Tu Dinero.",
       "your-way": "Tu Manera."
     },
+    "Login": {
+      "2fa": "Tu cuenta está habilitada con autenticación de dos factores. Utiliza uno de los métodos a continuación para autenticar tu identidad.",
+      "code": "Introduce el código de la app de autenticación",
+      "methods": "Métodos 2FA",
+      "no-account": "No tienes una cuenta?",
+      "or": "O",
+      "otp": "Contraseña de un solo uso",
+      "passkey": "Passkey",
+      "password": "Tu contraseña",
+      "secure": "Tu cuenta esta asegurada con un código de autenticación. Abre la app y introduce el código acá.",
+      "with-passkey": "Iniciar sesión con un Passkey"
+    },
     "login": "Iniciar Sesión",
     "privacy": "Política de Privacidad",
     "signup": "Registrarse",

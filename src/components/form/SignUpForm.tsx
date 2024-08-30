@@ -186,7 +186,7 @@ export function SignUpForm() {
             {s('already')}{' '}
             <Link
               href={ROUTES.login.home}
-              className="text-primary-v2 transition-colors hover:text-primary-v2-hover"
+              className="text-primary transition-colors hover:text-primary-hover"
             >
               {p('login')}
             </Link>
@@ -374,7 +374,7 @@ export function SignUpForm() {
                     <Link
                       href={ROUTES.docs.termsOfService}
                       target="_blank"
-                      className="text-primary-v2 transition-colors hover:text-primary-v2-hover"
+                      className="text-primary transition-colors hover:text-primary-hover"
                     >
                       {chunks}
                     </Link>
@@ -383,7 +383,7 @@ export function SignUpForm() {
                     <Link
                       href={ROUTES.docs.privacyPolicy}
                       target="_blank"
-                      className="text-primary-v2 transition-colors hover:text-primary-v2-hover"
+                      className="text-primary transition-colors hover:text-primary-hover"
                     >
                       {chunks}
                     </Link>

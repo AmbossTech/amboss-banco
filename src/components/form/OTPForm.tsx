@@ -1,22 +1,29 @@
 'use client';
 
 import { REGEXP_ONLY_DIGITS } from 'input-otp';
-import { Loader2 } from 'lucide-react';
-import { FC, useState } from 'react';
+import { ArrowLeft } from 'lucide-react';
+import Image from 'next/image';
+import { useTranslations } from 'next-intl';
+import { Dispatch, FC, SetStateAction, useState } from 'react';
 
+import touch from '/public/icons/touch.svg';
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSeparator,
   InputOTPSlot,
 } from '@/components/ui/input-otp';
-import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
 import { useTwoFactorOtpLoginMutation } from '@/graphql/mutations/__generated__/otp.generated';
 import { handleApolloError } from '@/utils/error';
 import { ROUTES } from '@/utils/routes';
 
-export const OTPForm: FC<{ session_id: string }> = ({ session_id }) => {
+export const OTPForm: FC<{
+  session_id: string;
+  setView: Dispatch<SetStateAction<'default' | '2fa' | 'otp'>>;
+}> = ({ session_id, setView }) => {
+  const l = useTranslations('Public.Login');
+
   const [value, setValue] = useState('');
 
   const { toast } = useToast();
@@ -48,22 +55,32 @@ export const OTPForm: FC<{ session_id: string }> = ({ session_id }) => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center">
-      <div className="mb-2 mt-4">
-        {loading ? (
-          <div className="flex h-[22px] w-full items-center justify-center">
-            <Loader2 className="size-4 animate-spin" />
-          </div>
-        ) : (
-          <Label>Please enter the one-time password</Label>
-        )}
-      </div>
+    <div className="relative mx-auto my-10 max-w-96 px-4">
+      <button
+        type="button"
+        onClick={() => setView('2fa')}
+        disabled={loading}
+        className="absolute left-4 top-0 transition-opacity hover:opacity-75 lg:-left-16"
+      >
+        <ArrowLeft size={24} />
+      </button>
+
+      <Image src={touch} alt="touch" className="mx-auto" priority />
+
+      <h1 className="my-4 text-center text-2xl font-semibold lg:text-3xl">
+        {l('code')}
+      </h1>
+
+      <p className="mb-4 text-center text-neutral-400">{l('secure')}</p>
+
       <div className="flex w-full justify-center">
         <InputOTP
+          autoFocus
           maxLength={6}
           pattern={REGEXP_ONLY_DIGITS}
           value={value}
           onChange={handleOTPChange}
+          disabled={loading}
         >
           <InputOTPGroup>
             <InputOTPSlot index={0} />

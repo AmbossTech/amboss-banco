@@ -24,12 +24,9 @@ const config = {
         ring: 'hsl(var(--ring))',
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
-        ['primary-v2']: {
-          DEFAULT: 'hsl(var(--primary-v2))',
-          hover: 'hsl(var(--primary-v2-hover))',
-        },
         primary: {
           DEFAULT: 'hsl(var(--primary))',
+          hover: 'hsl(var(--primary-hover))',
           foreground: 'hsl(var(--primary-foreground))',
         },
         secondary: {

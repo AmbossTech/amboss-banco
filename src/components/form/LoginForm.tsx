@@ -4,12 +4,14 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { startAuthentication } from '@simplewebauthn/browser';
 import { PublicKeyCredentialRequestOptionsJSON } from '@simplewebauthn/types';
 import { Loader2 } from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
-import { FC, useState } from 'react';
+import { useTranslations } from 'next-intl';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import { Button } from '@/components/ui/button';
+import lock from '/public/icons/lock.svg';
 import {
   Form,
   FormControl,
@@ -19,10 +21,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import {
-  LoginMutation,
-  useLoginMutation,
-} from '@/graphql/mutations/__generated__/login.generated';
+import { useLoginMutation } from '@/graphql/mutations/__generated__/login.generated';
 import {
   useLoginPasskeyInitMutation,
   useLoginPasskeyMutation,
@@ -30,16 +29,11 @@ import {
 import { generateMasterKeyAndHash } from '@/utils/argon';
 import { handleApolloError } from '@/utils/error';
 import { ROUTES } from '@/utils/routes';
+import { TwoFASteps } from '@/views/login/TwoFASteps';
 
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '../ui/card';
-import { Separator } from '../ui/separator';
+import { Button } from '../ui/button-v2';
 import { useToast } from '../ui/use-toast';
+import { OTPForm } from './OTPForm';
 
 const FormSchema = z.object({
   email: z.string().email().min(5, {
@@ -48,19 +42,21 @@ const FormSchema = z.object({
   password: z.string(),
 });
 
-const EmailPasswordLoginForm: FC<{
-  twoFACallback: (
-    payload: LoginMutation['login']['initial']['two_factor']
-  ) => void;
-}> = ({ twoFACallback }) => {
+export const LoginForm = () => {
+  const l = useTranslations('Public.Login');
+  const p = useTranslations('Public');
+  const c = useTranslations('Common');
+
   const { toast } = useToast();
 
   const [loading, setLoading] = useState(false);
 
-  const [login] = useLoginMutation({
+  const [view, setView] = useState<'default' | '2fa' | 'otp'>('default');
+
+  const [login, { data }] = useLoginMutation({
     onCompleted: data => {
-      if (!!data.login.initial.two_factor?.session_id) {
-        twoFACallback(data.login.initial.two_factor);
+      if (data.login.initial.two_factor?.methods.find(m => m.enabled)) {
+        setView('2fa');
       } else {
         window.location.href = ROUTES.dashboard;
       }
@@ -90,18 +86,6 @@ const EmailPasswordLoginForm: FC<{
 
     setLoading(true);
 
-    if (data.email.trim().toLowerCase() !== data.email) {
-      setLoading(false);
-
-      toast({
-        title: 'Email Mismatch!',
-        description:
-          'Please use only lowercase letters in your email. If you signed up with an email that contains uppercase letters, contact support for assistance.',
-      });
-
-      return;
-    }
-
     try {
       const { masterPasswordHash } = await generateMasterKeyAndHash({
         email: data.email,
@@ -126,16 +110,104 @@ const EmailPasswordLoginForm: FC<{
     }
   };
 
+  const [setupPasskey, { loading: setupPasskeyLoading }] =
+    useLoginPasskeyInitMutation({
+      onCompleted: data => {
+        try {
+          handlePasskeyRegistration({
+            options: JSON.parse(data.login.passkey.init.options),
+            session_id: data.login.passkey.init.session_id,
+          });
+        } catch (error) {
+          toast({
+            variant: 'destructive',
+            title: 'Error logging in with Passkey.',
+          });
+        }
+      },
+      onError: err => {
+        const messages = handleApolloError(err);
+
+        toast({
+          variant: 'destructive',
+          title: 'Error getting Passkey details.',
+          description: messages.join(', '),
+        });
+      },
+    });
+
+  const [verifyPasskey, { loading: verifyPasskeyLoading }] =
+    useLoginPasskeyMutation({
+      onCompleted: () => {
+        window.location.href = ROUTES.dashboard;
+      },
+      onError: err => {
+        const messages = handleApolloError(err);
+
+        toast({
+          variant: 'destructive',
+          title: 'Error logging in.',
+          description: messages.join(', '),
+        });
+      },
+    });
+
+  const handlePasskeyRegistration = async ({
+    options,
+    session_id,
+  }: {
+    options: PublicKeyCredentialRequestOptionsJSON;
+    session_id: string;
+  }) => {
+    try {
+      const response = await startAuthentication(options);
+      verifyPasskey({
+        variables: { input: { session_id, options: JSON.stringify(response) } },
+      });
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        title: 'Error setting up Passkey.',
+        description: error instanceof Error ? error.message : undefined,
+      });
+    }
+  };
+
+  const disabled = loading || setupPasskeyLoading || verifyPasskeyLoading;
+
+  if (view === '2fa')
+    return (
+      <TwoFASteps
+        session_id={data?.login.initial.two_factor?.session_id || ''}
+        methods={
+          data?.login.initial.two_factor?.methods.filter(m => m.enabled) || []
+        }
+        setView={setView}
+      />
+    );
+
+  if (view === 'otp')
+    return (
+      <OTPForm
+        session_id={data?.login.initial.two_factor?.session_id || ''}
+        setView={setView}
+      />
+    );
+
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
-        <CardContent className="flex flex-col gap-4">
+    <div className="mx-auto max-w-96 px-4 py-10">
+      <Image src={lock} alt="lock" className="mx-auto" priority />
+
+      <h1 className="my-4 text-center text-2xl font-semibold">{p('login')}</h1>
+
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <FormField
             control={form.control}
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel>{c('email')}</FormLabel>
                 <FormControl>
                   <Input placeholder="satoshi@nakamoto.com" {...field} />
                 </FormControl>
@@ -149,10 +221,10 @@ const EmailPasswordLoginForm: FC<{
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Master Password</FormLabel>
+                <FormLabel>{c('password')}</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="super secret password"
+                    placeholder={l('password')}
                     type="password"
                     {...field}
                   />
@@ -161,142 +233,45 @@ const EmailPasswordLoginForm: FC<{
               </FormItem>
             )}
           />
-        </CardContent>
 
-        <div className="flex w-full flex-col items-center px-6">
-          <Button type="submit" disabled={loading} className="w-full">
-            {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-            Login
+          <Button
+            type="submit"
+            disabled={disabled}
+            className="flex w-full items-center justify-center"
+          >
+            {loading ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin text-black" />
+            ) : null}
+            {p('login')}
           </Button>
 
-          <Link href={ROUTES.signup} className="w-full">
-            <Button
-              type="button"
-              disabled={loading}
-              variant={'ghost'}
-              className="mt-2 w-full"
-            >
-              Sign Up
-            </Button>
-          </Link>
-        </div>
-      </form>
-    </Form>
-  );
-};
-
-const PasskeyLoginForm = () => {
-  const { toast } = useToast();
-
-  const [setup, { loading: addLoading }] = useLoginPasskeyInitMutation({
-    onCompleted: data => {
-      try {
-        handleRegistration({
-          options: JSON.parse(data.login.passkey.init.options),
-          session_id: data.login.passkey.init.session_id,
-        });
-      } catch (error) {
-        toast({
-          variant: 'destructive',
-          title: 'Error logging in with passkey.',
-        });
-      }
-    },
-    onError: err => {
-      const messages = handleApolloError(err);
-
-      toast({
-        variant: 'destructive',
-        title: 'Error getting Passkey details.',
-        description: messages.join(', '),
-      });
-    },
-  });
-
-  const [verify, { loading: verifyLoading }] = useLoginPasskeyMutation({
-    onCompleted: () => {
-      window.location.href = ROUTES.dashboard;
-    },
-    onError: err => {
-      const messages = handleApolloError(err);
-
-      toast({
-        variant: 'destructive',
-        title: 'Error logging in.',
-        description: messages.join(', '),
-      });
-    },
-  });
-
-  const handleRegistration = async ({
-    options,
-    session_id,
-  }: {
-    options: PublicKeyCredentialRequestOptionsJSON;
-    session_id: string;
-  }) => {
-    try {
-      const response = await startAuthentication(options);
-      verify({
-        variables: { input: { session_id, options: JSON.stringify(response) } },
-      });
-    } catch (error) {
-      toast({
-        variant: 'destructive',
-        title: 'Error setting up Passkey.',
-        description: error instanceof Error ? error.message : undefined,
-      });
-    }
-  };
-
-  return (
-    <div className="w-full px-6">
-      <Button
-        className="w-full"
-        disabled={addLoading || verifyLoading}
-        onClick={() => {
-          setup();
-        }}
-      >
-        Authenticate with a Passkey
-      </Button>
-    </div>
-  );
-};
-
-export const LoginForm: FC<{
-  twoFACallback: (
-    payload: LoginMutation['login']['initial']['two_factor']
-  ) => void;
-}> = ({ twoFACallback }) => {
-  const [passkeyLogin, setPasskeyLogin] = useState<boolean>(false);
-
-  return (
-    <Card className="mx-auto my-10 w-full max-w-96">
-      <CardHeader>
-        <CardTitle>Login</CardTitle>
-      </CardHeader>
-
-      {passkeyLogin ? (
-        <PasskeyLoginForm />
-      ) : (
-        <EmailPasswordLoginForm twoFACallback={twoFACallback} />
-      )}
-
-      <CardFooter>
-        <div className="w-full">
-          <Separator className="my-4" />
+          <div className="flex w-full items-center justify-center space-x-6">
+            <div className="h-px w-full bg-slate-300 dark:bg-neutral-800 lg:w-28" />
+            <p className="font-medium">{l('or')}</p>
+            <div className="h-px w-full bg-slate-300 dark:bg-neutral-800 lg:w-28" />
+          </div>
 
           <Button
             type="button"
+            disabled={disabled}
+            variant="secondary"
             className="w-full"
-            variant={'secondary'}
-            onClick={() => setPasskeyLogin(p => !p)}
+            onClick={() => setupPasskey()}
           >
-            {passkeyLogin ? 'Login with Email' : 'Login with Passkey'}
+            {l('with-passkey')}
           </Button>
-        </div>
-      </CardFooter>
-    </Card>
+
+          <p className="text-center">
+            {l('no-account')}{' '}
+            <Link
+              href={ROUTES.signup}
+              className="text-primary transition-colors hover:text-primary-hover"
+            >
+              {p('signup')}
+            </Link>
+          </p>
+        </form>
+      </Form>
+    </div>
   );
 };
