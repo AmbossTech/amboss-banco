@@ -46,12 +46,12 @@
       "your-way": "Tu Manera."
     },
     "Login": {
-      "2fa": "Your account is enabled with two-factor authentication. Use a method below to authenticate your identity.",
+      "2fa": "Tu cuenta está habilitada con autenticación de dos factores. Utiliza uno de los métodos a continuación para autenticar tu identidad.",
       "code": "Introduce el código de la app de autenticación",
-      "methods": "2FA Methods",
+      "methods": "Métodos 2FA",
       "no-account": "No tienes una cuenta?",
       "or": "O",
-      "otp": "One-Time Password",
+      "otp": "Contraseña de un solo uso",
       "passkey": "Passkey",
       "password": "Tu contraseña",
       "secure": "Tu cuenta esta asegurada con un código de autenticación. Abre la app y introduce el código acá.",
