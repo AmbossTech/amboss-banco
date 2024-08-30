@@ -112,7 +112,7 @@ export default function Page() {
 
             <div className="mb-6 grid gap-6 xl:grid-cols-2">
               <CardSection
-                bg="bg-primary-v2"
+                bg="bg-primary"
                 accent="bg-white"
                 icon="1"
                 title={p('signup')}
@@ -195,7 +195,7 @@ export default function Page() {
 
             <div className="space-y-6">
               <CardSection
-                bg="bg-primary-v2"
+                bg="bg-primary"
                 accent="bg-white"
                 icon={
                   <ShieldCheck className="h-[28px] w-[28px] lg:h-[32px] lg:w-[32px]" />
@@ -215,7 +215,7 @@ export default function Page() {
 
               <CardSection
                 bg="bg-white"
-                accent="bg-primary-v2"
+                accent="bg-primary"
                 icon={
                   <KeyRound className="h-[28px] w-[28px] lg:h-[32px] lg:w-[32px]" />
                 }
@@ -254,7 +254,7 @@ export default function Page() {
 
               <CardSection
                 bg="bg-accent-black"
-                accent="bg-primary-v2"
+                accent="bg-primary"
                 icon={
                   <LockKeyhole className="h-[28px] w-[28px] lg:h-[32px] lg:w-[32px]" />
                 }
