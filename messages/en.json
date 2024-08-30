@@ -46,9 +46,13 @@
       "your-way": "Your Way."
     },
     "Login": {
+      "2fa": "Your account is enabled with two-factor authentication. Use a method below to authenticate your identity.",
       "code": "Enter the code from your authenticator app",
+      "methods": "2FA Methods",
       "no-account": "Don't have an account?",
       "or": "OR",
+      "otp": "One-Time Password",
+      "passkey": "Passkey",
       "password": "Your password",
       "secure": "Your account is secured with an authentication code. Open up the Authenticator app and enter the code here.",
       "with-passkey": "Log in with Passkey"

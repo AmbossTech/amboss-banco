@@ -26,10 +26,10 @@ import {
   useLoginPasskeyInitMutation,
   useLoginPasskeyMutation,
 } from '@/graphql/mutations/__generated__/passkey.generated';
-import { TwoFactorMethod } from '@/graphql/types';
 import { generateMasterKeyAndHash } from '@/utils/argon';
 import { handleApolloError } from '@/utils/error';
 import { ROUTES } from '@/utils/routes';
+import { TwoFASteps } from '@/views/login/TwoFASteps';
 
 import { Button } from '../ui/button-v2';
 import { useToast } from '../ui/use-toast';
@@ -51,16 +51,12 @@ export const LoginForm = () => {
 
   const [loading, setLoading] = useState(false);
 
-  const [OTP, setOTP] = useState(false);
+  const [view, setView] = useState<'default' | '2fa' | 'otp'>('default');
 
   const [login, { data }] = useLoginMutation({
     onCompleted: data => {
-      if (
-        data.login.initial.two_factor?.methods.find(
-          m => m.method === TwoFactorMethod.Otp && m.enabled
-        )
-      ) {
-        setOTP(true);
+      if (data.login.initial.two_factor?.methods.find(m => m.enabled)) {
+        setView('2fa');
       } else {
         window.location.href = ROUTES.dashboard;
       }
@@ -179,11 +175,22 @@ export const LoginForm = () => {
 
   const disabled = loading || setupPasskeyLoading || verifyPasskeyLoading;
 
-  if (OTP)
+  if (view === '2fa')
+    return (
+      <TwoFASteps
+        session_id={data?.login.initial.two_factor?.session_id || ''}
+        methods={
+          data?.login.initial.two_factor?.methods.filter(m => m.enabled) || []
+        }
+        setView={setView}
+      />
+    );
+
+  if (view === 'otp')
     return (
       <OTPForm
         session_id={data?.login.initial.two_factor?.session_id || ''}
-        setOTP={setOTP}
+        setView={setView}
       />
     );
 

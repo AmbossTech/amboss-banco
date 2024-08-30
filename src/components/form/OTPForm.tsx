@@ -20,8 +20,8 @@ import { ROUTES } from '@/utils/routes';
 
 export const OTPForm: FC<{
   session_id: string;
-  setOTP: Dispatch<SetStateAction<boolean>>;
-}> = ({ session_id, setOTP }) => {
+  setView: Dispatch<SetStateAction<'default' | '2fa' | 'otp'>>;
+}> = ({ session_id, setView }) => {
   const l = useTranslations('Public.Login');
 
   const [value, setValue] = useState('');
@@ -58,7 +58,7 @@ export const OTPForm: FC<{
     <div className="relative mx-auto my-10 max-w-96 px-4">
       <button
         type="button"
-        onClick={() => setOTP(false)}
+        onClick={() => setView('2fa')}
         disabled={loading}
         className="absolute left-4 top-0 transition-opacity hover:opacity-75 lg:-left-16"
       >
