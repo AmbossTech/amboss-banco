@@ -1,6 +1,7 @@
 import { Slot } from '@radix-ui/react-slot';
 import { cva, type VariantProps } from 'class-variance-authority';
 import * as React from 'react';
+import { FC, ReactNode } from 'react';
 
 import { cn } from '@/utils/cn';
 
@@ -46,4 +47,24 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 );
 Button.displayName = 'Button';
 
-export { Button, buttonVariants };
+const IconButton: FC<{
+  icon: ReactNode;
+  onClick: () => void;
+  disabled?: boolean;
+  className?: string;
+}> = ({ icon, onClick, disabled, className }) => {
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className={cn(
+        'flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-300 text-black dark:bg-neutral-800 dark:text-white',
+        className
+      )}
+    >
+      {icon}
+    </button>
+  );
+};
+
+export { Button, buttonVariants, IconButton };

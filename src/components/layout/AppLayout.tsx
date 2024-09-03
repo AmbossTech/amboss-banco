@@ -5,6 +5,7 @@ import {
   LifeBuoy,
   Menu,
   MessageCircle,
+  ScrollText,
   Settings,
   Settings2,
   Vault,
@@ -76,6 +77,24 @@ export const AppLayout: FC<{ children: ReactNode }> = ({ children }) => {
               </TooltipTrigger>
               <TooltipContent side="right" sideOffset={5}>
                 Contacts
+              </TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="rounded-lg"
+                  aria-label="Transactions"
+                  asChild
+                >
+                  <Link href={ROUTES.transactions.home}>
+                    <ScrollText className="size-5" />
+                  </Link>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="right" sideOffset={5}>
+                Transactions
               </TooltipContent>
             </Tooltip>
             <Tooltip>
@@ -169,6 +188,16 @@ export const AppLayout: FC<{ children: ReactNode }> = ({ children }) => {
                   >
                     <MessageCircle className="h-5 w-5" />
                     Chat
+                  </Link>
+                </nav>
+                <nav className="grid gap-2 font-medium">
+                  <Link
+                    href={ROUTES.transactions.home}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
+                  >
+                    <ScrollText className="h-5 w-5" />
+                    Transactions
                   </Link>
                 </nav>
                 <nav className="grid gap-2 font-medium">

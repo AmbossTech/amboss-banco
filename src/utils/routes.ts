@@ -9,6 +9,7 @@ export const ROUTES = {
     home: '/settings',
     twofa: '/settings/2fa',
   },
+  transactions: { home: '/transactions' },
   swaps: {
     home: '/swaps',
   },
@@ -18,8 +19,8 @@ export const ROUTES = {
     receive: (walletId: string, accountId: string) =>
       `/wallet/${walletId}/account/${accountId}/receive`,
     send: {
-      home: (walletId: string, accountId: string, assetId: string) =>
-        `/wallet/${walletId}/account/${accountId}/send?assetId=${assetId}`,
+      home: (walletId: string, accountId: string, assetId?: string) =>
+        `/wallet/${walletId}/account/${accountId}/send${assetId ? `?assetId=${assetId}` : ''}`,
       address: (walletId: string, accountId: string, assetId: string) =>
         `/wallet/${walletId}/account/${accountId}/send/address?assetId=${assetId}`,
       invoice: (walletId: string, accountId: string, assetId: string) =>

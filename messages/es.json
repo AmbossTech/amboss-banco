@@ -1,4 +1,19 @@
 {
+  "App": {
+    "Dashboard": {
+      "no-contacts": "No contacts to display.",
+      "recent": "Recent Contacts",
+      "warning-title": "Add Bitcoin!",
+      "warning": "In order to send USD you need to add Bitcoin to your wallet."
+    },
+    "miban": "MIBAN Code",
+    "view-all": "View all",
+    "Wallet": {
+      "assets": "Assets",
+      "receive": "Receive",
+      "send": "Send"
+    }
+  },
   "Common": {
     "confirm-password": "Repite la Contraseña",
     "email": "Correo",
