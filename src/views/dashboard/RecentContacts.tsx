@@ -44,7 +44,7 @@ export const RecentContacts: FC<{ id: string }> = ({ id }) => {
         </Link>
       </div>
 
-      <div className="flex w-full space-x-4 overflow-x-auto">
+      <div className="flex w-full space-x-4 overflow-x-auto pb-1">
         {loading ? (
           Array.from({ length: 3 }).map((_, i) => (
             <div key={i} className="space-y-2">

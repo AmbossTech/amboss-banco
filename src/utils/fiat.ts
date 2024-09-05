@@ -1,9 +1,6 @@
 import Big from 'big.js';
 
-const usdOptions = { maximumFractionDigits: 2, minimumFractionDigits: 2 };
-
-export const formatFiat = (fiat: number) =>
-  `$${fiat.toLocaleString(undefined, usdOptions)}`;
+export const formatFiat = (fiat: number) => `$${fiat.toFixed(2)}`;
 
 export const cryptoToUsd = (
   balance: string,
