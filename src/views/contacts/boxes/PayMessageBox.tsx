@@ -59,7 +59,7 @@ import {
 const formatNumber = (value: number, ticker: PaymentOptionCode) => {
   const minimumFractionDigits = ticker === PaymentOptionCode.Usdt ? 2 : 0;
 
-  return value.toLocaleString(undefined, { minimumFractionDigits });
+  return value.toLocaleString('en-US', { minimumFractionDigits });
 };
 
 export const PayMessageBox: FC<{
