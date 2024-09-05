@@ -1,17 +1,17 @@
 {
   "App": {
     "Dashboard": {
-      "no-contacts": "No contacts to display.",
-      "recent": "Recent Contacts",
-      "warning-title": "Add Bitcoin!",
-      "warning": "In order to send USD you need to add Bitcoin to your wallet."
+      "no-contacts": "No hay contactos para mostrar.",
+      "recent": "Contactos Recientes",
+      "warning-title": "Agrega Bitcoin!",
+      "warning": "Para enviar USD tienes que tener Bitcoin en tu billetera."
     },
-    "miban": "MIBAN Code",
-    "view-all": "View all",
+    "miban": "Código MIBAN",
+    "view-all": "Ver todos",
     "Wallet": {
-      "assets": "Assets",
-      "receive": "Receive",
-      "send": "Send"
+      "assets": "Activos",
+      "receive": "Recibir",
+      "send": "Envíar"
     }
   },
   "Common": {
