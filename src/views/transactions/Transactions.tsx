@@ -3,28 +3,12 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { format, formatDistanceToNowStrict } from 'date-fns';
 import { sortBy } from 'lodash';
-import {
-  ArrowDown,
-  ArrowDownToLine,
-  ArrowUp,
-  ArrowUpToLine,
-  Bitcoin,
-  DollarSign,
-  Loader2,
-  MoreHorizontal,
-} from 'lucide-react';
-import Link from 'next/link';
+import { ArrowDown, ArrowUp, Loader2, MoreHorizontal } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { FC, useMemo } from 'react';
+import { useMemo } from 'react';
+import { useLocalStorage } from 'usehooks-ts';
 
 import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -33,23 +17,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { useToast } from '@/components/ui/use-toast';
 import { useGetWalletQuery } from '@/graphql/queries/__generated__/wallet.generated';
+import { LOCALSTORAGE_KEYS } from '@/utils/constants';
+import { handleApolloError } from '@/utils/error';
 import { cryptoToUsd } from '@/utils/fiat';
 import { numberWithPrecisionAndDecimals } from '@/utils/numbers';
-import { ROUTES } from '@/utils/routes';
-import { SimpleTable } from '@/views/wallet/SimpleTable';
 
-type AssetBalance = {
-  accountId: string;
-  name: string;
-  ticker: string;
-  balance: string;
-  formatted_balance: string;
-  precision: number;
-  assetId: string;
-};
+import { SimpleTable } from '../wallet/SimpleTable';
 
-export type TransactionEntry = {
+type TransactionEntry = {
   id: string;
   tx_id: string;
   balance: string;
@@ -63,62 +40,7 @@ export type TransactionEntry = {
   blinded_url: string;
 };
 
-const BalanceIcon: FC<{ ticker: string }> = ({ ticker }) => {
-  const classname = 'h-4 w-4 text-muted-foreground';
-  switch (ticker) {
-    case 'USDT':
-      return <DollarSign className={classname} />;
-    case 'BTC':
-      return <Bitcoin className={classname} />;
-    default:
-      return null;
-  }
-};
-
-const BalanceCard: FC<{
-  walletId: string;
-  accountId: string;
-  input: AssetBalance;
-}> = ({
-  walletId,
-  accountId,
-  input: { balance, name, precision, ticker, assetId, formatted_balance },
-}) => {
-  return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">{name}</CardTitle>
-        <BalanceIcon ticker={ticker} />
-      </CardHeader>
-      <CardContent>
-        <div className="text-2xl font-bold">{formatted_balance}</div>
-        <p className="text-xs text-muted-foreground">{`${numberWithPrecisionAndDecimals(balance, precision)} ${ticker}`}</p>
-      </CardContent>
-      <CardFooter className="flex w-full gap-2">
-        <Button size={'sm'} className="w-full">
-          <Link
-            href={ROUTES.wallet.receive(walletId, accountId)}
-            className="flex"
-          >
-            <ArrowDownToLine className="mr-2 h-4 w-4" />
-            Receive
-          </Link>
-        </Button>
-        <Button variant="secondary" size={'sm'} className="w-full">
-          <Link
-            href={ROUTES.wallet.send.home(walletId, accountId, assetId)}
-            className="flex"
-          >
-            <ArrowUpToLine className="mr-2 h-4 w-4" />
-            Send
-          </Link>
-        </Button>
-      </CardFooter>
-    </Card>
-  );
-};
-
-export const columns: ColumnDef<TransactionEntry>[] = [
+const columns: ColumnDef<TransactionEntry>[] = [
   {
     accessorKey: 'direction',
     header: '',
@@ -223,42 +145,25 @@ export const columns: ColumnDef<TransactionEntry>[] = [
   },
 ];
 
-export const WalletInfo: FC<{ id: string }> = ({ id }) => {
+export const Transactions = () => {
   const t = useTranslations('Index');
+  const { toast } = useToast();
 
-  const { data, loading, error } = useGetWalletQuery({ variables: { id } });
+  const [value] = useLocalStorage(LOCALSTORAGE_KEYS.currentWalletId, '');
 
-  const balances = useMemo(() => {
-    if (loading || error) return [];
-    if (!data?.wallets.find_one.accounts.length) return [];
+  const { data, loading, error } = useGetWalletQuery({
+    variables: { id: value },
+    skip: !value,
+    onError: err => {
+      const messages = handleApolloError(err);
 
-    const { accounts } = data.wallets.find_one;
-
-    const mapped: AssetBalance[] = [];
-
-    accounts.forEach(a => {
-      if (!a.liquid) return;
-
-      a.liquid.assets.forEach(l => {
-        mapped.push({
-          accountId: a.id,
-          assetId: l.asset_id,
-          name: l.asset_info.name,
-          ticker: l.asset_info.ticker,
-          balance: l.balance,
-          formatted_balance: cryptoToUsd(
-            l.balance,
-            l.asset_info.precision,
-            l.asset_info.ticker,
-            l.fiat_info.fiat_to_btc
-          ),
-          precision: l.asset_info.precision,
-        });
+      toast({
+        variant: 'destructive',
+        title: 'Error getting transactions.',
+        description: messages.join(', '),
       });
-    });
-
-    return mapped;
-  }, [data, loading, error]);
+    },
+  });
 
   const transactions = useMemo(() => {
     if (loading || error) return [];
@@ -309,19 +214,6 @@ export const WalletInfo: FC<{ id: string }> = ({ id }) => {
 
   return (
     <div className="w-full">
-      <h2 className="scroll-m-20 pb-2 pt-6 text-xl font-semibold tracking-tight first:mt-0">
-        {t('accounts')}
-      </h2>
-      <div className="flex w-full flex-col gap-4 md:flex-row">
-        {balances.map((b, index) => (
-          <BalanceCard
-            walletId={id}
-            accountId={b.accountId}
-            input={b}
-            key={`${b.ticker}${index}`}
-          />
-        ))}
-      </div>
       <h2 className="scroll-m-20 pb-2 pt-6 text-xl font-semibold tracking-tight first:mt-0">
         {t('transactions')}
       </h2>

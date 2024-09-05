@@ -1,13 +1,16 @@
 import Big from 'big.js';
 
+const usdOptions = { maximumFractionDigits: 2, minimumFractionDigits: 2 };
+
+export const formatFiat = (fiat: number) =>
+  `$${fiat.toLocaleString(undefined, usdOptions)}`;
+
 export const cryptoToUsd = (
   balance: string,
   precision: number,
   ticker: string,
   fiat_to_btc: string | undefined | null
 ): string => {
-  const usdOptions = { maximumFractionDigits: 2, minimumFractionDigits: 2 };
-
   try {
     if (!fiat_to_btc) return '-';
 
@@ -17,13 +20,13 @@ export const cryptoToUsd = (
         .times(balance)
         .toNumber();
 
-      return `$${value.toLocaleString(undefined, usdOptions)}`;
+      return formatFiat(value);
     }
 
     if (ticker === 'USDT') {
       const value = new Big(balance).div(10 ** precision).toNumber();
 
-      return `$${value.toLocaleString(undefined, usdOptions)}`;
+      return formatFiat(value);
     }
 
     return balance;
