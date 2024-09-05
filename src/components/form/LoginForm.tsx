@@ -224,7 +224,7 @@ export const LoginForm = () => {
                 <FormLabel>{c('password')}</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder={l('password')}
+                    placeholder={c('your-password')}
                     type="password"
                     {...field}
                   />
