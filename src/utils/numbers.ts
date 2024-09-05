@@ -22,7 +22,7 @@ export const numberWithPrecisionAndDecimals = (
 
   const minimumFractionDigits = ticker === 'USDT' ? 2 : 0;
 
-  return precise.toLocaleString(undefined, { minimumFractionDigits });
+  return precise.toLocaleString('en-US', { minimumFractionDigits });
 };
 
 export const numberWithoutPrecision = (
