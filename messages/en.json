@@ -3,8 +3,8 @@
     "Dashboard": {
       "no-contacts": "No contacts to display.",
       "recent": "Recent Contacts",
-      "warning-title": "Add Bitcoin!",
-      "warning": "In order to send USD you need to add Bitcoin to your wallet."
+      "warning": "In order to send USD you need to add Bitcoin to your wallet.",
+      "warning-title": "Add Bitcoin!"
     },
     "miban": "MIBAN Code",
     "view-all": "View all",
@@ -15,11 +15,17 @@
     }
   },
   "Common": {
+    "clear": "Clear Memory",
+    "combo": "A combination of letters, numbers and symbols.",
     "confirm-password": "Confirm Password",
+    "decrypt": "Decrypt",
     "email": "Email",
+    "mnemonic": "Encrypted Mnemonic",
     "next": "Next",
     "optional": "Optional",
-    "password": "Password"
+    "password": "Password",
+    "private": "Keep this phrase private to avoid loss of funds.",
+    "your-password": "Your password"
   },
   "Index": {
     "accounts": "Accounts",
@@ -68,12 +74,17 @@
       "or": "OR",
       "otp": "One-Time Password",
       "passkey": "Passkey",
-      "password": "Your password",
       "secure": "Your account is secured with an authentication code. Open up the Authenticator app and enter the code here.",
       "with-passkey": "Log in with Passkey"
     },
     "login": "Log In",
     "privacy": "Privacy Policy",
+    "Recover": {
+      "decrypted": "Decrypted Mnemonic (decrypt to show)",
+      "description": "If you know your encrypted mnemonic, it can be decrypted in combination with email, password and symmetric key.",
+      "recover": "Recover your wallet",
+      "symmetric": "Symmetric Key"
+    },
     "signup": "Sign up",
     "Signup": {
       "accept-password": "I understand that if I forget the password my account cannot be recovered.",
