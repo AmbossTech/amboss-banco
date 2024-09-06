@@ -15,16 +15,16 @@
     }
   },
   "Common": {
-    "clear": "Clear Memory",
-    "combo": "A combination of letters, numbers and symbols.",
+    "clear": "Borrar de memoria",
+    "combo": "Una combinación de letras, números y símbolos.",
     "confirm-password": "Repite la Contraseña",
-    "decrypt": "Decrypt",
+    "decrypt": "Descifra",
     "email": "Correo",
-    "mnemonic": "Encrypted Mnemonic",
+    "mnemonic": "Mnemonic Encriptada",
     "next": "Siguiente",
     "optional": "Opcional",
     "password": "Contraseña",
-    "private": "Keep this phrase private to avoid loss of funds.",
+    "private": "Manten esta frase privada para evitar la perdida de fondos.",
     "your-password": "Tu contraseña"
   },
   "Index": {
@@ -80,10 +80,10 @@
     "login": "Iniciar Sesión",
     "privacy": "Política de Privacidad",
     "Recover": {
-      "decrypted": "Decrypted Mnemonic (decrypt to show)",
-      "description": "If you know your encrypted mnemonic, it can be decrypted in combination with email, password and symmetric key.",
-      "recover": "Recover your wallet",
-      "symmetric": "Symmetric Key"
+      "decrypted": "Mnemonic Descifrada",
+      "description": "Si sabes tu mnemonic cifrada, junto con tu correo, contraseña y llave simétrica, puedes descrifrarla.",
+      "recover": "Recupera tu billetera",
+      "symmetric": "Llave Simétrica"
     },
     "signup": "Registrarse",
     "Signup": {
