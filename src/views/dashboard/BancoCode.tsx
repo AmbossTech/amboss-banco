@@ -5,6 +5,14 @@ import { FC, useMemo, useState } from 'react';
 
 import { IconButton } from '@/components/ui/button-v2';
 import { Card } from '@/components/ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import { useToast } from '@/components/ui/use-toast';
 import { useGetWalletDetailsQuery } from '@/graphql/queries/__generated__/wallet.generated';
 import useCopyClipboard from '@/hooks/useClipboardCopy';
@@ -65,28 +73,34 @@ export const BancoCode: FC<{ id: string }> = ({ id }) => {
             onClick={() => copy(address)}
           />
 
-          <IconButton
-            icon={<QrCode size={20} />}
-            onClick={() => setShowQR(s => !s)}
-          />
+          <Dialog open={showQR} onOpenChange={setShowQR}>
+            <DialogTrigger asChild>
+              <IconButton icon={<QrCode size={20} />} />
+            </DialogTrigger>
+
+            <DialogContent className="w-fit">
+              <DialogHeader>
+                <DialogTitle>{t('miban')}</DialogTitle>
+                <DialogDescription>{address}</DialogDescription>
+              </DialogHeader>
+
+              <Canvas
+                text={'lightning:' + address}
+                options={{
+                  margin: 3,
+                  width: 250,
+                  color: {
+                    dark: '#000000',
+                    light: '#FFFFFF',
+                  },
+                }}
+              />
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
 
       <p className="break-all font-semibold lg:text-xl">{address}</p>
-
-      {showQR ? (
-        <Canvas
-          text={'lightning:' + address}
-          options={{
-            margin: 3,
-            width: 200,
-            color: {
-              dark: '#000000',
-              light: '#FFFFFF',
-            },
-          }}
-        />
-      ) : null}
     </Card>
   );
 };
