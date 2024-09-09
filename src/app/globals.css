@@ -73,6 +73,6 @@
   }
 
   .round-canvas > canvas {
-    @apply rounded-3xl
+    @apply rounded-3xl;
   }
 }
