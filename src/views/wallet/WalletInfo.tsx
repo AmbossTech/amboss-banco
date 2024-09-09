@@ -285,9 +285,13 @@ export const WalletInfo: FC<{
       />
 
       <div className="mb-3 flex w-full justify-between space-x-2">
-        <p className="z-10 font-semibold text-slate-600 dark:text-neutral-400 lg:text-xl">
+        <button
+          onClick={() => setView('assets')}
+          disabled={refreshLoading}
+          className="z-10 h-fit font-semibold text-primary transition-colors hover:text-primary-hover"
+        >
           {data?.wallets.find_one.name}
-        </p>
+        </button>
 
         <div className="flex space-x-2">
           <IconButton

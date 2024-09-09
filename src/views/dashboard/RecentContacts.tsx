@@ -46,7 +46,7 @@ export const RecentContacts: FC<{ id: string }> = ({ id }) => {
 
       <div className="hide-scroll flex w-full max-w-[calc(100vw-32px)] space-x-4 overflow-x-auto">
         {loading ? (
-          Array.from({ length: 3 }).map((_, i) => (
+          Array.from({ length: 5 }).map((_, i) => (
             <div key={i} className="space-y-2">
               <div className="mx-auto h-14 w-14 animate-pulse rounded-full bg-primary" />
               <p className="h-5 w-24 animate-pulse rounded-full bg-slate-600 dark:bg-neutral-400" />
