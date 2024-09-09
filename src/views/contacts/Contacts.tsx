@@ -110,7 +110,7 @@ export const Contacts = () => {
                   <DrawerTitle>Contacts</DrawerTitle>
                 </DrawerHeader>
 
-                <div className="flex max-h-80 flex-col gap-1 overflow-y-auto px-4">
+                <div className="flex max-h-80 flex-col gap-1 overflow-y-auto">
                   {contacts.length ? (
                     contacts.map(c => (
                       <ContactCard

@@ -317,7 +317,7 @@ export const WalletInfo: FC<{
       <button
         onClick={() => setView('assets')}
         disabled={refreshLoading}
-        className="z-10 mb-1 text-4xl font-semibold"
+        className="relative z-10 mb-1 text-4xl font-semibold"
       >
         {hideBalance ? '***' : totalBalance}
       </button>
