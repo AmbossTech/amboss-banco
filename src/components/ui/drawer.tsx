@@ -1,5 +1,6 @@
 'use client';
 
+import { X } from 'lucide-react';
 import * as React from 'react';
 import { Drawer as DrawerPrimitive } from 'vaul';
 
@@ -28,7 +29,10 @@ const DrawerOverlay = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DrawerPrimitive.Overlay
     ref={ref}
-    className={cn('fixed inset-0 z-50 bg-black/80', className)}
+    className={cn(
+      'fixed inset-0 z-50 bg-black/80 backdrop-blur dark:bg-transparent',
+      className
+    )}
     {...props}
   />
 ));
@@ -42,14 +46,28 @@ const DrawerContent = React.forwardRef<
     <DrawerOverlay />
     <DrawerPrimitive.Content
       ref={ref}
-      className={cn(
-        'fixed inset-x-0 bottom-0 z-50 mt-24 flex h-auto flex-col rounded-t-[10px] border bg-background',
-        className
-      )}
+      className="fixed inset-x-0 bottom-0 z-50 mx-auto max-w-lg"
       {...props}
     >
-      <div className="mx-auto mt-4 h-2 w-[100px] rounded-full bg-muted" />
-      {children}
+      <div
+        className={cn(
+          'relative flex h-auto max-h-[calc(100dvh-16px)] w-full flex-col rounded-t-3xl bg-slate-100 px-6 py-4 dark:bg-neutral-900 md:ml-[26.5px]',
+          className
+        )}
+      >
+        <div className="mx-auto mb-6 mt-2 h-2 w-[100px] shrink-0 rounded-full bg-slate-500 dark:bg-neutral-400" />
+
+        <DrawerClose
+          asChild
+          className="absolute right-6 top-4 transition-opacity hover:opacity-75"
+        >
+          <button type="button">
+            <X size={24} />
+          </button>
+        </DrawerClose>
+
+        <div className="w-full overflow-y-auto">{children}</div>
+      </div>
     </DrawerPrimitive.Content>
   </DrawerPortal>
 ));
@@ -60,7 +78,7 @@ const DrawerHeader = ({
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
-    className={cn('grid gap-1.5 p-4 text-center sm:text-left', className)}
+    className={cn('grid gap-1.5 pb-4 text-center sm:text-left', className)}
     {...props}
   />
 );
@@ -71,7 +89,7 @@ const DrawerFooter = ({
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
-    className={cn('mt-auto flex flex-col gap-2 p-4', className)}
+    className={cn('mt-auto flex flex-col gap-2 pt-4', className)}
     {...props}
   />
 );
@@ -98,7 +116,7 @@ const DrawerDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DrawerPrimitive.Description
     ref={ref}
-    className={cn('text-sm text-muted-foreground', className)}
+    className={cn('text-sm text-slate-500 dark:text-neutral-400', className)}
     {...props}
   />
 ));

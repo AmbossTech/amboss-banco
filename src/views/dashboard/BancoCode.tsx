@@ -3,16 +3,18 @@ import { useTranslations } from 'next-intl';
 import { useQRCode } from 'next-qrcode';
 import { FC, useMemo, useState } from 'react';
 
-import { IconButton } from '@/components/ui/button-v2';
+import { Button, IconButton } from '@/components/ui/button-v2';
 import { Card } from '@/components/ui/card';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from '@/components/ui/drawer';
 import { useToast } from '@/components/ui/use-toast';
 import { useGetWalletDetailsQuery } from '@/graphql/queries/__generated__/wallet.generated';
 import useCopyClipboard from '@/hooks/useClipboardCopy';
@@ -73,30 +75,38 @@ export const BancoCode: FC<{ id: string }> = ({ id }) => {
             onClick={() => copy(address)}
           />
 
-          <Dialog open={showQR} onOpenChange={setShowQR}>
-            <DialogTrigger asChild>
+          <Drawer open={showQR} onOpenChange={setShowQR}>
+            <DrawerTrigger asChild>
               <IconButton icon={<QrCode size={20} />} />
-            </DialogTrigger>
+            </DrawerTrigger>
 
-            <DialogContent className="w-fit">
-              <DialogHeader>
-                <DialogTitle>{t('miban')}</DialogTitle>
-                <DialogDescription>{address}</DialogDescription>
-              </DialogHeader>
+            <DrawerContent>
+              <DrawerHeader className="pb-6 !text-center">
+                <DrawerTitle>{t('miban')}</DrawerTitle>
+                <DrawerDescription>{address}</DrawerDescription>
+              </DrawerHeader>
 
-              <Canvas
-                text={'lightning:' + address}
-                options={{
-                  margin: 3,
-                  width: 250,
-                  color: {
-                    dark: '#000000',
-                    light: '#FFFFFF',
-                  },
-                }}
-              />
-            </DialogContent>
-          </Dialog>
+              <div className="round-canvas mx-auto w-fit">
+                <Canvas
+                  text={'lightning:' + address}
+                  options={{
+                    margin: 3,
+                    width: 250,
+                    color: {
+                      dark: '#000000',
+                      light: '#FFFFFF',
+                    },
+                  }}
+                />
+              </div>
+
+              <DrawerFooter className="pt-10">
+                <DrawerClose asChild>
+                  <Button className="mx-auto w-[250px]">Close</Button>
+                </DrawerClose>
+              </DrawerFooter>
+            </DrawerContent>
+          </Drawer>
         </div>
       </div>
 
