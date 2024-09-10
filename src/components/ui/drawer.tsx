@@ -55,7 +55,7 @@ const DrawerContent = React.forwardRef<
           className
         )}
       >
-        <div className="mx-auto mb-6 mt-2 h-2 w-[100px] shrink-0 rounded-full bg-slate-500 dark:bg-neutral-400" />
+        <div className="mx-auto mb-6 mt-2 h-2 w-[100px] shrink-0 rounded-full bg-slate-500 opacity-50 dark:bg-neutral-400" />
 
         <DrawerClose
           asChild

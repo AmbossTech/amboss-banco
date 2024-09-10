@@ -1,10 +1,17 @@
 {
   "App": {
     "Dashboard": {
+      "asset": "Un activo en tu billetera.",
+      "buy": "Comprar",
+      "liquid-explainer": "Liquid Bitcoin (L-BTC) es una versión envuelta de Bitcoin (BTC) emitida por la Liquid Network, una red de liquidación de segunda capa basada en una cadena lateral de Bitcoin. Es un activo vinculado 1:1, lo que significa que un L-BTC es equivalente a un BTC. L-BTC está diseñado para mejorar la funcionalidad de las transacciones de Bitcoin, la emisión de activos digitales y los intercambios.",
       "no-contacts": "No hay contactos para mostrar.",
+      "price": "Precio",
       "recent": "Contactos Recientes",
+      "sell": "Vender",
+      "tether-explainer": "Tether (USDT) es una stablecoin, un tipo de criptomoneda diseñada para mantener un valor estable en relación con una moneda fiduciaria, en este caso, el dólar estadounidense (USD). Es emitida por Tether Limited, una compañía fundada en 2014, y está vinculada al valor del dólar estadounidense.",
       "warning": "Para enviar USD tienes que tener Bitcoin en tu billetera.",
-      "warning-title": "Agrega Bitcoin!"
+      "warning-title": "Agrega Bitcoin!",
+      "what-asset": "Qué es {asset}?"
     },
     "miban": "Código MIBAN",
     "view-all": "Ver todos",
@@ -16,7 +23,9 @@
   },
   "Common": {
     "clear": "Borrar de memoria",
+    "close": "Cerrar",
     "combo": "Una combinación de letras, números y símbolos.",
+    "coming-soon": "Pronto!",
     "confirm-password": "Repite la Contraseña",
     "decrypt": "Descifra",
     "email": "Correo",
