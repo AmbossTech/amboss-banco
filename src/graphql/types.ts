@@ -436,11 +436,41 @@ export enum PaymentOptionNetwork {
   Liquid = 'LIQUID',
 }
 
+export type PriceChartInput = {
+  from_date: Scalars['String']['input'];
+};
+
+export type PriceHistorical = {
+  __typename?: 'PriceHistorical';
+  id: Scalars['String']['output'];
+  interval: Scalars['String']['output'];
+  points: Array<PricePoint>;
+};
+
+export type PricePoint = {
+  __typename?: 'PricePoint';
+  currency: Scalars['String']['output'];
+  date: Scalars['String']['output'];
+  id: Scalars['String']['output'];
+  value?: Maybe<Scalars['Float']['output']>;
+};
+
+export type PriceQueries = {
+  __typename?: 'PriceQueries';
+  historical: PriceHistorical;
+  id: Scalars['String']['output'];
+};
+
+export type PriceQueriesHistoricalArgs = {
+  input: PriceChartInput;
+};
+
 export type Query = {
   __typename?: 'Query';
   hello: Scalars['String']['output'];
   passkey: PasskeyQueries;
   pay: PayQueries;
+  prices: PriceQueries;
   two_factor: TwoFactorQueries;
   user: User;
   wallets: WalletQueries;
