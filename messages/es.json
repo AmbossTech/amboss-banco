@@ -1,5 +1,6 @@
 {
   "App": {
+    "copy": "Copy",
     "Dashboard": {
       "asset": "Un activo en tu billetera.",
       "buy": "Comprar",
@@ -14,8 +15,12 @@
       "what-asset": "Qué es {asset}?"
     },
     "miban": "Código MIBAN",
+    "save": "Save",
     "view-all": "Ver todos",
     "Wallet": {
+      "amount": "Please specify an amount.",
+      "amount-custom": "Customize Amount",
+      "amount-ln": "Please specify an amount to generate a Lightning invoice.",
       "assets": "Activos",
       "receive": "Recibir",
       "send": "Envíar"

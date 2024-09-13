@@ -437,7 +437,7 @@ export const WalletInfo: FC<{
         <div className="mb-6 flex justify-center space-x-3">
           <Button asChild>
             <Link
-              href={ROUTES.wallet.receive(id, accountId)}
+              href={ROUTES.wallet.receive}
               className="flex w-full max-w-32 items-center justify-center space-x-2"
             >
               <p>{t('receive')}</p> <ArrowDown size={16} />
@@ -595,7 +595,7 @@ export const WalletInfo: FC<{
       <div className="flex space-x-3">
         <Button asChild>
           <Link
-            href={ROUTES.wallet.receive(id, accountId)}
+            href={ROUTES.wallet.receive}
             className="z-10 flex w-full max-w-32 items-center justify-center space-x-2"
           >
             <p>{t('receive')}</p> <ArrowDown size={16} />
