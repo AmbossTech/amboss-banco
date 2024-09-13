@@ -1,4 +1,3 @@
-import { sub } from 'date-fns';
 import { ArrowLeft, ArrowUpDown, ChevronsUpDown } from 'lucide-react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
@@ -17,7 +16,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/components/ui/use-toast';
 import { useCreateLightningInvoiceMutation } from '@/graphql/mutations/__generated__/createInvoice.generated';
 import { useCreateOnchainAddressMutation } from '@/graphql/mutations/__generated__/createOnchainAddress.generated';
-import { useGetPricesHistoricalQuery } from '@/graphql/queries/__generated__/prices.generated';
+import { useGetPriceCurrentQuery } from '@/graphql/queries/__generated__/prices.generated';
 import {
   useGetWalletDetailsQuery,
   useGetWalletQuery,
@@ -186,19 +185,11 @@ export const Receive = () => {
     }
   }, [receive, bancoCode, receiveString, liquidAddress, t]);
 
-  const from_date = useMemo(
-    () => sub(new Date(), { days: 1 }).toISOString(),
-    []
-  );
-
   const {
     data: priceData,
     loading: priceLoading,
     error: priceError,
-  } = useGetPricesHistoricalQuery({
-    variables: {
-      input: { from_date },
-    },
+  } = useGetPriceCurrentQuery({
     onError: err => {
       const messages = handleApolloError(err);
 
@@ -210,13 +201,7 @@ export const Receive = () => {
     },
   });
 
-  const latestPrice = useMemo(
-    () =>
-      priceData?.prices.historical.points
-        .filter(p => p.value !== null)
-        .toSorted((a, b) => Date.parse(b.date) - Date.parse(a.date))[0].value,
-    [priceData]
-  );
+  const latestPrice = priceData?.prices.current.value;
 
   const loading =
     detailsLoading ||

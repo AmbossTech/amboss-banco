@@ -30,6 +30,25 @@ export type GetPricesHistoricalQuery = {
   };
 };
 
+export type GetPriceCurrentQueryVariables = Types.Exact<{
+  [key: string]: never;
+}>;
+
+export type GetPriceCurrentQuery = {
+  __typename?: 'Query';
+  prices: {
+    __typename?: 'PriceQueries';
+    id: string;
+    current: {
+      __typename?: 'PricePoint';
+      currency: string;
+      date: string;
+      id: string;
+      value?: number | null;
+    };
+  };
+};
+
 export const GetPricesHistoricalDocument = gql`
   query getPricesHistorical($input: PriceChartInput!) {
     prices {
@@ -116,4 +135,82 @@ export type GetPricesHistoricalSuspenseQueryHookResult = ReturnType<
 export type GetPricesHistoricalQueryResult = Apollo.QueryResult<
   GetPricesHistoricalQuery,
   GetPricesHistoricalQueryVariables
+>;
+export const GetPriceCurrentDocument = gql`
+  query getPriceCurrent {
+    prices {
+      current {
+        currency
+        date
+        id
+        value
+      }
+      id
+    }
+  }
+`;
+
+/**
+ * __useGetPriceCurrentQuery__
+ *
+ * To run a query within a React component, call `useGetPriceCurrentQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetPriceCurrentQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetPriceCurrentQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetPriceCurrentQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    GetPriceCurrentQuery,
+    GetPriceCurrentQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<GetPriceCurrentQuery, GetPriceCurrentQueryVariables>(
+    GetPriceCurrentDocument,
+    options
+  );
+}
+export function useGetPriceCurrentLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetPriceCurrentQuery,
+    GetPriceCurrentQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetPriceCurrentQuery,
+    GetPriceCurrentQueryVariables
+  >(GetPriceCurrentDocument, options);
+}
+export function useGetPriceCurrentSuspenseQuery(
+  baseOptions?: Apollo.SuspenseQueryHookOptions<
+    GetPriceCurrentQuery,
+    GetPriceCurrentQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useSuspenseQuery<
+    GetPriceCurrentQuery,
+    GetPriceCurrentQueryVariables
+  >(GetPriceCurrentDocument, options);
+}
+export type GetPriceCurrentQueryHookResult = ReturnType<
+  typeof useGetPriceCurrentQuery
+>;
+export type GetPriceCurrentLazyQueryHookResult = ReturnType<
+  typeof useGetPriceCurrentLazyQuery
+>;
+export type GetPriceCurrentSuspenseQueryHookResult = ReturnType<
+  typeof useGetPriceCurrentSuspenseQuery
+>;
+export type GetPriceCurrentQueryResult = Apollo.QueryResult<
+  GetPriceCurrentQuery,
+  GetPriceCurrentQueryVariables
 >;

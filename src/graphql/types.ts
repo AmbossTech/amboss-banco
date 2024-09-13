@@ -467,6 +467,7 @@ export type PricePoint = {
 
 export type PriceQueries = {
   __typename?: 'PriceQueries';
+  current: PricePoint;
   historical: PriceHistorical;
   id: Scalars['String']['output'];
 };
