@@ -459,7 +459,7 @@ export const Receive = () => {
 
                 setAmountOpen(false);
               }}
-              disabled={!Number(amountUSDInput) || !Number(amountSatsInput)}
+              disabled={!Number(amountSatsInput)}
               className="mb-4 w-full"
             >
               {t('save')}
