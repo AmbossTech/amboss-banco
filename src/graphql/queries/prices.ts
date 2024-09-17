@@ -17,3 +17,17 @@ export const getPricesHistorical = gql`
     }
   }
 `;
+
+export const getPriceCurrent = gql`
+  query getPriceCurrent {
+    prices {
+      current {
+        currency
+        date
+        id
+        value
+      }
+      id
+    }
+  }
+`;

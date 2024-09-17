@@ -16,8 +16,7 @@ export const ROUTES = {
   wallet: {
     home: '/wallet',
     settings: (id: string) => `/wallet/${id}/settings`,
-    receive: (walletId: string, accountId: string) =>
-      `/wallet/${walletId}/account/${accountId}/receive`,
+    receive: '/wallet/receive',
     send: {
       home: (walletId: string, accountId: string, assetId?: string) =>
         `/wallet/${walletId}/account/${accountId}/send${assetId ? `?assetId=${assetId}` : ''}`,

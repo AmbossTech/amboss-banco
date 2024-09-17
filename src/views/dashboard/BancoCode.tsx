@@ -88,7 +88,7 @@ export const BancoCode: FC<{ id: string }> = ({ id }) => {
 
               <div className="round-canvas mx-auto w-fit">
                 <Canvas
-                  text={'lightning:' + address}
+                  text={address}
                   options={{
                     margin: 3,
                     width: 250,

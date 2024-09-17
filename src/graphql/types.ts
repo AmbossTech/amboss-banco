@@ -91,6 +91,16 @@ export type CreateContactInput = {
   wallet_id: Scalars['String']['input'];
 };
 
+export type CreateLightingInvoice = {
+  __typename?: 'CreateLightingInvoice';
+  payment_request: Scalars['String']['output'];
+};
+
+export type CreateLightingInvoiceInput = {
+  amount: Scalars['Float']['input'];
+  wallet_account_id: Scalars['String']['input'];
+};
+
 export type CreateLiquidTransaction = {
   __typename?: 'CreateLiquidTransaction';
   base_64: Scalars['String']['output'];
@@ -457,6 +467,7 @@ export type PricePoint = {
 
 export type PriceQueries = {
   __typename?: 'PriceQueries';
+  current: PricePoint;
   historical: PriceHistorical;
   id: Scalars['String']['output'];
 };
@@ -810,6 +821,7 @@ export type WalletMutations = {
   broadcast_liquid_transaction: BroadcastLiquidTransaction;
   change_name: Scalars['Boolean']['output'];
   create: CreateWallet;
+  create_lightning_invoice: CreateLightingInvoice;
   create_onchain_address: CreateOnchainAddress;
   create_onchain_address_swap: ReceiveSwap;
   refresh_wallet: Scalars['Boolean']['output'];
@@ -826,6 +838,10 @@ export type WalletMutationsChange_NameArgs = {
 
 export type WalletMutationsCreateArgs = {
   input: CreateWalletInput;
+};
+
+export type WalletMutationsCreate_Lightning_InvoiceArgs = {
+  input: CreateLightingInvoiceInput;
 };
 
 export type WalletMutationsCreate_Onchain_AddressArgs = {
