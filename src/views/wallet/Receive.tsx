@@ -2,7 +2,7 @@ import { ArrowLeft, ArrowUpDown, ChevronsUpDown } from 'lucide-react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { useQRCode } from 'next-qrcode';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useLocalStorage } from 'usehooks-ts';
 
 import { Button } from '@/components/ui/button-v2';
@@ -116,6 +116,8 @@ export const Receive = () => {
     { data: liquidData, loading: liquidLoading, error: liquidError },
   ] = useCreateOnchainAddressMutation({
     variables: { input: { wallet_account_id: liquidAccountId } },
+    onCompleted: data =>
+      setReceiveString(data.wallets.create_onchain_address.address),
     onError: err => {
       const messages = handleApolloError(err);
 
@@ -127,21 +129,15 @@ export const Receive = () => {
     },
   });
 
-  useEffect(() => {
-    if (!liquidAccountId || liquidData) return;
-
-    createLiquidAddress();
-  }, [liquidAccountId, liquidData, createLiquidAddress]);
-
-  const liquidAddress = useMemo(() => {
+  const liquidAddressFormatted = useMemo(() => {
     if (!liquidData?.wallets.create_onchain_address.address) {
-      return { address: '', formatted: '' };
+      return '';
     }
 
     const address = liquidData.wallets.create_onchain_address.address;
     const formatted = (address.match(/.{1,6}/g) || []).join(' - ');
 
-    return { address, formatted };
+    return formatted;
   }, [liquidData]);
 
   const [createLightningInvoice, { loading: invoiceLoading }] =
@@ -187,9 +183,9 @@ export const Receive = () => {
           : t('Wallet.amount-ln');
       case 'Liquid Bitcoin':
       case 'Tether USD':
-        return liquidAddress.formatted;
+        return liquidAddressFormatted;
     }
-  }, [receive, bancoCode, receiveString, liquidAddress, t]);
+  }, [receive, bancoCode, receiveString, liquidAddressFormatted, t]);
 
   const {
     data: priceData,
@@ -271,7 +267,7 @@ export const Receive = () => {
                         break;
                       case 'Liquid Bitcoin':
                       case 'Tether USD':
-                        setReceiveString(liquidAddress.address);
+                        createLiquidAddress();
                         break;
                     }
                   }}
