@@ -264,7 +264,11 @@ export const RecoverForm = () => {
         <div className="flex items-center space-x-2">
           <Input readOnly value={seed} id="seed" />
 
-          <button onClick={() => copy(seed)} disabled={!seed}>
+          <button
+            onClick={() => copy(seed)}
+            disabled={!seed}
+            className="transition-opacity hover:opacity-75"
+          >
             {copiedText === seed ? <CopyCheck size={24} /> : <Copy size={24} />}
           </button>
         </div>

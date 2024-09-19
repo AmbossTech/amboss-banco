@@ -180,11 +180,6 @@ export const WalletInfo: FC<{
       }),
   });
 
-  const accountId = useMemo(
-    () => data?.wallets.find_one.accounts.find(a => a.liquid)?.id || '',
-    [data?.wallets.find_one.accounts]
-  );
-
   const balances = useMemo(() => {
     if (loading || error) return [];
     if (!data?.wallets.find_one.accounts.length) return [];
@@ -446,7 +441,7 @@ export const WalletInfo: FC<{
 
           <Button asChild variant="secondary">
             <Link
-              href={ROUTES.wallet.send.home(id, accountId)}
+              href={ROUTES.wallet.send}
               className="flex w-full max-w-32 items-center justify-center space-x-2"
             >
               <p>{t('send')}</p> <ArrowUp size={16} />
@@ -604,7 +599,7 @@ export const WalletInfo: FC<{
 
         <Button asChild variant="secondary">
           <Link
-            href={ROUTES.wallet.send.home(id, accountId)}
+            href={ROUTES.wallet.send}
             className="z-10 flex w-full max-w-32 items-center justify-center space-x-2"
           >
             <p>{t('send')}</p> <ArrowUp size={16} />

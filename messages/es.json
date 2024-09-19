@@ -1,6 +1,5 @@
 {
   "App": {
-    "copy": "Copy",
     "Dashboard": {
       "asset": "Un activo en tu billetera.",
       "buy": "Comprar",
@@ -14,25 +13,40 @@
       "warning-title": "Agrega Bitcoin!",
       "what-asset": "Qué es {asset}?"
     },
-    "miban": "Código MIBAN",
-    "save": "Save",
-    "view-all": "Ver todos",
     "Wallet": {
+      "add-contact": "Add Contact",
       "amount": "Please specify an amount.",
       "amount-custom": "Customize Amount",
       "amount-ln": "Please specify an amount to generate a Lightning invoice.",
       "assets": "Activos",
+      "available": "Available",
+      "confirm-pay": "Confirm Payment",
+      "fee": "Fee",
+      "locked": "Your vault is locked.",
       "receive": "Recibir",
-      "send": "Envíar"
-    }
+      "recipient": "Enter recipient",
+      "send": "Envíar",
+      "send-options": "MIBAN Code, Lightning Invoice, or Payment Address",
+      "started": "Payment Started!",
+      "success": "Success!",
+      "to": "To",
+      "unknown": "Unknown"
+    },
+    "copy": "Copy",
+    "miban": "Código MIBAN",
+    "save": "Save",
+    "view-all": "Ver todos"
   },
   "Common": {
+    "cancel": "Cancel",
     "clear": "Borrar de memoria",
     "close": "Cerrar",
     "combo": "Una combinación de letras, números y símbolos.",
     "coming-soon": "Pronto!",
     "confirm-password": "Repite la Contraseña",
+    "continue": "Continue",
     "decrypt": "Descifra",
+    "done": "Done",
     "email": "Correo",
     "mnemonic": "Mnemonic Cifrada",
     "next": "Siguiente",
@@ -91,15 +105,12 @@
       "secure": "Tu cuenta esta asegurada con un código de autenticación. Abre la app y introduce el código acá.",
       "with-passkey": "Iniciar sesión con un Passkey"
     },
-    "login": "Iniciar Sesión",
-    "privacy": "Política de Privacidad",
     "Recover": {
       "decrypted": "Mnemonic Descifrada",
       "description": "Si sabes tu mnemonic cifrada, junto con tu correo, contraseña y llave simétrica, puedes descrifrarla.",
       "recover": "Recupera tu billetera",
       "symmetric": "Llave Simétrica"
     },
-    "signup": "Registrarse",
     "Signup": {
       "accept-password": "Entiendo que si olvido mi contraseña, la cuenta no se puede recuperar.",
       "accept-terms": "Confirmo que acepto los <terms>Términos de Servicio</terms> y la <privacy>Política de Privacidad</privacy>.",
@@ -114,7 +125,6 @@
       "set": "Crea una contraseña",
       "submit": "Crea una cuenta"
     },
-    "terms": "Términos y Condiciones",
     "Waitlist": {
       "good-things": "Las cosas buenas toman tiempo. Nos encantaría avisarte apenas estemos listos!",
       "join": "Uneté a nuestra lista de espera",
@@ -122,6 +132,10 @@
       "referral": "Tengo un código de invitación",
       "submit": "Uneté a nuestra lista de espera",
       "subscriber": "Tengo una subscripción de Amboss"
-    }
+    },
+    "login": "Iniciar Sesión",
+    "privacy": "Política de Privacidad",
+    "signup": "Registrarse",
+    "terms": "Términos y Condiciones"
   }
 }
