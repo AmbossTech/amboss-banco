@@ -55,6 +55,9 @@ export const Receive = () => {
   const [amountUSDSaved, setAmountUSDSaved] = useState('');
   const [amountSatsSaved, setAmountSatsSaved] = useState('');
   const [satsFirst, setSatsFirst] = useState(false);
+  const [descriptionOpen, setDescriptionOpen] = useState(false);
+  const [description, setDescription] = useState('');
+  const [descriptionSaved, setDescriptionSaved] = useState('');
 
   const [value] = useLocalStorage(LOCALSTORAGE_KEYS.currentWalletId, '');
 
@@ -142,6 +145,7 @@ export const Receive = () => {
       variables: {
         input: {
           amount: Number(amountSatsInput),
+          invoice_description: description,
           wallet_account_id: liquidAccountId,
         },
       },
@@ -156,6 +160,8 @@ export const Receive = () => {
         setAmountUSDSaved('');
         setAmountSatsSaved('');
         setSatsFirst(false);
+        setDescription('');
+        setDescriptionSaved('');
 
         const messages = handleApolloError(err);
 
@@ -248,6 +254,8 @@ export const Receive = () => {
                     setAmountUSDSaved('');
                     setAmountSatsSaved('');
                     setSatsFirst(false);
+                    setDescription('');
+                    setDescriptionSaved('');
 
                     switch (o) {
                       case 'Any Currency':
@@ -456,6 +464,65 @@ export const Receive = () => {
                 setAmountOpen(false);
               }}
               disabled={!Number(amountSatsInput)}
+              className="mb-4 w-full"
+            >
+              {t('save')}
+            </Button>
+          </DrawerContent>
+        </Drawer>
+      ) : null}
+
+      {receive === 'Lightning' ? (
+        <Drawer
+          open={descriptionOpen}
+          onOpenChange={setDescriptionOpen}
+          onClose={() => {
+            setTimeout(() => {
+              setDescription(descriptionSaved);
+            }, 1000);
+          }}
+        >
+          <DrawerTrigger asChild disabled={loading}>
+            <button className="w-full text-center text-primary transition-colors hover:text-primary-hover">
+              {descriptionSaved
+                ? '- ' + t('Wallet.edit-desc')
+                : '+ ' + t('Wallet.add-desc')}
+            </button>
+          </DrawerTrigger>
+
+          <DrawerContent>
+            <input
+              autoFocus
+              id="description"
+              type="text"
+              value={description}
+              onChange={e => {
+                setDescription(e.target.value);
+              }}
+              className="mt-16 w-full border-b border-primary bg-transparent pb-px text-center text-5xl font-medium focus:outline-none"
+            />
+
+            <label
+              htmlFor="description"
+              className="mb-16 mt-6 block text-center text-sm"
+            >
+              {t('Wallet.enter-desc')}
+            </label>
+
+            <Button
+              onClick={() => {
+                setDescriptionSaved(description);
+
+                if (
+                  description !== descriptionSaved &&
+                  Number(amountSatsInput)
+                ) {
+                  createLightningInvoice();
+                }
+
+                setDescriptionOpen(false);
+              }}
+              disabled={!description}
               className="mb-4 w-full"
             >
               {t('save')}

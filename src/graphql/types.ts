@@ -98,6 +98,7 @@ export type CreateLightingInvoice = {
 
 export type CreateLightingInvoiceInput = {
   amount: Scalars['Float']['input'];
+  invoice_description?: InputMaybe<Scalars['String']['input']>;
   wallet_account_id: Scalars['String']['input'];
 };
 
