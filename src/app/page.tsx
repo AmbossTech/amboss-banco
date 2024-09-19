@@ -210,7 +210,7 @@ export default function Page() {
                     <Image
                       src={six}
                       alt="phone-pay"
-                      className="scale-150 transition-transform duration-500 hover:scale-[200%]"
+                      className="scale-125 transition-transform duration-500 hover:scale-150"
                     />
                   </div>
                 }
