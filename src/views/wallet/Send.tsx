@@ -786,6 +786,7 @@ export const Send = () => {
                     toast({
                       variant: 'destructive',
                       title: 'Error Scanning QR',
+                      description: String(error),
                     });
 
                     setShowScanner(false);
