@@ -1,6 +1,5 @@
 {
   "App": {
-    "copy": "Copiar",
     "Dashboard": {
       "asset": "Un activo en tu billetera.",
       "buy": "Comprar",
@@ -14,11 +13,8 @@
       "warning-title": "Agrega Bitcoin!",
       "what-asset": "Qué es {asset}?"
     },
-    "miban": "Código MIBAN",
-    "save": "Guardar",
-    "view-all": "Ver todos",
     "Wallet": {
-            "add-contact": "Add Contact",
+      "add-contact": "Add Contact",
       "amount": "Especifíca una cantidad.",
       "amount-custom": "Cambia la cantidad",
       "amount-ln": "Por favor especifíca una cantidad para generar un recibo de Lightning.",

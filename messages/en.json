@@ -1,6 +1,5 @@
 {
   "App": {
-    "copy": "Copy",
     "Dashboard": {
       "asset": "An asset in your wallet.",
       "buy": "Buy",
@@ -14,9 +13,6 @@
       "warning-title": "Add Bitcoin!",
       "what-asset": "What is {asset}?"
     },
-    "miban": "MIBAN Code",
-    "save": "Save",
-    "view-all": "View all",
     "Wallet": {
       "add-contact": "Add Contact",
       "amount": "Please specify an amount.",
