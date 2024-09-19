@@ -27,14 +27,14 @@ const Warning: FC<{ id: string }> = ({ id }) => {
 
   const showAlert = useMemo(() => {
     const otherAssets = liquidAssets.filter(
-      a => a.asset_info.ticker !== 'BTC' && !!a.balance
+      a => a.asset_info.ticker !== 'BTC' && Number(a.balance)
     );
 
     const btcAsset = liquidAssets.filter(
-      a => a.asset_info.ticker == 'BTC' && !!a.balance
+      a => a.asset_info.ticker == 'BTC' && Number(a.balance)
     );
 
-    return !!otherAssets.length && !btcAsset.length;
+    return otherAssets.length && !btcAsset.length;
   }, [liquidAssets]);
 
   if (loading || error) return null;
