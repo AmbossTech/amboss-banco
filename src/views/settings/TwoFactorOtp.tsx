@@ -137,15 +137,14 @@ export const OTP: FC<{ hasAlready: boolean }> = ({ hasAlready }) => {
               <Canvas
                 text={data.two_factor.otp.add.otp_url}
                 options={{
-                  errorCorrectionLevel: 'M',
                   margin: 3,
-                  scale: 4,
-                  width: 280,
+                  width: 250,
                   color: {
                     dark: '#000000',
                     light: '#FFFFFF',
                   },
                 }}
+                logo={{ src: '/icons/qr-logo.svg', options: { width: 56 } }}
               />
               <Label className="mb-2 mt-4">Secret</Label>
               <div className="flex w-full max-w-[280px] gap-2">

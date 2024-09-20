@@ -308,6 +308,7 @@ export const Receive = () => {
                 light: '#FFFFFF',
               },
             }}
+            logo={{ src: '/icons/qr-logo.svg', options: { width: 56 } }}
           />
         </div>
       )}
