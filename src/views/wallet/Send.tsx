@@ -95,6 +95,7 @@ export const Send = () => {
     'miban' | 'lightning-address' | 'invoice' | 'liquid'
   >();
   const [invoiceNode, setInvoiceNode] = useState('');
+  const [invoiceDescription, setInvoiceDescription] = useState('');
   const [asset, setAsset] = useState<Assets>('Liquid Bitcoin');
   const [selectAsset, setSelectAsset] = useState(false);
   const [amountUSDInput, setAmountUSDInput] = useState('');
@@ -107,6 +108,7 @@ export const Send = () => {
     setSendString('');
     setSendType(undefined);
     setInvoiceNode('');
+    setInvoiceDescription('');
     setAsset('Liquid Bitcoin');
     setAmountUSDInput('');
     setAmountSatsInput('');
@@ -677,6 +679,12 @@ export const Send = () => {
                 recipient
               )}
             </p>
+
+            {invoiceDescription ? (
+              <p className="mt-2 text-center font-medium text-slate-600 dark:text-neutral-400">
+                {t('App.Wallet.desc')}: {invoiceDescription}
+              </p>
+            ) : null}
           </div>
 
           <p className="mb-3 text-center text-sm text-slate-600 dark:text-neutral-400">
@@ -884,10 +892,12 @@ export const Send = () => {
 
             if (type === 'invoice') {
               try {
-                const { payeeNodeKey, satoshis } = bolt11.decode(sendString);
+                const { payeeNodeKey, satoshis, tagsObject } =
+                  bolt11.decode(sendString);
 
                 if (payeeNodeKey && satoshis) {
                   setInvoiceNode(payeeNodeKey);
+                  setInvoiceDescription(tagsObject.description || '');
                   setAmountSatsInput(satoshis.toString());
                   setAmountUSDInput((latestPricePerSat * satoshis).toFixed(2));
                 } else {
