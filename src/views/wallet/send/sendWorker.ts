@@ -21,7 +21,7 @@ export const useSendWorker = (
 
   useEffect(() => {
     workerRef.current = new Worker(
-      new URL('../../workers/crypto/crypto.ts', import.meta.url)
+      new URL('../../../workers/crypto/crypto.ts', import.meta.url)
     );
 
     workerRef.current.onmessage = async event => {
