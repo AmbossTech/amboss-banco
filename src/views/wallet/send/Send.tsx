@@ -14,7 +14,7 @@ import {
 import Image from 'next/image';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useLocalStorage } from 'usehooks-ts';
 
 import success from '/public/icons/success.svg';
@@ -28,11 +28,6 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
-import {
-  BroadcastLiquidTransactionDocument,
-  BroadcastLiquidTransactionMutation,
-  BroadcastLiquidTransactionMutationVariables,
-} from '@/graphql/mutations/__generated__/broadcastLiquidTransaction.generated';
 import {
   PayLightningAddressDocument,
   PayLightningAddressMutation,
@@ -56,34 +51,17 @@ import { handleApolloError } from '@/utils/error';
 import { cryptoToUsd, formatFiat } from '@/utils/fiat';
 import { ROUTES } from '@/utils/routes';
 import { shorten } from '@/utils/string';
-import {
-  CryptoWorkerMessage,
-  CryptoWorkerResponse,
-} from '@/workers/crypto/types';
+import { CryptoWorkerMessage } from '@/workers/crypto/types';
 
-type Assets = 'Liquid Bitcoin' | 'Tether USD';
-
-const checkSendString = (str: string) => {
-  switch (true) {
-    case str.includes('@'):
-      return str.split('@')[1] === 'bancolibre.com'
-        ? 'miban'
-        : 'lightning-address';
-    case str.startsWith('lnbc'):
-      return 'invoice';
-    case str.startsWith('lq'):
-    case str.startsWith('liquid:'):
-      return 'liquid';
-  }
-};
-
-const assets: Assets[] = ['Liquid Bitcoin', 'Tether USD'];
+import { Assets, assets } from './assets';
+import { checkSendString } from './checkSendString';
+import { useSendWorker } from './sendWorker';
 
 export const Send = () => {
   const t = useTranslations();
-  const workerRef = useRef<Worker>();
-  const client = useApolloClient();
   const { toast } = useToast();
+
+  const client = useApolloClient();
 
   const [value] = useLocalStorage(LOCALSTORAGE_KEYS.currentWalletId, '');
   const keys = useKeyStore(s => s.keys);
@@ -102,6 +80,8 @@ export const Send = () => {
   const [amountSatsInput, setAmountSatsInput] = useState('');
   const [satsFirst, setSatsFirst] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const workerRef = useSendWorker(setLoading, setView);
 
   const reset = () => {
     setView('default');
@@ -417,75 +397,6 @@ export const Send = () => {
 
     workerRef.current.postMessage(message);
   };
-
-  useEffect(() => {
-    workerRef.current = new Worker(
-      new URL('../../workers/crypto/crypto.ts', import.meta.url)
-    );
-
-    workerRef.current.onmessage = async event => {
-      const message: CryptoWorkerResponse = event.data;
-
-      switch (message.type) {
-        case 'signPset':
-          const [, error] = await toWithError(
-            client.mutate<
-              BroadcastLiquidTransactionMutation,
-              BroadcastLiquidTransactionMutationVariables
-            >({
-              mutation: BroadcastLiquidTransactionDocument,
-              variables: {
-                input: {
-                  wallet_account_id: message.payload.wallet_account_id,
-                  signed_pset: message.payload.signedPset,
-                },
-              },
-            })
-          );
-
-          if (error) {
-            const messages = handleApolloError(error as ApolloError);
-
-            toast({
-              variant: 'destructive',
-              title: 'Error Sending Money',
-              description: messages.join(', '),
-            });
-
-            setLoading(false);
-            return;
-          }
-
-          toast({
-            title: 'Money Sent!',
-            description: `Money has been sent.`,
-          });
-
-          setLoading(false);
-          setView('sent');
-          break;
-
-        case 'error':
-          toast({
-            variant: 'destructive',
-            title: 'Error Sending Money',
-            description: message.msg,
-          });
-
-          setLoading(false);
-          break;
-      }
-    };
-
-    workerRef.current.onerror = error => {
-      console.error('Worker error:', error);
-      setLoading(false);
-    };
-
-    return () => {
-      if (workerRef.current) workerRef.current.terminate();
-    };
-  }, [client, toast]);
 
   if (view === 'sent')
     return (
