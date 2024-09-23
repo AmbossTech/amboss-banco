@@ -80,7 +80,6 @@ const makeClient = (
                 refreshTokens(serverUrl, accessToken, refreshToken).catch(
                   error => {
                     console.log(error);
-                    window.location.reload();
                   }
                 )
               ).flatMap(accessToken => {
