@@ -97,6 +97,7 @@ export const BancoCode: FC<{ id: string }> = ({ id }) => {
                       light: '#FFFFFF',
                     },
                   }}
+                  logo={{ src: '/icons/qr-logo.svg', options: { width: 56 } }}
                 />
               </div>
 

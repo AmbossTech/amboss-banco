@@ -17,14 +17,7 @@ export const ROUTES = {
     home: '/wallet',
     settings: (id: string) => `/wallet/${id}/settings`,
     receive: '/wallet/receive',
-    send: {
-      home: (walletId: string, accountId: string, assetId?: string) =>
-        `/wallet/${walletId}/account/${accountId}/send${assetId ? `?assetId=${assetId}` : ''}`,
-      address: (walletId: string, accountId: string, assetId: string) =>
-        `/wallet/${walletId}/account/${accountId}/send/address?assetId=${assetId}`,
-      invoice: (walletId: string, accountId: string, assetId: string) =>
-        `/wallet/${walletId}/account/${accountId}/send/invoice?assetId=${assetId}`,
-    },
+    send: '/wallet/send',
   },
   contacts: {
     home: '/contacts',
@@ -50,5 +43,6 @@ export const ROUTES = {
     x: 'https://x.com/ambosstech',
     telegram: 'https://t.me/+FrzdhJw4piAzMzgx',
     support: 'mailto:support@amboss.tech',
+    space: 'https://amboss.space',
   },
 };

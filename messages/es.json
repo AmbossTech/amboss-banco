@@ -1,6 +1,5 @@
 {
   "App": {
-    "copy": "Copiar",
     "Dashboard": {
       "asset": "Un activo en tu billetera.",
       "buy": "Comprar",
@@ -14,25 +13,44 @@
       "warning-title": "Agrega Bitcoin!",
       "what-asset": "Qué es {asset}?"
     },
-    "miban": "Código MIBAN",
-    "save": "Guardar",
-    "view-all": "Ver todos",
     "Wallet": {
+      "add-contact": "Agregar Contacto",
+      "add-desc": "Agrega una descripción",
       "amount": "Especifíca una cantidad.",
       "amount-custom": "Cambia la cantidad",
       "amount-ln": "Por favor especifíca una cantidad para generar un recibo de Lightning.",
       "assets": "Activos",
+      "available": "Disponible",
+      "confirm-pay": "Confirmar Pago",
+      "desc": "Descripción",
+      "edit-desc": "Modifica la descripción",
+      "enter-desc": "Opcionalmente agrega una descripción.",
+      "fee": "Comisión",
+      "locked": "Tu bóveda esta bloqueada.",
       "receive": "Recibir",
-      "send": "Envíar"
-    }
+      "recipient": "Ingrese el destinatario",
+      "send": "Envíar",
+      "send-options": "Código MIBAN, factura Lightning o dirección de pago",
+      "started": "Pago iniciado!",
+      "success": "Éxito!",
+      "to": "A",
+      "unknown": "Desconocido"
+    },
+    "copy": "Copiar",
+    "miban": "Código MIBAN",
+    "save": "Guardar",
+    "view-all": "Ver todos"
   },
   "Common": {
+    "cancel": "Cancelar",
     "clear": "Borrar de memoria",
     "close": "Cerrar",
     "combo": "Una combinación de letras, números y símbolos.",
     "coming-soon": "Pronto!",
     "confirm-password": "Repite la Contraseña",
+    "continue": "Continuar",
     "decrypt": "Descifra",
+    "done": "Terminado",
     "email": "Correo",
     "mnemonic": "Mnemonic Cifrada",
     "next": "Siguiente",
@@ -91,15 +109,12 @@
       "secure": "Tu cuenta esta asegurada con un código de autenticación. Abre la app y introduce el código acá.",
       "with-passkey": "Iniciar sesión con un Passkey"
     },
-    "login": "Iniciar Sesión",
-    "privacy": "Política de Privacidad",
     "Recover": {
       "decrypted": "Mnemonic Descifrada",
       "description": "Si sabes tu mnemonic cifrada, junto con tu correo, contraseña y llave simétrica, puedes descrifrarla.",
       "recover": "Recupera tu billetera",
       "symmetric": "Llave Simétrica"
     },
-    "signup": "Registrarse",
     "Signup": {
       "accept-password": "Entiendo que si olvido mi contraseña, la cuenta no se puede recuperar.",
       "accept-terms": "Confirmo que acepto los <terms>Términos de Servicio</terms> y la <privacy>Política de Privacidad</privacy>.",
@@ -114,7 +129,6 @@
       "set": "Crea una contraseña",
       "submit": "Crea una cuenta"
     },
-    "terms": "Términos y Condiciones",
     "Waitlist": {
       "good-things": "Las cosas buenas toman tiempo. Nos encantaría avisarte apenas estemos listos!",
       "join": "Uneté a nuestra lista de espera",
@@ -122,6 +136,10 @@
       "referral": "Tengo un código de invitación",
       "submit": "Uneté a nuestra lista de espera",
       "subscriber": "Tengo una subscripción de Amboss"
-    }
+    },
+    "login": "Iniciar Sesión",
+    "privacy": "Política de Privacidad",
+    "signup": "Registrarse",
+    "terms": "Términos y Condiciones"
   }
 }
