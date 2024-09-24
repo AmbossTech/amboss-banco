@@ -1,6 +1,7 @@
 'use client';
 
 import { Plus, User } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { FC, useEffect, useState } from 'react';
 import { useLocalStorage } from 'usehooks-ts';
@@ -67,8 +68,11 @@ const ContactCard: FC<{ contact: ContactType; cbk?: () => void }> = ({
 export const Contacts = () => {
   const t = useTranslations('Index');
 
+  const searchParams = useSearchParams();
+  const addParam = searchParams.has('add');
+
   const [openDrawer, setOpenDrawer] = useState(false);
-  const [openDialog, setOpenDialog] = useState(false);
+  const [openDialog, setOpenDialog] = useState(addParam);
 
   const currentContact = useContactStore(s => s.currentContact);
   const setContact = useContactStore(s => s.setCurrentContact);
