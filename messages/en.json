@@ -1,6 +1,5 @@
 {
   "App": {
-    "copy": "Copy",
     "Dashboard": {
       "asset": "An asset in your wallet.",
       "buy": "Buy",
@@ -14,17 +13,38 @@
       "warning-title": "Add Bitcoin!",
       "what-asset": "What is {asset}?"
     },
-    "miban": "MIBAN Code",
-    "save": "Save",
-    "view-all": "View all",
     "Wallet": {
+      "Settings": {
+        "decrypt": "Decrypt to view your wallet’s secret mnemonic.",
+        "decrypted": "Decrypted Mnemonic",
+        "descriptor": "Descriptor",
+        "miban": "Share this code with other people to receive payments.",
+        "name": "Wallet Name",
+        "settings": "Wallet Settings",
+        "tech-info": "Technical information about your wallet, helpful for advanced recovery.",
+        "unlock": "Unlock to Decrypt"
+      },
+      "Vault": {
+        "lock": "Lock",
+        "lock-wallet": "Lock your wallet",
+        "locked": "Locked",
+        "password": "Your BancoLibre Password",
+        "seed": "Your seed phrase is encrypted with your password.",
+        "unlock": "Unlock",
+        "unlock-wallet": "Unlock your wallet",
+        "unlocked": "Unlocked"
+      },
       "amount": "Please specify an amount.",
       "amount-custom": "Customize Amount",
       "amount-ln": "Please specify an amount to generate a Lightning invoice.",
       "assets": "Assets",
       "receive": "Receive",
       "send": "Send"
-    }
+    },
+    "copy": "Copy",
+    "miban": "MIBAN Code",
+    "save": "Save",
+    "view-all": "View all"
   },
   "Common": {
     "clear": "Clear Memory",
@@ -34,6 +54,7 @@
     "confirm-password": "Confirm Password",
     "decrypt": "Decrypt",
     "email": "Email",
+    "error": "Error",
     "mnemonic": "Encrypted Mnemonic",
     "next": "Next",
     "optional": "Optional",
@@ -91,15 +112,12 @@
       "secure": "Your account is secured with an authentication code. Open up the Authenticator app and enter the code here.",
       "with-passkey": "Log in with Passkey"
     },
-    "login": "Log In",
-    "privacy": "Privacy Policy",
     "Recover": {
       "decrypted": "Decrypted Mnemonic (decrypt to show)",
       "description": "If you know your encrypted mnemonic, it can be decrypted in combination with email, password and symmetric key.",
       "recover": "Recover your wallet",
       "symmetric": "Symmetric Key"
     },
-    "signup": "Sign up",
     "Signup": {
       "accept-password": "I understand that if I forget the password my account cannot be recovered.",
       "accept-terms": "By checking this box you agree to the <terms>Terms of Service</terms> and the <privacy>Privacy Policy</privacy>.",
@@ -114,7 +132,6 @@
       "set": "Set a password",
       "submit": "Create Account"
     },
-    "terms": "Terms & Conditions",
     "Waitlist": {
       "good-things": "Good things take time. We’d love for you to be the first to know when we’re live!",
       "join": "Join our waitlist",
@@ -122,6 +139,10 @@
       "referral": "I have a referral code",
       "submit": "Join Waitlist",
       "subscriber": "I am an Amboss subscriber"
-    }
+    },
+    "login": "Log In",
+    "privacy": "Privacy Policy",
+    "signup": "Sign up",
+    "terms": "Terms & Conditions"
   }
 }
