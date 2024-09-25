@@ -8,6 +8,7 @@ import { useGetWalletContactsQuery } from '@/graphql/queries/__generated__/conta
 import { useContactStore } from '@/stores/contacts';
 import { handleApolloError } from '@/utils/error';
 import { ROUTES } from '@/utils/routes';
+import { addEllipsis } from '@/utils/string';
 
 export const RecentContacts: FC<{ id: string }> = ({ id }) => {
   const t = useTranslations('App');
@@ -44,12 +45,12 @@ export const RecentContacts: FC<{ id: string }> = ({ id }) => {
         </Link>
       </div>
 
-      <div className="hide-scroll flex w-full max-w-[calc(100vw-32px)] space-x-4 overflow-x-auto">
+      <div className="hide-scroll flex w-full max-w-[calc(100vw-32px)] space-x-6 overflow-x-auto">
         {loading ? (
           Array.from({ length: 5 }).map((_, i) => (
             <div key={i} className="space-y-2">
               <div className="mx-auto h-14 w-14 animate-pulse rounded-full bg-primary" />
-              <p className="h-5 w-24 animate-pulse rounded-full bg-slate-600 dark:bg-neutral-400" />
+              <p className="h-5 w-16 animate-pulse rounded-full bg-slate-600 dark:bg-neutral-400" />
             </div>
           ))
         ) : contacts?.length ? (
@@ -74,8 +75,8 @@ export const RecentContacts: FC<{ id: string }> = ({ id }) => {
                 {c.money_address.slice(0, 2)}
               </div>
 
-              <p className="text-center text-sm font-medium text-slate-600 transition-colors group-hover:text-foreground dark:text-neutral-400">
-                {c.money_address.split('@')[0]}
+              <p className="w-16 text-center text-sm font-medium text-slate-600 transition-colors group-hover:text-foreground dark:text-neutral-400">
+                {addEllipsis(c.money_address.split('@')[0], 8)}
               </p>
             </button>
           ))
