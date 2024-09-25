@@ -591,7 +591,7 @@ export const WalletInfo: FC<{
         <Button asChild>
           <Link
             href={ROUTES.wallet.receive}
-            className="z-10 flex w-full max-w-32 items-center justify-center space-x-2"
+            className="z-10 flex w-full items-center justify-center space-x-2 sm:max-w-32"
           >
             <p>{t('receive')}</p> <ArrowDown size={16} />
           </Link>
@@ -600,7 +600,7 @@ export const WalletInfo: FC<{
         <Button asChild variant="secondary">
           <Link
             href={ROUTES.wallet.send}
-            className="z-10 flex w-full max-w-32 items-center justify-center space-x-2"
+            className="z-10 flex w-full items-center justify-center space-x-2 sm:max-w-32"
           >
             <p>{t('send')}</p> <ArrowUp size={16} />
           </Link>
