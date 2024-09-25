@@ -11,9 +11,11 @@ import { toWithError } from '@/utils/async';
 import { handleApolloError } from '@/utils/error';
 import { CryptoWorkerResponse } from '@/workers/crypto/types';
 
+import { SendView } from './Send';
+
 export const useSendWorker = (
   setLoading: Dispatch<SetStateAction<boolean>>,
-  setView: Dispatch<SetStateAction<'default' | 'sent' | 'confirm'>>
+  setView: Dispatch<SetStateAction<SendView>>
 ) => {
   const workerRef = useRef<Worker>();
   const client = useApolloClient();
