@@ -15,24 +15,24 @@
     },
     "Wallet": {
       "Settings": {
-        "decrypt": "Decrypt to view your wallet’s secret mnemonic.",
-        "decrypted": "Decrypted Mnemonic",
+        "decrypt": "Desencriptar para ver la frase secreta de tu billetera.",
+        "decrypted": "Frase Secreta Desencriptada",
         "descriptor": "Descriptor",
-        "miban": "Share this code with other people to receive payments.",
-        "name": "Wallet Name",
-        "settings": "Wallet Settings",
-        "tech-info": "Technical information about your wallet, helpful for advanced recovery.",
-        "unlock": "Unlock to Decrypt"
+        "miban": "Comparte este código con otras personas para recibir pagos.",
+        "name": "Nombre de la Billetera",
+        "settings": "Configuración de la Billetera",
+        "tech-info": "Información técnica sobre tu billetera, útil para recuperación avanzada.",
+        "unlock": "Desbloquear para Desencriptar"
       },
       "Vault": {
-        "lock": "Lock",
-        "lock-wallet": "Lock your wallet",
-        "locked": "Locked",
-        "password": "Your BancoLibre Password",
-        "seed": "Your seed phrase is encrypted with your password.",
-        "unlock": "Unlock",
-        "unlock-wallet": "Unlock your wallet",
-        "unlocked": "Unlocked"
+        "lock": "Bloquear",
+        "lock-wallet": "Bloquear tu billetera",
+        "locked": "Bloqueado",
+        "password": "Tu Contraseña de BancoLibre",
+        "seed": "Tu frase semilla está encriptada con tu contraseña.",
+        "unlock": "Desbloquear",
+        "unlock-wallet": "Desbloquear tu billetera",
+        "unlocked": "Desbloqueado"
       },
       "add-contact": "Agregar Contacto",
       "add-desc": "Agrega una descripción",
