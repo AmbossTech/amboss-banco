@@ -415,7 +415,7 @@ export const WalletInfo: FC<{
         </button>
 
         <Link
-          href={ROUTES.wallet.settings(id)}
+          href={ROUTES.wallet.settings}
           className="absolute right-0 top-0 transition-opacity hover:opacity-75 lg:-right-16"
         >
           <Settings2 size={24} />

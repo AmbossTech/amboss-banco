@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { startAuthentication } from '@simplewebauthn/browser';
 import { PublicKeyCredentialRequestOptionsJSON } from '@simplewebauthn/types';
 import { Loader2, Lock, Unlock, X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { FC, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -31,17 +32,8 @@ import {
 } from '@/utils/passkey';
 import { WorkerMessage, WorkerResponse } from '@/workers/account/types';
 
-import { Button } from '../ui/button';
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '../ui/dialog';
+import { Button } from '../ui/button-v2';
+import { Drawer, DrawerContent, DrawerTrigger } from '../ui/drawer';
 import {
   Form,
   FormControl,
@@ -53,11 +45,15 @@ import {
 import { Input } from '../ui/input';
 import { useToast } from '../ui/use-toast';
 
+type Variants = 'primary' | 'secondary' | 'neutral' | null | undefined;
+
 const formSchema = z.object({
   password: z.string(),
 });
 
 const UnlockDialogContent: FC<{ callback: () => void }> = ({ callback }) => {
+  const t = useTranslations('App.Wallet.Vault');
+
   const workerRef = useRef<Worker>();
 
   const client = useApolloClient();
@@ -73,13 +69,25 @@ const UnlockDialogContent: FC<{ callback: () => void }> = ({ callback }) => {
 
   const setKeys = useKeyStore(s => s.setKeys);
 
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
-  const { data, loading: userLoading, error } = useUserQuery();
+  const {
+    data,
+    loading: userLoading,
+    error,
+  } = useUserQuery({
+    onError: err => {
+      const messages = handleApolloError(err);
+
+      toast({
+        variant: 'destructive',
+        title: 'Error getting user data.',
+        description: messages.join(', '),
+      });
+    },
+  });
 
   const handleSubmit = (values: z.infer<typeof formSchema>) => {
-    setLoading(true);
-
     if (
       loading ||
       userLoading ||
@@ -88,9 +96,10 @@ const UnlockDialogContent: FC<{ callback: () => void }> = ({ callback }) => {
       !data?.user.protected_symmetric_key ||
       !workerRef.current
     ) {
-      setLoading(false);
       return;
     }
+
+    setLoading(true);
 
     const message: WorkerMessage = {
       type: 'generateMaster',
@@ -141,13 +150,16 @@ const UnlockDialogContent: FC<{ callback: () => void }> = ({ callback }) => {
             });
             callback();
           }
-
           break;
         }
 
-        case 'loaded':
-          setLoading(false);
-          return;
+        case 'error':
+          toast({
+            variant: 'destructive',
+            title: 'Error unlocking.',
+            description: message.msg,
+          });
+          break;
       }
 
       setLoading(false);
@@ -165,12 +177,10 @@ const UnlockDialogContent: FC<{ callback: () => void }> = ({ callback }) => {
 
   return (
     <>
-      <DialogHeader>
-        <DialogTitle>Unlock your vault</DialogTitle>
-        <DialogDescription>
-          This will allow you to send funds and messages.
-        </DialogDescription>
-      </DialogHeader>
+      <p className="mb-4 text-2xl font-semibold">{t('unlock-wallet')}</p>
+
+      <p className="mb-6 text-sm font-medium text-neutral-400">{t('seed')}</p>
+
       <Form {...form}>
         <form
           onSubmit={event => {
@@ -179,18 +189,18 @@ const UnlockDialogContent: FC<{ callback: () => void }> = ({ callback }) => {
             event?.preventDefault?.();
             event?.stopPropagation?.();
           }}
-          className="space-y-8"
+          className="space-y-4"
         >
           <FormField
             control={form.control}
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Master Password</FormLabel>
+                <FormLabel>{t('password')}</FormLabel>
                 <FormControl>
                   <Input
                     type="password"
-                    placeholder="super secret password"
+                    disabled={loading || userLoading || Boolean(error)}
                     {...field}
                   />
                 </FormControl>
@@ -198,19 +208,22 @@ const UnlockDialogContent: FC<{ callback: () => void }> = ({ callback }) => {
               </FormItem>
             )}
           />
-          <DialogFooter className="gap-2 sm:justify-start">
-            <Button type="submit" disabled={loading}>
-              {loading ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : null}
-              Unlock
-            </Button>
-            <DialogClose asChild>
-              <Button type="button" variant="secondary" disabled={loading}>
-                Close
-              </Button>
-            </DialogClose>
-          </DialogFooter>
+
+          <Button
+            type="submit"
+            disabled={
+              loading ||
+              userLoading ||
+              Boolean(error) ||
+              !form.getValues().password
+            }
+            className="flex w-full items-center justify-center"
+          >
+            {loading ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin text-black" />
+            ) : null}
+            {t('unlock')}
+          </Button>
         </form>
       </Form>
     </>
@@ -220,8 +233,11 @@ const UnlockDialogContent: FC<{ callback: () => void }> = ({ callback }) => {
 const VaultPasswordButton: FC<{
   lockedTitle: string;
   className?: string;
-  size?: 'sm';
-}> = ({ lockedTitle, className, size }) => {
+  variant?: Variants;
+  size?: 'md';
+}> = ({ lockedTitle, className, variant, size }) => {
+  const t = useTranslations('App.Wallet.Vault');
+
   const keys = useKeyStore(s => s.keys);
 
   const clearKeys = useKeyStore(s => s.clear);
@@ -234,50 +250,44 @@ const VaultPasswordButton: FC<{
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        {!!keys ? (
-          <Button
-            type="button"
-            variant="outline"
-            size={size}
-            className={cn(className)}
-          >
-            <Unlock className="mr-2 h-4 w-4" color="green" />
-            Unlocked
-          </Button>
-        ) : (
-          <Button
-            type="button"
-            variant="outline"
-            size={size}
-            className={cn(className)}
-          >
-            <Lock className="mr-2 h-4 w-4" color="red" />
-            {lockedTitle}
-          </Button>
-        )}
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
+    <Drawer open={open} onOpenChange={setOpen}>
+      <DrawerTrigger asChild>
+        <Button
+          type="button"
+          variant={variant}
+          size={size}
+          className={cn('flex items-center justify-center', className)}
+        >
+          {keys ? (
+            <>
+              <Unlock className="mr-2" size={16} />
+              {t('unlocked')}
+            </>
+          ) : (
+            <>
+              <Lock className="mr-2" size={16} />
+              {lockedTitle}
+            </>
+          )}
+        </Button>
+      </DrawerTrigger>
+
+      <DrawerContent>
         {!!keys ? (
           <>
-            <DialogHeader>
-              <DialogTitle>Lock your vault</DialogTitle>
-              <DialogDescription>
-                You will not be able to send funds or messages until the vault
-                is unlocked with your Master Password.
-              </DialogDescription>
-            </DialogHeader>
-            <DialogFooter className="gap-2 sm:justify-center">
-              <Button type="submit" onClick={handleClear} className="w-full">
-                Lock
-              </Button>
-              <DialogClose asChild>
-                <Button type="button" variant="secondary" className="w-full">
-                  Close
-                </Button>
-              </DialogClose>
-            </DialogFooter>
+            <p className="mb-4 text-2xl font-semibold">{t('lock-wallet')}</p>
+
+            <p className="mb-6 text-sm font-medium text-neutral-400">
+              {t('seed')}
+            </p>
+
+            <Button
+              type="button"
+              onClick={() => handleClear()}
+              className="w-full"
+            >
+              {t('lock')}
+            </Button>
           </>
         ) : (
           <UnlockDialogContent
@@ -286,18 +296,28 @@ const VaultPasswordButton: FC<{
             }}
           />
         )}
-      </DialogContent>
-    </Dialog>
+      </DrawerContent>
+    </Drawer>
   );
 };
 
 const PasskeyVaultButton: FC<{
   lockedTitle: string;
   className?: string;
-  size?: 'sm';
+  variant?: Variants;
+  size?: 'md';
   protectedSymmetricKey: string;
   passkeyId: string;
-}> = ({ lockedTitle, className, size, protectedSymmetricKey, passkeyId }) => {
+}> = ({
+  lockedTitle,
+  className,
+  variant,
+  size,
+  protectedSymmetricKey,
+  passkeyId,
+}) => {
+  const t = useTranslations('App.Wallet.Vault');
+
   const client = useApolloClient();
 
   const keys = useKeyStore(s => s.keys);
@@ -404,15 +424,15 @@ const PasskeyVaultButton: FC<{
     return (
       <Button
         type="button"
-        variant="outline"
+        variant={variant}
         size={size}
-        className={cn(className)}
+        className={cn('flex items-center justify-center', className)}
         disabled={loading || addLoading}
         onClick={() => {
           setup({ variables: { id: passkeyId } });
         }}
       >
-        <Lock className="mr-2 h-4 w-4" color="red" />
+        <Lock className="mr-2" size={16} />
         {lockedTitle}
       </Button>
     );
@@ -421,16 +441,15 @@ const PasskeyVaultButton: FC<{
   return (
     <Button
       type="button"
-      variant="outline"
+      variant={variant}
       size={size}
-      className={cn(className)}
-      disabled={loading || addLoading}
+      className={cn('flex items-center justify-center', className)}
       onClick={() => {
         clearKeys();
       }}
     >
-      <Unlock className="mr-2 h-4 w-4" color="green" />
-      Unlocked
+      <Unlock className="mr-2" size={16} />
+      {t('unlocked')}
     </Button>
   );
 };
@@ -438,21 +457,26 @@ const PasskeyVaultButton: FC<{
 export const VaultButton: FC<{
   lockedTitle?: string;
   className?: string;
-  size?: 'sm';
-}> = ({ lockedTitle = 'Locked', className, size }) => {
+  variant?: Variants;
+  size?: 'md';
+}> = ({ lockedTitle, className, variant, size }) => {
+  const t = useTranslations();
+
+  const lockedTitleFinal = lockedTitle || t('App.Wallet.Vault.locked');
+
   const { data, loading, error } = useUserQuery();
 
   if (loading) {
     return (
       <Button
         type="button"
-        variant="outline"
+        variant={variant}
         size={size}
-        className={cn(className)}
+        className={cn('flex items-center justify-center', className)}
         disabled
       >
-        <Loader2 className="mr-2 h-4 w-4 animate-spin" color="red" />
-        {lockedTitle}
+        <Loader2 className="mr-2 animate-spin" size={16} />
+        {lockedTitleFinal}
       </Button>
     );
   }
@@ -461,22 +485,23 @@ export const VaultButton: FC<{
     return (
       <Button
         type="button"
-        variant="outline"
+        variant={variant}
         size={size}
-        className={cn(className)}
+        className={cn('flex items-center justify-center', className)}
         disabled
       >
-        <X className="mr-2 h-4 w-4" color="red" />
-        Error
+        <X className="mr-2" size={16} />
+        {t('Common.error')}
       </Button>
     );
   }
 
-  if (!!data.user.using_passkey_id) {
+  if (data.user.using_passkey_id) {
     return (
       <PasskeyVaultButton
-        lockedTitle={lockedTitle}
+        lockedTitle={lockedTitleFinal}
         className={className}
+        variant={variant}
         size={size}
         protectedSymmetricKey={data.user.protected_symmetric_key}
         passkeyId={data.user.using_passkey_id}
@@ -486,8 +511,9 @@ export const VaultButton: FC<{
 
   return (
     <VaultPasswordButton
-      lockedTitle={lockedTitle}
+      lockedTitle={lockedTitleFinal}
       className={className}
+      variant={variant}
       size={size}
     />
   );

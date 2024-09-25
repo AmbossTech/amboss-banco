@@ -14,6 +14,26 @@
       "what-asset": "What is {asset}?"
     },
     "Wallet": {
+      "Settings": {
+        "decrypt": "Decrypt to view your wallet’s secret mnemonic.",
+        "decrypted": "Decrypted Mnemonic",
+        "descriptor": "Descriptor",
+        "miban": "Share this code with other people to receive payments.",
+        "name": "Wallet Name",
+        "settings": "Wallet Settings",
+        "tech-info": "Technical information about your wallet, helpful for advanced recovery.",
+        "unlock": "Unlock to Decrypt"
+      },
+      "Vault": {
+        "lock": "Lock",
+        "lock-wallet": "Lock your wallet",
+        "locked": "Locked",
+        "password": "Your BancoLibre Password",
+        "seed": "Your seed phrase is encrypted with your password.",
+        "unlock": "Unlock",
+        "unlock-wallet": "Unlock your wallet",
+        "unlocked": "Unlocked"
+      },
       "add-contact": "Add Contact",
       "add-desc": "Add Description",
       "amount": "Please specify an amount.",
@@ -52,6 +72,7 @@
     "decrypt": "Decrypt",
     "done": "Done",
     "email": "Email",
+    "error": "Error",
     "mnemonic": "Encrypted Mnemonic",
     "next": "Next",
     "optional": "Optional",

@@ -139,7 +139,7 @@ export function WalletButton() {
                   }}
                 >
                   <Link
-                    href={ROUTES.wallet.settings(value)}
+                    href={ROUTES.wallet.settings}
                     className="flex w-full items-center justify-between"
                   >
                     Settings

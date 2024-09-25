@@ -1,10 +1,13 @@
 'use client';
 
-import { Copy, CopyCheck, Loader2 } from 'lucide-react';
-import { FC, useEffect, useRef, useState } from 'react';
+import { ArrowLeft, Copy, CopyCheck, CornerDownRight } from 'lucide-react';
+import Link from 'next/link';
+import { useTranslations } from 'next-intl';
+import { FC, useEffect, useMemo, useRef, useState } from 'react';
+import { useLocalStorage } from 'usehooks-ts';
 
-import { VaultButton } from '@/components/button/VaultButton';
-import { Button } from '@/components/ui/button';
+import { VaultButton } from '@/components/button/VaultButtonV2';
+import { Button } from '@/components/ui/button-v2';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
@@ -12,25 +15,27 @@ import { useChangeWalletNameMutation } from '@/graphql/mutations/__generated__/w
 import { useGetWalletDetailsQuery } from '@/graphql/queries/__generated__/wallet.generated';
 import useCopyClipboard from '@/hooks/useClipboardCopy';
 import { useKeyStore } from '@/stores/keys';
+import { LOCALSTORAGE_KEYS } from '@/utils/constants';
 import { handleApolloError } from '@/utils/error';
+import { ROUTES } from '@/utils/routes';
 import {
   CryptoWorkerMessage,
   CryptoWorkerResponse,
 } from '@/workers/crypto/types';
 
-import { Section } from '../settings/Section';
-
 const WalletName: FC<{ walletId: string }> = ({ walletId }) => {
+  const t = useTranslations('App');
+
   const { toast } = useToast();
 
-  const { data } = useGetWalletDetailsQuery({
+  const { data, loading } = useGetWalletDetailsQuery({
     variables: { id: walletId },
     errorPolicy: 'ignore',
   });
 
   const [name, setName] = useState(data?.wallets.find_one.name || '');
 
-  const [changeName, { loading }] = useChangeWalletNameMutation({
+  const [changeName, { loading: loadingChange }] = useChangeWalletNameMutation({
     onCompleted: () => {
       toast({
         title: 'Wallet name saved.',
@@ -53,49 +58,85 @@ const WalletName: FC<{ walletId: string }> = ({ walletId }) => {
     setName(data.wallets.find_one.name);
   }, [data]);
 
-  if (!data) return null;
-
-  const hasChange = name !== data.wallets.find_one.name;
+  const hasChange = name !== data?.wallets.find_one.name;
 
   return (
-    <Section
-      title={'Wallet Name'}
-      description={'This is the name for this wallet.'}
-    >
-      <div>
-        <Label htmlFor="walletname">Wallet Name</Label>
-        <div className="flex gap-2">
-          <Input
-            id="walletname"
-            autoComplete="off"
-            value={name}
-            onChange={e => setName(e.target.value)}
-            placeholder="Wallet Name"
-          />
-          <Button
-            disabled={!name || loading || !hasChange}
-            onClick={() => {
-              if (!name) return;
-              changeName({ variables: { id: walletId, name } });
-            }}
-          >
-            Save
-          </Button>
-        </div>
+    <div>
+      <Label htmlFor="walletname">{t('Wallet.Settings.name')}</Label>
+
+      <div className="mt-2 flex gap-2">
+        <Input
+          id="walletname"
+          autoComplete="off"
+          value={name}
+          onChange={e => setName(e.target.value)}
+          disabled={loading || loadingChange}
+        />
+
+        <Button
+          variant="secondary"
+          disabled={loading || !name || !hasChange || loadingChange}
+          onClick={() => changeName({ variables: { id: walletId, name } })}
+        >
+          {t('save')}
+        </Button>
       </div>
-    </Section>
+    </div>
+  );
+};
+
+const WalletCode: FC<{ walletId: string }> = ({ walletId }) => {
+  const t = useTranslations('App');
+
+  const [copiedText, copy] = useCopyClipboard();
+
+  const { data } = useGetWalletDetailsQuery({
+    variables: { id: walletId },
+    errorPolicy: 'ignore',
+  });
+
+  const address = useMemo(() => {
+    if (!data?.wallets.find_one.money_address.length) return '';
+
+    const first = data.wallets.find_one.money_address[0];
+
+    return first.user + '@' + first.domains[0];
+  }, [data]);
+
+  return (
+    <div>
+      <Label htmlFor="address">{t('miban')}</Label>
+
+      <p className="my-2 text-sm text-neutral-400">
+        {t('Wallet.Settings.miban')}
+      </p>
+
+      <div className="flex items-center gap-2">
+        <Input id="address" readOnly defaultValue={address} />
+
+        <button
+          onClick={() => copy(address)}
+          disabled={!address}
+          className="px-2 transition-opacity hover:opacity-75 disabled:cursor-not-allowed"
+        >
+          {copiedText ? <CopyCheck size={24} /> : <Copy size={24} />}
+        </button>
+      </div>
+    </div>
   );
 };
 
 const WalletMnemonic: FC<{ walletId: string }> = ({ walletId }) => {
+  const t = useTranslations();
+
   const { toast } = useToast();
 
   const workerRef = useRef<Worker>();
 
-  const [stateLoading, setLoading] = useState(false);
-
-  const [protectedMnemonic, setProtectedMnemonic] = useState('');
   const [mnemonic, setMnemonic] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const [copiedMnemonic, copyMnemonic] = useCopyClipboard();
 
   const keys = useKeyStore(s => s.keys);
 
@@ -108,10 +149,26 @@ const WalletMnemonic: FC<{ walletId: string }> = ({ walletId }) => {
       }),
   });
 
-  useEffect(() => {
-    if (!data?.wallets.find_one.details.protected_mnemonic) return;
-    setProtectedMnemonic(data.wallets.find_one.details.protected_mnemonic);
-  }, [data]);
+  const protectedMnemonic =
+    data?.wallets.find_one.details.protected_mnemonic || '';
+
+  const disabled = loading || walletLoading;
+
+  const handleDecrypt = () => {
+    if (!keys || !protectedMnemonic || !workerRef.current) return;
+
+    setLoading(true);
+
+    const message: CryptoWorkerMessage = {
+      type: 'decryptMnemonic',
+      payload: {
+        protectedMnemonic,
+        keys,
+      },
+    };
+
+    workerRef.current.postMessage(message);
+  };
 
   useEffect(() => {
     workerRef.current = new Worker(
@@ -125,13 +182,13 @@ const WalletMnemonic: FC<{ walletId: string }> = ({ walletId }) => {
         case 'decryptMnemonic':
           setMnemonic(message.payload.mnemonic);
           break;
+
         case 'error':
           toast({
             variant: 'destructive',
             title: 'Error decrypting mnemonic.',
             description: `Please reach out to support. ${message.msg}`,
           });
-
           break;
       }
 
@@ -148,184 +205,142 @@ const WalletMnemonic: FC<{ walletId: string }> = ({ walletId }) => {
     };
   }, [toast]);
 
-  const handleDecrypt = () => {
-    if (!keys) return;
-    if (!data?.wallets.find_one.details.protected_mnemonic) return;
-
-    setLoading(true);
-
-    if (workerRef.current) {
-      const message: CryptoWorkerMessage = {
-        type: 'decryptMnemonic',
-        payload: {
-          protectedMnemonic: data.wallets.find_one.details.protected_mnemonic,
-          keys,
-        },
-      };
-
-      workerRef.current.postMessage(message);
-    }
-  };
-
-  const [copiedMnemonic, copyMnemonic] = useCopyClipboard();
-
-  const loading = stateLoading || walletLoading;
-
   return (
-    <Section title="Mnemonic" description="View your wallets secret mnemonic.">
+    <div>
       <div>
-        <Label htmlFor="protectedMnemonic">Encrypted</Label>
-        <div className="flex gap-2">
+        <Label htmlFor="protectedMnemonic">{t('Common.mnemonic')}</Label>
+
+        <p className="my-2 text-sm text-neutral-400">
+          {t('App.Wallet.Settings.decrypt')}
+        </p>
+
+        <div className="flex flex-col gap-2 sm:flex-row">
           <Input
             id="protectedMnemonic"
             readOnly
             defaultValue={protectedMnemonic}
           />
+
           {!keys ? (
-            <VaultButton lockedTitle="Unlock to Decrypt" />
+            <VaultButton
+              lockedTitle={t('App.Wallet.Settings.unlock')}
+              variant="secondary"
+              className="w-full sm:w-fit"
+            />
           ) : (
             <Button
-              className="w-40"
-              disabled={loading || !!mnemonic || !keys}
+              variant="secondary"
               onClick={() => handleDecrypt()}
+              disabled={disabled || !protectedMnemonic || Boolean(mnemonic)}
+              className="w-full sm:w-fit"
             >
-              Decrypt
+              {t('Common.decrypt')}
             </Button>
           )}
         </div>
       </div>
 
-      <div className="my-2">
-        <Label htmlFor="mnemonic">Decrypted</Label>
-        <div className="flex gap-2">
-          <Input
-            id="mnemonic"
-            readOnly
-            defaultValue={mnemonic}
-            placeholder="Clear text Mnemonic"
-          />
+      <div className="mt-4">
+        <div className="flex items-start space-x-2">
+          <CornerDownRight size={20} className="text-neutral-500" />
+
+          <Label htmlFor="mnemonic">{t('App.Wallet.Settings.decrypted')}</Label>
+        </div>
+
+        <p className="my-2 ml-7 text-sm text-orange-400">
+          {t('Common.private')}
+        </p>
+
+        <div className="ml-7 flex flex-col items-center gap-2 sm:flex-row">
+          <div className="flex w-full items-center gap-2">
+            <Input id="mnemonic" readOnly defaultValue={mnemonic} />
+
+            <button
+              onClick={() => copyMnemonic(mnemonic)}
+              disabled={!mnemonic}
+              className="px-2 transition-opacity hover:opacity-75 disabled:cursor-not-allowed"
+            >
+              {copiedMnemonic ? <CopyCheck size={24} /> : <Copy size={24} />}
+            </button>
+          </div>
+
           <Button
-            disabled={loading || !mnemonic || !keys}
-            onClick={() => copyMnemonic(mnemonic)}
-            size={'icon'}
-            className="px-2"
-            variant={'outline'}
-          >
-            {copiedMnemonic ? (
-              <CopyCheck color="green" className="size-4" />
-            ) : (
-              <Copy className="size-4" />
-            )}
-          </Button>
-          <Button
-            className="w-40"
-            disabled={loading || !mnemonic || !keys}
+            variant="secondary"
             onClick={() => setMnemonic('')}
+            disabled={!mnemonic}
+            className="w-full sm:w-fit"
           >
-            Clear Memory
+            {t('Common.clear')}
           </Button>
         </div>
       </div>
-    </Section>
+    </div>
   );
 };
 
-export const WalletSettings: FC<{ walletId: string }> = ({ walletId }) => {
-  const { data, loading } = useGetWalletDetailsQuery({
+const WalletDescriptor: FC<{ walletId: string }> = ({ walletId }) => {
+  const t = useTranslations('App.Wallet.Settings');
+
+  const [copiedText, copy] = useCopyClipboard();
+
+  const { data } = useGetWalletDetailsQuery({
     variables: { id: walletId },
     errorPolicy: 'ignore',
   });
 
-  const [copiedText, copy] = useCopyClipboard();
+  return (
+    <div>
+      {data?.wallets.find_one.accounts.map((a, i) => {
+        return (
+          <div key={i}>
+            <Label htmlFor="descriptor">
+              <span className="capitalize">{a.account_type.toLowerCase()}</span>{' '}
+              {t('descriptor')}
+            </Label>
 
-  if (loading) {
-    return (
-      <div className="flex w-full justify-center py-4">
-        <Loader2 className="size-4 animate-spin" />
-      </div>
-    );
-  }
+            <p className="my-2 text-sm text-neutral-400">{t('tech-info')}</p>
 
-  if (!data?.wallets.find_one.id) {
-    return (
-      <div className="flex w-full justify-center py-4">
-        <p className="text-sm text-muted-foreground">Error loading wallet.</p>
-      </div>
-    );
-  }
+            <div className="flex items-center gap-2">
+              <Input id="descriptor" readOnly defaultValue={a.descriptor} />
+
+              <button
+                onClick={() => copy(a.descriptor)}
+                className="px-2 transition-opacity hover:opacity-75"
+              >
+                {copiedText ? <CopyCheck size={24} /> : <Copy size={24} />}
+              </button>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
+export const WalletSettings = () => {
+  const t = useTranslations('App.Wallet.Settings');
+
+  const [walletId] = useLocalStorage(LOCALSTORAGE_KEYS.currentWalletId, '');
 
   return (
-    <div className="flex max-w-screen-lg flex-col gap-10 py-4 md:gap-16">
-      <WalletName walletId={walletId} />
-      <Section
-        title="MIBAN Code"
-        description="This is your MIBAN Code. You can share this with other users to
-            receive money."
-      >
-        {!data?.wallets.find_one.money_address.length ? (
-          <p className="text-sm text-muted-foreground">No MIBAN Code found.</p>
-        ) : (
-          data.wallets.find_one.money_address.map(a => {
-            return a.domains.map(d => {
-              return (
-                <div key={d}>
-                  <Label htmlFor="address">MIBAN Code</Label>
-                  <div className="flex gap-2">
-                    <Input
-                      id="address"
-                      readOnly
-                      defaultValue={`${a.user}@${d}`}
-                    />
-                    <Button onClick={() => copy(`${a.user}@${d}`)}>
-                      {copiedText === `${a.user}@${d}` ? 'Copied' : 'Copy'}
-                      {copiedText === `${a.user}@${d}` ? (
-                        <CopyCheck className="ml-2 size-4" color="green" />
-                      ) : (
-                        <Copy className="ml-2 size-4" />
-                      )}
-                    </Button>
-                  </div>
-                </div>
-              );
-            });
-          })
-        )}
-      </Section>
+    <div className="mx-auto w-full max-w-lg py-4 lg:py-10">
+      <div className="mb-6 flex items-center space-x-4">
+        <Link
+          href={ROUTES.dashboard}
+          className="transition-opacity hover:opacity-75"
+        >
+          <ArrowLeft size={24} />
+        </Link>
 
-      <WalletMnemonic walletId={walletId} />
+        <p className="text-3xl font-semibold">{t('settings')}</p>
+      </div>
 
-      <Section
-        title="Details"
-        description="Technical information about your wallet, helpful for advanced recovery."
-      >
-        {!data?.wallets.find_one.accounts.length ? (
-          <p className="text-sm text-muted-foreground">No accounts found.</p>
-        ) : (
-          data.wallets.find_one.accounts.map((a, i) => {
-            return (
-              <div key={i}>
-                <Label htmlFor="descriptor">
-                  <span className="capitalize">
-                    {a.account_type.toLowerCase()}
-                  </span>{' '}
-                  Descriptor
-                </Label>
-                <div className="flex gap-2">
-                  <Input id="descriptor" readOnly defaultValue={a.descriptor} />
-                  <Button onClick={() => copy(a.descriptor)}>
-                    {copiedText === a.descriptor ? 'Copied' : 'Copy'}
-                    {copiedText === a.descriptor ? (
-                      <CopyCheck className="ml-2 size-4" color="green" />
-                    ) : (
-                      <Copy className="ml-2 size-4" />
-                    )}
-                  </Button>
-                </div>
-              </div>
-            );
-          })
-        )}
-      </Section>
+      <div className="space-y-8">
+        <WalletName walletId={walletId} />
+        <WalletCode walletId={walletId} />
+        <WalletMnemonic walletId={walletId} />
+        <WalletDescriptor walletId={walletId} />
+      </div>
     </div>
   );
 };

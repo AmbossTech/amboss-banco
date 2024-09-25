@@ -15,7 +15,7 @@ export const ROUTES = {
   },
   wallet: {
     home: '/wallet',
-    settings: (id: string) => `/wallet/${id}/settings`,
+    settings: '/wallet/settings',
     receive: '/wallet/receive',
     send: '/wallet/send',
   },
