@@ -23,3 +23,20 @@ export const shorten = (
 
   return `${beginning}...${end}`;
 };
+
+export const addEllipsis = (
+  text: string | null | undefined,
+  length = 16
+): string => {
+  if (!text) return '';
+
+  const textLength = text.length;
+
+  if (textLength <= length) {
+    return text;
+  }
+
+  const beginning = text.slice(0, length);
+
+  return `${beginning}...`;
+};
