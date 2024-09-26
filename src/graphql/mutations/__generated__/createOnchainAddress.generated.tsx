@@ -17,6 +17,8 @@ export type CreateOnchainAddressMutation = {
     create_onchain_address: {
       __typename?: 'CreateOnchainAddress';
       address: string;
+      bip21?: string | null;
+      network: Types.OnchainAddressType;
     };
   };
 };
@@ -26,6 +28,8 @@ export const CreateOnchainAddressDocument = gql`
     wallets {
       create_onchain_address(input: $input) {
         address
+        bip21
+        network
       }
     }
   }

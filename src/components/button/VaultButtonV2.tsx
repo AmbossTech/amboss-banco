@@ -199,6 +199,7 @@ const UnlockDialogContent: FC<{ callback: () => void }> = ({ callback }) => {
                 <FormLabel>{t('password')}</FormLabel>
                 <FormControl>
                   <Input
+                    autoFocus
                     type="password"
                     disabled={loading || userLoading || Boolean(error)}
                     {...field}

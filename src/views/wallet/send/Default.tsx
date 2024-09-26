@@ -13,14 +13,16 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
 import { useGetWalletContactsQuery } from '@/graphql/queries/__generated__/contacts.generated';
 import { useGetPriceCurrentQuery } from '@/graphql/queries/__generated__/prices.generated';
+import { LiquidAssetIDs } from '@/lib/types/assets';
 import { LOCALSTORAGE_KEYS } from '@/utils/constants';
 import { handleApolloError } from '@/utils/error';
 import { ROUTES } from '@/utils/routes';
 
 import { checkSendString } from './checkSendString';
-import { SendType, SendView } from './Send';
+import { Assets, SendType, SendView } from './Send';
 
 export const Default: FC<{
+  setAsset: Dispatch<SetStateAction<Assets>>;
   sendString: string;
   setSendString: Dispatch<SetStateAction<string>>;
   setAmountSatsInput: Dispatch<SetStateAction<string>>;
@@ -28,6 +30,7 @@ export const Default: FC<{
   setSendType: Dispatch<SetStateAction<SendType>>;
   setView: Dispatch<SetStateAction<SendView>>;
 }> = ({
+  setAsset,
   sendString,
   setSendString,
   setAmountSatsInput,
@@ -132,6 +135,7 @@ export const Default: FC<{
 
                     setShowScanner(false);
                   }}
+                  components={{ audio: false, torch: false }}
                 />
               </div>
             </DrawerContent>
@@ -223,9 +227,19 @@ export const Default: FC<{
               return;
             }
 
+            if (type === 'dev') {
+              setSendType('miban');
+              setView('confirm');
+              return;
+            }
+
+            const prefix = sendString.split(':');
+            const sendStringFormatted =
+              prefix.length > 1 ? prefix[1] : prefix[0];
+
             if (type === 'invoice') {
               try {
-                const { satoshis } = bolt11.decode(sendString);
+                const { satoshis } = bolt11.decode(sendStringFormatted);
 
                 if (satoshis) {
                   setAmountSatsInput(satoshis.toString());
@@ -251,29 +265,59 @@ export const Default: FC<{
             }
 
             if (type === 'liquid') {
-              const amount = sendString.split('?amount=');
+              const params = sendStringFormatted.split('?');
 
-              if (amount.length > 1) {
-                const address = amount[0].split('liquid:')[1];
+              if (params.length > 1) {
+                const paramsDecoded = new URLSearchParams(params[1]);
+                const assetID = paramsDecoded.get('assetid');
+                const amount = Number(paramsDecoded.get('amount'));
+                let type: LiquidAssetIDs | undefined;
 
-                if (!address) {
-                  toast({
-                    variant: 'destructive',
-                    title: 'Could not decode address.',
-                  });
-
-                  return;
+                if (assetID) {
+                  switch (assetID) {
+                    case LiquidAssetIDs.BTC:
+                      setAsset('Liquid Bitcoin');
+                      type = LiquidAssetIDs.BTC;
+                      break;
+                    case LiquidAssetIDs.USDT:
+                      setAsset('Tether USD');
+                      type = LiquidAssetIDs.USDT;
+                      break;
+                    default:
+                      toast({
+                        variant: 'destructive',
+                        title: 'Unknown asset ID.',
+                      });
+                      return;
+                  }
                 }
 
-                const amountInSats = Number(amount[1]) * 100_000_000;
+                if (amount > 0) {
+                  switch (type) {
+                    case LiquidAssetIDs.USDT: {
+                      const amountInSats = amount / latestPricePerSat;
+                      setAmountSatsInput(amountInSats.toFixed(0));
+                      setAmountUSDInput(amount.toFixed(2));
+                      break;
+                    }
+                    case LiquidAssetIDs.BTC:
+                    default: {
+                      const amountInSats = amount * 100_000_000;
+                      setAmountSatsInput(amountInSats.toFixed(0));
+                      setAmountUSDInput(
+                        (latestPricePerSat * amountInSats).toFixed(2)
+                      );
+                      break;
+                    }
+                  }
+                }
 
-                setAmountSatsInput(amountInSats.toFixed(0));
-                setAmountUSDInput(
-                  (latestPricePerSat * amountInSats).toFixed(2)
-                );
-
-                setSendString(address);
+                setSendString(params[0]);
+              } else {
+                setSendString(sendStringFormatted);
               }
+            } else {
+              setSendString(sendStringFormatted);
             }
 
             setSendType(type);

@@ -84,6 +84,7 @@ export const Send = () => {
 
   return (
     <Default
+      setAsset={setAsset}
       sendString={sendString}
       setSendString={setSendString}
       setAmountSatsInput={setAmountSatsInput}

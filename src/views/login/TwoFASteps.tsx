@@ -1,6 +1,6 @@
 import { startAuthentication } from '@simplewebauthn/browser';
 import { PublicKeyCredentialRequestOptionsJSON } from '@simplewebauthn/types';
-import { ArrowLeft, ArrowRight, KeyRound, ScanText } from 'lucide-react';
+import { ArrowLeft, ArrowRight, KeyRound, Scan } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Dispatch, FC, ReactNode, SetStateAction } from 'react';
 
@@ -133,7 +133,7 @@ export const TwoFASteps: FC<{
               return (
                 <MethodButton
                   key={m.id}
-                  icon={<ScanText size={24} />}
+                  icon={<Scan size={24} />}
                   title={l('otp')}
                   onClick={() => setView('otp')}
                   disabled={disabled}

@@ -21,6 +21,7 @@ import {
   useGetWalletDetailsQuery,
   useGetWalletQuery,
 } from '@/graphql/queries/__generated__/wallet.generated';
+import { LiquidAssetEnum } from '@/graphql/types';
 import { cn } from '@/utils/cn';
 import { LOCALSTORAGE_KEYS } from '@/utils/constants';
 import { handleApolloError } from '@/utils/error';
@@ -115,9 +116,11 @@ export const Receive = () => {
     createLiquidAddress,
     { data: liquidData, loading: liquidLoading, error: liquidError },
   ] = useCreateOnchainAddressMutation({
-    variables: { input: { wallet_account_id: liquidAccountId } },
     onCompleted: data =>
-      setReceiveString(data.wallets.create_onchain_address.address),
+      setReceiveString(
+        data.wallets.create_onchain_address.bip21 ||
+          data.wallets.create_onchain_address.address
+      ),
     onError: err => {
       const messages = handleApolloError(err);
 
@@ -266,8 +269,24 @@ export const Receive = () => {
                         setAmountOpen(true);
                         break;
                       case 'Liquid Bitcoin':
+                        createLiquidAddress({
+                          variables: {
+                            input: {
+                              asset: LiquidAssetEnum.Btc,
+                              wallet_account_id: liquidAccountId,
+                            },
+                          },
+                        });
+                        break;
                       case 'Tether USD':
-                        createLiquidAddress();
+                        createLiquidAddress({
+                          variables: {
+                            input: {
+                              asset: LiquidAssetEnum.Usdt,
+                              wallet_account_id: liquidAccountId,
+                            },
+                          },
+                        });
                         break;
                     }
                   }}
@@ -353,9 +372,15 @@ export const Receive = () => {
               )}
             </DrawerTrigger>
 
-            {amountSatsSaved ? (
+            {receive !== 'Tether USD' && amountSatsSaved ? (
               <p className="text-slate-600 dark:text-neutral-400">
                 {Number(amountSatsSaved).toLocaleString('en-US')} sats
+              </p>
+            ) : null}
+
+            {receive === 'Tether USD' && amountUSDSaved ? (
+              <p className="text-slate-600 dark:text-neutral-400">
+                {formatFiat(Number(amountUSDSaved)).slice(1)} USDT
               </p>
             ) : null}
           </div>
@@ -412,22 +437,26 @@ export const Receive = () => {
 
             <div className="flex items-center justify-center space-x-2 text-slate-600 dark:text-neutral-400">
               <p className="overflow-x-auto whitespace-nowrap">
-                {satsFirst
-                  ? formatFiat(Number(amountUSDInput)) + ' USD'
-                  : Number(amountSatsInput).toLocaleString('en-US') + ' sats'}
+                {receive !== 'Tether USD'
+                  ? satsFirst
+                    ? formatFiat(Number(amountUSDInput)) + ' USD'
+                    : Number(amountSatsInput).toLocaleString('en-US') + ' sats'
+                  : formatFiat(Number(amountUSDInput)).slice(1) + ' USDT'}
               </p>
 
-              <button
-                onClick={() => {
-                  setSatsFirst(s => !s);
+              {receive !== 'Tether USD' ? (
+                <button
+                  onClick={() => {
+                    setSatsFirst(s => !s);
 
-                  if (amountUSDInput) {
-                    setAmountUSDInput(a => Number(a).toFixed(2));
-                  }
-                }}
-              >
-                <ArrowUpDown size={16} className="shrink-0" />
-              </button>
+                    if (amountUSDInput) {
+                      setAmountUSDInput(a => Number(a).toFixed(2));
+                    }
+                  }}
+                >
+                  <ArrowUpDown size={16} className="shrink-0" />
+                </button>
+              ) : null}
             </div>
 
             <p className="mb-16 mt-6 text-center text-sm">
@@ -446,18 +475,29 @@ export const Receive = () => {
                     }
                     break;
                   case 'Liquid Bitcoin':
+                    if (amountSatsInput !== amountSatsSaved) {
+                      createLiquidAddress({
+                        variables: {
+                          input: {
+                            amount: Number(amountSatsInput),
+                            asset: LiquidAssetEnum.Btc,
+                            wallet_account_id: liquidAccountId,
+                          },
+                        },
+                      });
+                    }
+                    break;
                   case 'Tether USD':
-                    const currentAmount = receiveString.split('amount');
-                    const newAmount = Number(amountSatsInput) / 100_000_000;
-
-                    if (currentAmount.length > 1) {
-                      setReceiveString(
-                        currentAmount[0] + 'amount=' + newAmount
-                      );
-                    } else {
-                      setReceiveString(
-                        s => 'liquid:' + s + '?amount=' + newAmount
-                      );
+                    if (amountUSDInput !== amountUSDSaved) {
+                      createLiquidAddress({
+                        variables: {
+                          input: {
+                            amount: Number(amountUSDInput) * 100_000_000,
+                            asset: LiquidAssetEnum.Usdt,
+                            wallet_account_id: liquidAccountId,
+                          },
+                        },
+                      });
                     }
                     break;
                 }
