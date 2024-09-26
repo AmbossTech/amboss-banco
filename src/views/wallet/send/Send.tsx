@@ -1,10 +1,19 @@
+import { Loader2 } from 'lucide-react';
+import dynamic from 'next/dynamic';
 import { useState } from 'react';
 
-import { Default } from './Default';
 import { PayLightningAddress } from './PayLightningAddress';
 import { PayLightningInvoice } from './PayLightningInvoice';
 import { PayLiquidAddress } from './PayLiquidAddress';
 import { Success } from './Success';
+
+const Default = dynamic(() => import('./Default').then(mod => mod.Default), {
+  loading: () => (
+    <div className="mx-auto flex w-full max-w-lg items-center justify-center py-4 lg:py-10">
+      <Loader2 className="animate-spin" size={16} />
+    </div>
+  ),
+});
 
 export type SendView = 'default' | 'confirm' | 'sent';
 export type SendType =
