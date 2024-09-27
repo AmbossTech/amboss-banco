@@ -316,6 +316,8 @@ export const Default: FC<{
               } else {
                 setSendString(sendStringFormatted);
               }
+            } else {
+              setSendString(sendStringFormatted);
             }
 
             if (type === 'bitcoin') {
