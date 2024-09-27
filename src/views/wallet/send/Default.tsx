@@ -316,6 +316,27 @@ export const Default: FC<{
               } else {
                 setSendString(sendStringFormatted);
               }
+            }
+
+            if (type === 'bitcoin') {
+              const params = sendStringFormatted.split('?');
+
+              if (params.length > 1) {
+                const paramsDecoded = new URLSearchParams(params[1]);
+                const amount = Number(paramsDecoded.get('amount'));
+
+                if (amount > 0) {
+                  const amountInSats = amount * 100_000_000;
+                  setAmountSatsInput(amountInSats.toFixed(0));
+                  setAmountUSDInput(
+                    (latestPricePerSat * amountInSats).toFixed(2)
+                  );
+                }
+
+                setSendString(params[0]);
+              } else {
+                setSendString(sendStringFormatted);
+              }
             } else {
               setSendString(sendStringFormatted);
             }
