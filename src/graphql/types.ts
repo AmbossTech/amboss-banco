@@ -111,9 +111,13 @@ export type CreateLiquidTransaction = {
 export type CreateOnchainAddress = {
   __typename?: 'CreateOnchainAddress';
   address: Scalars['String']['output'];
+  bip21?: Maybe<Scalars['String']['output']>;
+  network: OnchainAddressType;
 };
 
 export type CreateOnchainAddressInput = {
+  amount?: InputMaybe<Scalars['Int']['input']>;
+  asset?: InputMaybe<LiquidAssetEnum>;
   wallet_account_id: Scalars['String']['input'];
 };
 
@@ -145,6 +149,27 @@ export type CreateWalletInput = {
   secp256k1_key_pair: Secp256k1KeyPairInput;
 };
 
+export type FeeAmount = {
+  __typename?: 'FeeAmount';
+  id: Scalars['String']['output'];
+  satoshis: Scalars['Float']['output'];
+  usd: Scalars['Float']['output'];
+};
+
+export type FeeEstimation = {
+  __typename?: 'FeeEstimation';
+  id: Scalars['String']['output'];
+  network_fee: FeeAmount;
+  swap_fee_rate: Scalars['Float']['output'];
+  type: PaymentOptionNetwork;
+};
+
+export type FeeInfo = {
+  __typename?: 'FeeInfo';
+  fee_estimations: Array<FeeEstimation>;
+  id: Scalars['String']['output'];
+};
+
 export type FiatInfo = {
   __typename?: 'FiatInfo';
   fiat_to_btc?: Maybe<Scalars['String']['output']>;
@@ -166,6 +191,11 @@ export type LiquidAsset = {
   fiat_info: FiatInfo;
   id: Scalars['String']['output'];
 };
+
+export enum LiquidAssetEnum {
+  Btc = 'BTC',
+  Usdt = 'USDT',
+}
 
 export type LiquidAssetInfo = {
   __typename?: 'LiquidAssetInfo';
@@ -285,6 +315,11 @@ export type NewAccount = {
   id: Scalars['String']['output'];
   refresh_token: Scalars['String']['output'];
 };
+
+export enum OnchainAddressType {
+  Btc = 'BTC',
+  LBtc = 'L_BTC',
+}
 
 export type PasskeyAuthenticateInput = {
   options: Scalars['String']['input'];
@@ -408,6 +443,7 @@ export type PayNetworkSwapInput = {
 
 export type PayQueries = {
   __typename?: 'PayQueries';
+  fee_info: FeeInfo;
   lnurl_info: LnUrlInfo;
   network_swap_quote: SwapQuote;
 };
@@ -490,6 +526,7 @@ export type Query = {
 
 export type ReceiveSwap = {
   __typename?: 'ReceiveSwap';
+  bip21?: Maybe<Scalars['String']['output']>;
   coin: SwapCoin;
   id: Scalars['String']['output'];
   max: Scalars['String']['output'];
@@ -499,6 +536,7 @@ export type ReceiveSwap = {
 };
 
 export type ReceiveSwapInput = {
+  amount?: InputMaybe<Scalars['Int']['input']>;
   deposit_coin: SwapCoin;
   deposit_network: SwapNetwork;
   wallet_account_id: Scalars['String']['input'];

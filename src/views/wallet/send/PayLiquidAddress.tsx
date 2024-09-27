@@ -1,5 +1,12 @@
 import { ApolloError, useApolloClient } from '@apollo/client';
-import { Dispatch, FC, SetStateAction, useMemo, useState } from 'react';
+import {
+  Dispatch,
+  FC,
+  SetStateAction,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { useLocalStorage } from 'usehooks-ts';
 
 import { useToast } from '@/components/ui/use-toast';
@@ -46,7 +53,14 @@ export const PayLiquidAddress: FC<{
 
   const client = useApolloClient();
 
+  const [sendAll, setSendAll] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (asset === 'Tether USD') {
+      setSendAll(false);
+    }
+  }, [asset]);
 
   const [value] = useLocalStorage(LOCALSTORAGE_KEYS.currentWalletId, '');
   const keys = useKeyStore(s => s.keys);
@@ -113,6 +127,7 @@ export const PayLiquidAddress: FC<{
                 asset_id: liquidAssetId,
               },
             ],
+            send_all_lbtc: sendAll,
           },
           payInput: {
             account_id: liquidAccountId,
@@ -159,6 +174,9 @@ export const PayLiquidAddress: FC<{
 
   return (
     <PayView
+      sendAll={sendAll}
+      setSendAll={setSendAll}
+      showSendAll={asset === 'Liquid Bitcoin'}
       reset={reset}
       loading={loading}
       UpperBadge={

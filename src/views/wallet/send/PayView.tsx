@@ -1,19 +1,22 @@
-import { ArrowLeft, ArrowUpDown, Loader2, Lock } from 'lucide-react';
+import { ArrowLeft, ArrowUpDown, Check, Loader2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import {
   Dispatch,
   FC,
   ReactNode,
   SetStateAction,
+  useEffect,
   useMemo,
   useState,
 } from 'react';
 import { useLocalStorage } from 'usehooks-ts';
 
+import { VaultButton } from '@/components/button/VaultButtonV2';
 import { Button } from '@/components/ui/button-v2';
 import { useToast } from '@/components/ui/use-toast';
 import { useGetPriceCurrentQuery } from '@/graphql/queries/__generated__/prices.generated';
 import { useGetWalletQuery } from '@/graphql/queries/__generated__/wallet.generated';
+import { LiquidAssetEnum } from '@/graphql/types';
 import { useKeyStore } from '@/stores/keys';
 import { LOCALSTORAGE_KEYS } from '@/utils/constants';
 import { handleApolloError } from '@/utils/error';
@@ -26,6 +29,9 @@ export const PayView: FC<{
   loading: boolean;
   UpperBadge: ReactNode;
   asset: Assets;
+  sendAll?: boolean;
+  setSendAll?: Dispatch<SetStateAction<boolean>>;
+  showSendAll?: boolean;
   amountSatsInput: string;
   amountUSDInput: string;
   setAmountSatsInput: Dispatch<SetStateAction<string>>;
@@ -39,6 +45,9 @@ export const PayView: FC<{
   loading,
   UpperBadge,
   asset,
+  sendAll,
+  setSendAll,
+  showSendAll,
   amountSatsInput,
   amountUSDInput,
   setAmountSatsInput,
@@ -52,6 +61,12 @@ export const PayView: FC<{
   const { toast } = useToast();
 
   const [satsFirst, setSatsFirst] = useState(false);
+
+  useEffect(() => {
+    if (asset === 'Tether USD') {
+      setSatsFirst(false);
+    }
+  }, [asset]);
 
   const keys = useKeyStore(s => s.keys);
   const [value] = useLocalStorage(LOCALSTORAGE_KEYS.currentWalletId, '');
@@ -86,6 +101,13 @@ export const PayView: FC<{
     return fiatBalance;
   }, [walletData, asset]);
 
+  const totalLiquidBalance = useMemo(() => {
+    return walletData?.wallets.find_one.accounts
+      .find(a => a.liquid)
+      ?.liquid?.assets.find(a => a.asset_info.ticker === LiquidAssetEnum.Btc)
+      ?.balance;
+  }, [walletData?.wallets.find_one.accounts]);
+
   const { data: priceData } = useGetPriceCurrentQuery({
     onError: err => {
       const messages = handleApolloError(err);
@@ -118,9 +140,31 @@ export const PayView: FC<{
 
       {UpperBadge}
 
-      <p className="text-center font-medium">
-        {t('App.Wallet.available')}: {balance}
-      </p>
+      <div>
+        <p className="text-center font-medium">
+          {t('App.Wallet.available')}: {balance}
+        </p>
+
+        {showSendAll ? (
+          <button
+            onClick={() => {
+              if (!setSendAll || !totalLiquidBalance || !latestPrice) return;
+
+              const latestPricePerSat = latestPrice / 100_000_000;
+
+              setSendAll(a => !a);
+              setAmountSatsInput(totalLiquidBalance);
+              setAmountUSDInput(
+                (latestPricePerSat * Number(totalLiquidBalance)).toFixed(2)
+              );
+            }}
+            disabled={loading}
+            className="mx-auto mt-2 flex items-center justify-center text-sm text-primary transition-colors hover:text-primary-hover"
+          >
+            Send All {sendAll ? <Check size={14} className="ml-1" /> : null}
+          </button>
+        ) : null}
+      </div>
 
       <div>
         <div className="my-20">
@@ -129,7 +173,6 @@ export const PayView: FC<{
               autoFocus={!amountSatsInput}
               id="amount"
               type="number"
-              min="0"
               placeholder="0"
               value={satsFirst ? amountSatsInput : amountUSDInput}
               onChange={e => {
@@ -162,7 +205,7 @@ export const PayView: FC<{
                   );
                 }
               }}
-              disabled={!latestPrice || loading || disableInput}
+              disabled={!latestPrice || loading || sendAll || disableInput}
               readOnly={disableInput}
               className="w-full bg-transparent text-center text-5xl font-medium focus:outline-none"
             />
@@ -177,22 +220,26 @@ export const PayView: FC<{
 
           <div className="flex items-center justify-center space-x-2 text-slate-600 dark:text-neutral-400">
             <p className="overflow-x-auto whitespace-nowrap">
-              {satsFirst
-                ? formatFiat(Number(amountUSDInput)) + ' USD'
-                : Number(amountSatsInput).toLocaleString('en-US') + ' sats'}
+              {asset !== 'Tether USD'
+                ? satsFirst
+                  ? formatFiat(Number(amountUSDInput)) + ' USD'
+                  : Number(amountSatsInput).toLocaleString('en-US') + ' sats'
+                : formatFiat(Number(amountUSDInput)).slice(1) + ' USDT'}
             </p>
 
-            <button
-              onClick={() => {
-                setSatsFirst(s => !s);
+            {asset !== 'Tether USD' ? (
+              <button
+                onClick={() => {
+                  setSatsFirst(s => !s);
 
-                if (amountUSDInput) {
-                  setAmountUSDInput(a => Number(a).toFixed(2));
-                }
-              }}
-            >
-              <ArrowUpDown size={16} className="shrink-0" />
-            </button>
+                  if (amountUSDInput) {
+                    setAmountUSDInput(a => Number(a).toFixed(2));
+                  }
+                }}
+              >
+                <ArrowUpDown size={16} className="shrink-0" />
+              </button>
+            ) : null}
           </div>
 
           <p className="mt-4 text-center font-medium">
@@ -218,25 +265,26 @@ export const PayView: FC<{
             {t('Common.cancel')}
           </Button>
 
-          <Button
-            onClick={() => {
-              payFunction();
-            }}
-            disabled={!keys || !Number(amountSatsInput) || loading}
-            className="flex w-full items-center justify-center lg:w-36"
-          >
-            {loading ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin text-black" />
-            ) : null}
-            {t('App.Wallet.send')}
-          </Button>
+          {keys ? (
+            <Button
+              onClick={() => {
+                payFunction();
+              }}
+              disabled={!keys || !Number(amountSatsInput) || loading}
+              className="flex w-full items-center justify-center lg:w-36"
+            >
+              {loading ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin text-black" />
+              ) : null}
+              {t('App.Wallet.send')}
+            </Button>
+          ) : (
+            <VaultButton
+              lockedTitle={t('App.Wallet.Vault.unlock')}
+              className="w-full lg:w-36"
+            />
+          )}
         </div>
-
-        {keys ? null : (
-          <div className="mt-3 flex items-center justify-center space-x-1 text-sm font-medium text-destructive">
-            <Lock size={14} /> <p>{t('App.Wallet.locked')}</p>
-          </div>
-        )}
       </div>
     </div>
   );
