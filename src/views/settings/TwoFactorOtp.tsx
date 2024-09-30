@@ -2,9 +2,9 @@
 
 import { REGEXP_ONLY_DIGITS } from 'input-otp';
 import { Check, Copy, CopyCheck, Loader2 } from 'lucide-react';
-import { useQRCode } from 'next-qrcode';
 import { FC, useState } from 'react';
 
+import { QrCode } from '@/components/QrCode';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -33,8 +33,6 @@ import { handleApolloError } from '@/utils/error';
 import { Section } from './Section';
 
 export const OTP: FC<{ hasAlready: boolean }> = ({ hasAlready }) => {
-  const { Canvas } = useQRCode();
-
   const { toast } = useToast();
 
   const [value, setValue] = useState('');
@@ -134,18 +132,7 @@ export const OTP: FC<{ hasAlready: boolean }> = ({ hasAlready }) => {
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center">
-              <Canvas
-                text={data.two_factor.otp.add.otp_url}
-                options={{
-                  margin: 3,
-                  width: 250,
-                  color: {
-                    dark: '#000000',
-                    light: '#FFFFFF',
-                  },
-                }}
-                logo={{ src: '/icons/qr-logo.svg', options: { width: 56 } }}
-              />
+              <QrCode text={data.two_factor.otp.add.otp_url} />
               <Label className="mb-2 mt-4">Secret</Label>
               <div className="flex w-full max-w-[280px] gap-2">
                 <Input
