@@ -9,8 +9,8 @@ import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 import { useLocalStorage } from 'usehooks-ts';
 
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { QrCode } from '@/components/QrCode';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button-v2';
 import {
   Drawer,
