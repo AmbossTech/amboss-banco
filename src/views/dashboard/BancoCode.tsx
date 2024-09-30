@@ -1,8 +1,8 @@
-import { Copy, CopyCheck, QrCode } from 'lucide-react';
+import { Copy, CopyCheck, QrCode as QrCodeIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useQRCode } from 'next-qrcode';
 import { FC, useMemo, useState } from 'react';
 
+import { QrCode } from '@/components/QrCode';
 import { Button, IconButton } from '@/components/ui/button-v2';
 import { Card } from '@/components/ui/card';
 import {
@@ -22,7 +22,6 @@ import { handleApolloError } from '@/utils/error';
 
 export const BancoCode: FC<{ id: string }> = ({ id }) => {
   const t = useTranslations('App');
-  const { Canvas } = useQRCode();
   const { toast } = useToast();
 
   const { data, loading } = useGetWalletDetailsQuery({
@@ -77,7 +76,7 @@ export const BancoCode: FC<{ id: string }> = ({ id }) => {
 
           <Drawer open={showQR} onOpenChange={setShowQR}>
             <DrawerTrigger asChild>
-              <IconButton icon={<QrCode size={20} />} />
+              <IconButton icon={<QrCodeIcon size={20} />} />
             </DrawerTrigger>
 
             <DrawerContent>
@@ -85,21 +84,7 @@ export const BancoCode: FC<{ id: string }> = ({ id }) => {
                 <DrawerTitle>{t('miban')}</DrawerTitle>
                 <DrawerDescription>{address}</DrawerDescription>
               </DrawerHeader>
-
-              <div className="round-canvas mx-auto w-fit">
-                <Canvas
-                  text={address}
-                  options={{
-                    margin: 3,
-                    width: 250,
-                    color: {
-                      dark: '#000000',
-                      light: '#FFFFFF',
-                    },
-                  }}
-                  logo={{ src: '/icons/qr-logo.svg', options: { width: 56 } }}
-                />
-              </div>
+              <QrCode text={address} className="mx-auto w-fit" />
 
               <DrawerFooter className="pt-10">
                 <DrawerClose asChild>

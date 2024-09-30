@@ -1,10 +1,10 @@
 import { ArrowLeft, ArrowUpDown, ChevronsUpDown } from 'lucide-react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import { useQRCode } from 'next-qrcode';
 import { useMemo, useState } from 'react';
 import { useLocalStorage } from 'usehooks-ts';
 
+import { QrCode } from '@/components/QrCode';
 import { Button } from '@/components/ui/button-v2';
 import {
   Drawer,
@@ -45,7 +45,6 @@ const options: ReceiveOptions[] = [
 export const Receive = () => {
   const t = useTranslations('App');
   const { toast } = useToast();
-  const { Canvas } = useQRCode();
 
   const [receive, setReceive] = useState<ReceiveOptions>('Any Currency');
   const [receiveString, setReceiveString] = useState('');
@@ -319,25 +318,13 @@ export const Receive = () => {
       {loading ? (
         <Skeleton className="mx-auto h-[250px] w-[250px] rounded-3xl" />
       ) : (
-        <div
+        <QrCode
+          text={receiveString || 'BancoLibre'}
           className={cn(
-            'round-canvas mx-auto w-fit drop-shadow-2xl dark:drop-shadow-none',
+            'mx-auto w-fit drop-shadow-2xl dark:drop-shadow-none',
             !receiveString && 'blur'
           )}
-        >
-          <Canvas
-            text={receiveString || 'BancoLibre'}
-            options={{
-              margin: 3,
-              width: 250,
-              color: {
-                dark: '#000000',
-                light: '#FFFFFF',
-              },
-            }}
-            logo={{ src: '/icons/qr-logo.svg', options: { width: 56 } }}
-          />
-        </div>
+        />
       )}
 
       {loading ? (
