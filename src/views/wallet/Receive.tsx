@@ -1,10 +1,16 @@
-import { ArrowLeft, ArrowUpDown, ChevronsUpDown } from 'lucide-react';
+import {
+  AlertTriangle,
+  ArrowLeft,
+  ArrowUpDown,
+  ChevronsUpDown,
+} from 'lucide-react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 import { useLocalStorage } from 'usehooks-ts';
 
 import { QrCode } from '@/components/QrCode';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button-v2';
 import {
   Drawer,
@@ -16,34 +22,38 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/components/ui/use-toast';
 import { useCreateLightningInvoiceMutation } from '@/graphql/mutations/__generated__/createInvoice.generated';
 import { useCreateOnchainAddressMutation } from '@/graphql/mutations/__generated__/createOnchainAddress.generated';
+import { useCreateOnchainAddressSwapMutation } from '@/graphql/mutations/__generated__/createOnchainAddressSwap.generated';
 import { useGetPriceCurrentQuery } from '@/graphql/queries/__generated__/prices.generated';
 import {
   useGetWalletDetailsQuery,
   useGetWalletQuery,
 } from '@/graphql/queries/__generated__/wallet.generated';
-import { LiquidAssetEnum } from '@/graphql/types';
+import { LiquidAssetEnum, SwapCoin, SwapNetwork } from '@/graphql/types';
 import { cn } from '@/utils/cn';
 import { LOCALSTORAGE_KEYS } from '@/utils/constants';
 import { handleApolloError } from '@/utils/error';
 import { formatFiat } from '@/utils/fiat';
 import { ROUTES } from '@/utils/routes';
-import { shorten } from '@/utils/string';
+import { getAddressFromBip21, shorten } from '@/utils/string';
 
 type ReceiveOptions =
   | 'Any Currency'
   | 'Lightning'
   | 'Liquid Bitcoin'
-  | 'Tether USD';
+  | 'Tether USD'
+  | 'Bitcoin';
 
 const options: ReceiveOptions[] = [
   'Any Currency',
   'Lightning',
   'Liquid Bitcoin',
   'Tether USD',
+  'Bitcoin',
 ];
 
 export const Receive = () => {
   const t = useTranslations('App');
+  const c = useTranslations('Common');
   const { toast } = useToast();
 
   const [receive, setReceive] = useState<ReceiveOptions>('Any Currency');
@@ -58,6 +68,17 @@ export const Receive = () => {
   const [descriptionOpen, setDescriptionOpen] = useState(false);
   const [description, setDescription] = useState('');
   const [descriptionSaved, setDescriptionSaved] = useState('');
+
+  const reset = () => {
+    setReceiveString('');
+    setAmountUSDInput('');
+    setAmountSatsInput('');
+    setAmountUSDSaved('');
+    setAmountSatsSaved('');
+    setSatsFirst(false);
+    setDescription('');
+    setDescriptionSaved('');
+  };
 
   const [value] = useLocalStorage(LOCALSTORAGE_KEYS.currentWalletId, '');
 
@@ -153,17 +174,9 @@ export const Receive = () => {
       },
       onCompleted: data => {
         setReceiveString(data.wallets.create_lightning_invoice.payment_request);
-        toast({ title: 'Invoice generated!' });
       },
       onError: err => {
-        setReceiveString('');
-        setAmountUSDInput('');
-        setAmountSatsInput('');
-        setAmountUSDSaved('');
-        setAmountSatsSaved('');
-        setSatsFirst(false);
-        setDescription('');
-        setDescriptionSaved('');
+        reset();
 
         const messages = handleApolloError(err);
 
@@ -175,19 +188,62 @@ export const Receive = () => {
       },
     });
 
+  const [createOnchainAddress, { loading: onchainLoading }] =
+    useCreateOnchainAddressSwapMutation({
+      variables: {
+        input: {
+          amount: Number(amountSatsInput),
+          deposit_coin: SwapCoin.Btc,
+          deposit_network: SwapNetwork.Bitcoin,
+          wallet_account_id: liquidAccountId,
+        },
+      },
+      onCompleted: data =>
+        setReceiveString(
+          data.wallets.create_onchain_address_swap.bip21 ||
+            data.wallets.create_onchain_address_swap.receive_address
+        ),
+      onError: err => {
+        reset();
+
+        const messages = handleApolloError(err);
+
+        toast({
+          variant: 'destructive',
+          title: 'Error generating Bitcoin address.',
+          description: messages.join(', '),
+        });
+      },
+    });
+
+  const onchainAddressFormatted = useMemo(() => {
+    if (!receiveString) return t('Wallet.amount');
+
+    const address = getAddressFromBip21(receiveString);
+
+    return shorten(address, 12);
+  }, [receiveString, t]);
+
   const receiveText = useMemo(() => {
     switch (receive) {
       case 'Any Currency':
         return bancoCode;
       case 'Lightning':
-        return receiveString
-          ? shorten(receiveString, 12)
-          : t('Wallet.amount-ln');
+        return receiveString ? shorten(receiveString, 12) : t('Wallet.amount');
       case 'Liquid Bitcoin':
       case 'Tether USD':
         return liquidAddressFormatted;
+      case 'Bitcoin':
+        return onchainAddressFormatted;
     }
-  }, [receive, bancoCode, receiveString, liquidAddressFormatted, t]);
+  }, [
+    receive,
+    bancoCode,
+    receiveString,
+    liquidAddressFormatted,
+    onchainAddressFormatted,
+    t,
+  ]);
 
   const {
     data: priceData,
@@ -212,6 +268,7 @@ export const Receive = () => {
     walletLoading ||
     liquidLoading ||
     invoiceLoading ||
+    onchainLoading ||
     priceLoading;
 
   const error =
@@ -220,7 +277,21 @@ export const Receive = () => {
     Boolean(liquidError) ||
     Boolean(priceError);
 
-  if (error) return null;
+  if (error)
+    return (
+      <p className="mx-auto w-full max-w-lg py-4 text-center lg:py-10">
+        {c.rich('refresh', {
+          refresh: chunks => (
+            <button
+              className="font-semibold text-primary transition-colors hover:text-primary-hover"
+              onClick={() => window.location.reload()}
+            >
+              {chunks}
+            </button>
+          ),
+        })}
+      </p>
+    );
 
   return (
     <div className="mx-auto w-full max-w-lg space-y-6 py-4 lg:py-10">
@@ -264,6 +335,7 @@ export const Receive = () => {
                         setReceiveString(bancoCode);
                         break;
                       case 'Lightning':
+                      case 'Bitcoin':
                         setReceiveString('');
                         setAmountOpen(true);
                         break;
@@ -314,6 +386,14 @@ export const Receive = () => {
           </div>
         </DrawerContent>
       </Drawer>
+
+      {receive === 'Bitcoin' && receiveString ? (
+        <Alert>
+          <AlertTriangle size={16} />
+          <AlertTitle>{c('important')}</AlertTitle>
+          <AlertDescription>{t('Wallet.receive-warn')}</AlertDescription>
+        </Alert>
+      ) : null}
 
       {loading ? (
         <Skeleton className="mx-auto h-[250px] w-[250px] rounded-3xl" />
@@ -485,6 +565,11 @@ export const Receive = () => {
                           },
                         },
                       });
+                    }
+                    break;
+                  case 'Bitcoin':
+                    if (amountSatsInput !== amountSatsSaved) {
+                      createOnchainAddress();
                     }
                     break;
                 }

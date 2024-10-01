@@ -40,3 +40,13 @@ export const addEllipsis = (
 
   return `${beginning}...`;
 };
+
+export const getAddressFromBip21 = (str: string) => {
+  if (!str.includes(':')) return str;
+
+  const prefix = str.split(':');
+  const params = prefix[1].split('?');
+  const address = params[0];
+
+  return address;
+};

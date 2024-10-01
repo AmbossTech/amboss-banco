@@ -2,6 +2,7 @@ import { Loader2 } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { useState } from 'react';
 
+import { PayBitcoinAddress } from './PayBitcoinAddress';
 import { PayLightningAddress } from './PayLightningAddress';
 import { PayLightningInvoice } from './PayLightningInvoice';
 import { PayLiquidAddress } from './PayLiquidAddress';
@@ -21,6 +22,7 @@ export type SendType =
   | 'lightning-address'
   | 'invoice'
   | 'liquid'
+  | 'bitcoin'
   | undefined;
 export type Assets = 'Liquid Bitcoin' | 'Tether USD';
 
@@ -79,6 +81,18 @@ export const Send = () => {
           <PayLiquidAddress
             asset={asset}
             setAsset={setAsset}
+            sendString={sendString}
+            setView={setView}
+            reset={reset}
+            amountSatsInput={amountSatsInput}
+            amountUSDInput={amountUSDInput}
+            setAmountSatsInput={setAmountSatsInput}
+            setAmountUSDInput={setAmountUSDInput}
+          />
+        );
+      case 'bitcoin':
+        return (
+          <PayBitcoinAddress
             sendString={sendString}
             setView={setView}
             reset={reset}

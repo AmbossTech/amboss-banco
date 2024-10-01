@@ -42,6 +42,7 @@
     "@yudiel/react-qr-scanner": "^2.0.8",
     "argon2-browser": "^1.18.0",
     "big.js": "^6.2.1",
+    "bitcoin-address-validation": "^2.2.3",
     "bolt11": "^1.4.1",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",

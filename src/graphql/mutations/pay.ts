@@ -50,3 +50,17 @@ export const PayLightningInvoice = gql`
     }
   }
 `;
+
+export const PaySwapAddress = gql`
+  mutation PaySwapAddress($input: PaySwapAddressInput!, $payInput2: PayInput!) {
+    pay(input: $payInput2) {
+      swap_address(input: $input) {
+        wallet_account {
+          id
+          descriptor
+        }
+        base_64
+      }
+    }
+  }
+`;

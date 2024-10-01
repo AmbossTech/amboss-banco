@@ -69,6 +69,27 @@ export type PayLightningInvoiceMutation = {
   };
 };
 
+export type PaySwapAddressMutationVariables = Types.Exact<{
+  input: Types.PaySwapAddressInput;
+  payInput2: Types.PayInput;
+}>;
+
+export type PaySwapAddressMutation = {
+  __typename?: 'Mutation';
+  pay: {
+    __typename?: 'PayMutations';
+    swap_address: {
+      __typename?: 'CreateLiquidTransaction';
+      base_64: string;
+      wallet_account: {
+        __typename?: 'WalletAccount';
+        id: string;
+        descriptor: string;
+      };
+    };
+  };
+};
+
 export const PayLightningAddressDocument = gql`
   mutation PayLightningAddress(
     $addressInput: PayLnAddressInput!
@@ -248,4 +269,61 @@ export type PayLightningInvoiceMutationResult =
 export type PayLightningInvoiceMutationOptions = Apollo.BaseMutationOptions<
   PayLightningInvoiceMutation,
   PayLightningInvoiceMutationVariables
+>;
+export const PaySwapAddressDocument = gql`
+  mutation PaySwapAddress($input: PaySwapAddressInput!, $payInput2: PayInput!) {
+    pay(input: $payInput2) {
+      swap_address(input: $input) {
+        wallet_account {
+          id
+          descriptor
+        }
+        base_64
+      }
+    }
+  }
+`;
+export type PaySwapAddressMutationFn = Apollo.MutationFunction<
+  PaySwapAddressMutation,
+  PaySwapAddressMutationVariables
+>;
+
+/**
+ * __usePaySwapAddressMutation__
+ *
+ * To run a mutation, you first call `usePaySwapAddressMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `usePaySwapAddressMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [paySwapAddressMutation, { data, loading, error }] = usePaySwapAddressMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *      payInput2: // value for 'payInput2'
+ *   },
+ * });
+ */
+export function usePaySwapAddressMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    PaySwapAddressMutation,
+    PaySwapAddressMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    PaySwapAddressMutation,
+    PaySwapAddressMutationVariables
+  >(PaySwapAddressDocument, options);
+}
+export type PaySwapAddressMutationHookResult = ReturnType<
+  typeof usePaySwapAddressMutation
+>;
+export type PaySwapAddressMutationResult =
+  Apollo.MutationResult<PaySwapAddressMutation>;
+export type PaySwapAddressMutationOptions = Apollo.BaseMutationOptions<
+  PaySwapAddressMutation,
+  PaySwapAddressMutationVariables
 >;
