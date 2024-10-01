@@ -238,8 +238,18 @@ export const Default: FC<{
               prefix.length > 1 ? prefix[1] : prefix[0];
 
             if (type === 'invoice') {
+              let bip21Invoice: string | null | undefined;
+
+              if (sendStringFormatted.includes('lightning=')) {
+                const params = sendStringFormatted.split('?');
+                const paramsDecoded = new URLSearchParams(params[1]);
+                bip21Invoice = paramsDecoded.get('lightning');
+              }
+
+              const invoice = bip21Invoice || sendStringFormatted;
+
               try {
-                const { satoshis } = bolt11.decode(sendStringFormatted);
+                const { satoshis } = bolt11.decode(invoice);
 
                 if (satoshis) {
                   setAmountSatsInput(satoshis.toString());
@@ -262,6 +272,8 @@ export const Default: FC<{
 
                 return;
               }
+
+              setSendString(invoice);
             }
 
             if (type === 'liquid') {
@@ -316,7 +328,30 @@ export const Default: FC<{
               } else {
                 setSendString(sendStringFormatted);
               }
-            } else {
+            }
+
+            if (type === 'bitcoin') {
+              const params = sendStringFormatted.split('?');
+
+              if (params.length > 1) {
+                const paramsDecoded = new URLSearchParams(params[1]);
+                const amount = Number(paramsDecoded.get('amount'));
+
+                if (amount > 0) {
+                  const amountInSats = amount * 100_000_000;
+                  setAmountSatsInput(amountInSats.toFixed(0));
+                  setAmountUSDInput(
+                    (latestPricePerSat * amountInSats).toFixed(2)
+                  );
+                }
+
+                setSendString(params[0]);
+              } else {
+                setSendString(sendStringFormatted);
+              }
+            }
+
+            if (type === 'lightning-address' || type === 'miban') {
               setSendString(sendStringFormatted);
             }
 
