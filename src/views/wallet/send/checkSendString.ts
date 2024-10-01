@@ -30,11 +30,13 @@ export const checkSendString = (str: string) => {
     case strFormatted.startsWith('liquidnetwork:'):
     case isLiquidAddress(str):
       return 'liquid';
-    case validate(getAddressFromBip21(strFormatted), Network.mainnet):
-      return 'bitcoin';
     case strFormatted.startsWith('lnbc'):
     case strFormatted.startsWith('lightning:lnbc'):
+    case strFormatted.startsWith('bitcoin:') &&
+      strFormatted.includes('lightning='):
       return 'invoice';
+    case validate(getAddressFromBip21(strFormatted), Network.mainnet):
+      return 'bitcoin';
     case devAddressRegex.test(str):
       return 'dev';
   }
