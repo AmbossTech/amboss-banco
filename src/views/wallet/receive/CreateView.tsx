@@ -6,7 +6,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import { Dispatch, FC, ReactNode, SetStateAction, useState } from 'react';
+import { Dispatch, FC, ReactNode, useState } from 'react';
 
 import { QrCode } from '@/components/QrCode';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -25,7 +25,7 @@ import { handleApolloError } from '@/utils/error';
 import { formatFiat } from '@/utils/fiat';
 import { ROUTES } from '@/utils/routes';
 
-import { ReceiveOptions } from './Receive';
+import { ReceiveAction, ReceiveOptions, ReceiveState } from './Receive';
 
 const options: ReceiveOptions[] = [
   'Any Currency',
@@ -36,36 +36,16 @@ const options: ReceiveOptions[] = [
 ];
 
 export const CreateView: FC<{
-  receive: ReceiveOptions;
-  setReceive: Dispatch<SetStateAction<ReceiveOptions>>;
-  receiveString: string;
-  setReceiveString: Dispatch<SetStateAction<string>>;
-  amountUSDInput: string;
-  setAmountUSDInput: Dispatch<SetStateAction<string>>;
-  amountSatsInput: string;
-  setAmountSatsInput: Dispatch<SetStateAction<string>>;
-  amountUSDSaved: string;
-  setAmountUSDSaved: Dispatch<SetStateAction<string>>;
-  amountSatsSaved: string;
-  setAmountSatsSaved: Dispatch<SetStateAction<string>>;
+  state: ReceiveState;
+  dispatch: Dispatch<ReceiveAction>;
   receiveText: string;
   dataLoading: boolean;
   dataError: boolean;
   createFunction?: () => void;
   Description?: ReactNode;
 }> = ({
-  receive,
-  setReceive,
-  receiveString,
-  setReceiveString,
-  amountUSDInput,
-  setAmountUSDInput,
-  amountSatsInput,
-  setAmountSatsInput,
-  amountUSDSaved,
-  setAmountUSDSaved,
-  amountSatsSaved,
-  setAmountSatsSaved,
+  state,
+  dispatch,
   receiveText,
   dataLoading,
   dataError,
@@ -78,7 +58,7 @@ export const CreateView: FC<{
 
   const [optionsOpen, setOptionsOpen] = useState(false);
   const [amountOpen, setAmountOpen] = useState(
-    receive === 'Lightning' || receive === 'Bitcoin'
+    state.receive === 'Lightning' || state.receive === 'Bitcoin'
   );
   const [satsFirst, setSatsFirst] = useState(false);
 
@@ -137,7 +117,7 @@ export const CreateView: FC<{
       <Drawer open={optionsOpen} onOpenChange={setOptionsOpen}>
         <DrawerTrigger asChild disabled={loading}>
           <button className="mx-auto flex h-10 items-center justify-center space-x-2 rounded-xl border border-slate-200 px-4 font-semibold dark:border-neutral-800">
-            <p>{receive}</p> <ChevronsUpDown size={16} />
+            <p>{state.receive}</p> <ChevronsUpDown size={16} />
           </button>
         </DrawerTrigger>
 
@@ -147,12 +127,12 @@ export const CreateView: FC<{
               <DrawerClose key={o} asChild>
                 <button
                   onClick={() => {
-                    setReceive(o);
-                    setReceiveString('');
-                    setAmountUSDInput('');
-                    setAmountSatsInput('');
-                    setAmountUSDSaved('');
-                    setAmountSatsSaved('');
+                    dispatch({ type: 'receive', nextReceive: o });
+                    dispatch({ type: 'receiveString', nextString: '' });
+                    dispatch({ type: 'amountUSDInput', nextString: '' });
+                    dispatch({ type: 'amountSatsInput', nextString: '' });
+                    dispatch({ type: 'amountUSDSaved', nextString: '' });
+                    dispatch({ type: 'amountSatsSaved', nextString: '' });
                     setSatsFirst(false);
                   }}
                   className="flex w-full items-center justify-between border-b border-slate-200 py-3 dark:border-neutral-800"
@@ -162,7 +142,7 @@ export const CreateView: FC<{
                   <div
                     className={cn(
                       'flex h-6 w-6 items-center justify-center rounded-full border-2',
-                      receive === o
+                      state.receive === o
                         ? 'border-foreground'
                         : 'border-slate-300 dark:border-neutral-500'
                     )}
@@ -170,7 +150,7 @@ export const CreateView: FC<{
                     <div
                       className={cn(
                         'h-2.5 w-2.5 rounded-full bg-foreground',
-                        receive === o ? 'block' : 'hidden'
+                        state.receive === o ? 'block' : 'hidden'
                       )}
                     />
                   </div>
@@ -181,7 +161,7 @@ export const CreateView: FC<{
         </DrawerContent>
       </Drawer>
 
-      {receive === 'Bitcoin' && receiveString ? (
+      {state.receive === 'Bitcoin' && state.receiveString ? (
         <Alert>
           <AlertTriangle size={16} />
           <AlertTitle>{c('important')}</AlertTitle>
@@ -193,10 +173,10 @@ export const CreateView: FC<{
         <Skeleton className="mx-auto h-[250px] w-[250px] rounded-3xl" />
       ) : (
         <QrCode
-          text={receiveString || 'BancoLibre'}
+          text={state.receiveString || 'BancoLibre'}
           className={cn(
             'mx-auto w-fit drop-shadow-2xl dark:drop-shadow-none',
-            !receiveString && 'blur'
+            !state.receiveString && 'blur'
           )}
         />
       )}
@@ -209,22 +189,28 @@ export const CreateView: FC<{
         </p>
       )}
 
-      {receive !== 'Any Currency' ? (
+      {state.receive !== 'Any Currency' ? (
         <Drawer
           open={amountOpen}
           onOpenChange={setAmountOpen}
           onClose={() => {
             setTimeout(() => {
-              setAmountUSDInput(amountUSDSaved);
-              setAmountSatsInput(amountSatsSaved);
+              dispatch({
+                type: 'amountUSDInput',
+                nextString: state.amountUSDSaved,
+              });
+              dispatch({
+                type: 'amountSatsInput',
+                nextString: state.amountSatsSaved,
+              });
             }, 1000);
           }}
         >
           <div className="flex flex-wrap items-center justify-center gap-2">
             <DrawerTrigger asChild disabled={loading}>
-              {amountUSDSaved ? (
+              {state.amountUSDSaved ? (
                 <button className="text-primary transition-colors hover:text-primary-hover">
-                  {formatFiat(Number(amountUSDSaved))} USD
+                  {formatFiat(Number(state.amountUSDSaved))} USD
                 </button>
               ) : (
                 <button className="w-full text-center text-primary transition-colors hover:text-primary-hover">
@@ -233,15 +219,15 @@ export const CreateView: FC<{
               )}
             </DrawerTrigger>
 
-            {receive !== 'Tether USD' && amountSatsSaved ? (
+            {state.receive !== 'Tether USD' && state.amountSatsSaved ? (
               <p className="text-slate-600 dark:text-neutral-400">
-                {Number(amountSatsSaved).toLocaleString('en-US')} sats
+                {Number(state.amountSatsSaved).toLocaleString('en-US')} sats
               </p>
             ) : null}
 
-            {receive === 'Tether USD' && amountUSDSaved ? (
+            {state.receive === 'Tether USD' && state.amountUSDSaved ? (
               <p className="text-slate-600 dark:text-neutral-400">
-                {formatFiat(Number(amountUSDSaved)).slice(1)} USDT
+                {formatFiat(Number(state.amountUSDSaved)).slice(1)} USDT
               </p>
             ) : null}
           </div>
@@ -254,7 +240,7 @@ export const CreateView: FC<{
                 type="number"
                 min="0"
                 placeholder="0"
-                value={satsFirst ? amountSatsInput : amountUSDInput}
+                value={satsFirst ? state.amountSatsInput : state.amountUSDInput}
                 onChange={e => {
                   if (!latestPrice) return;
 
@@ -263,8 +249,8 @@ export const CreateView: FC<{
                   const latestPricePerSat = latestPrice / 100_000_000;
 
                   if (!e.target.value) {
-                    setAmountUSDInput('');
-                    setAmountSatsInput('');
+                    dispatch({ type: 'amountUSDInput', nextString: '' });
+                    dispatch({ type: 'amountSatsInput', nextString: '' });
                     return;
                   }
 
@@ -274,15 +260,23 @@ export const CreateView: FC<{
                   if (!satsFirst && decimals?.length > 2) return;
 
                   if (satsFirst) {
-                    setAmountSatsInput(numberValue.toFixed(0));
-                    setAmountUSDInput(
-                      (latestPricePerSat * numberValue).toFixed(2)
-                    );
+                    dispatch({
+                      type: 'amountSatsInput',
+                      nextString: numberValue.toFixed(0),
+                    });
+                    dispatch({
+                      type: 'amountUSDInput',
+                      nextString: (latestPricePerSat * numberValue).toFixed(2),
+                    });
                   } else {
-                    setAmountUSDInput(e.target.value);
-                    setAmountSatsInput(
-                      (numberValue / latestPricePerSat).toFixed(0)
-                    );
+                    dispatch({
+                      type: 'amountUSDInput',
+                      nextString: e.target.value,
+                    });
+                    dispatch({
+                      type: 'amountSatsInput',
+                      nextString: (numberValue / latestPricePerSat).toFixed(0),
+                    });
                   }
                 }}
                 className="w-full bg-transparent text-center text-5xl font-medium focus:outline-none"
@@ -298,20 +292,24 @@ export const CreateView: FC<{
 
             <div className="flex items-center justify-center space-x-2 text-slate-600 dark:text-neutral-400">
               <p className="overflow-x-auto whitespace-nowrap">
-                {receive !== 'Tether USD'
+                {state.receive !== 'Tether USD'
                   ? satsFirst
-                    ? formatFiat(Number(amountUSDInput)) + ' USD'
-                    : Number(amountSatsInput).toLocaleString('en-US') + ' sats'
-                  : formatFiat(Number(amountUSDInput)).slice(1) + ' USDT'}
+                    ? formatFiat(Number(state.amountUSDInput)) + ' USD'
+                    : Number(state.amountSatsInput).toLocaleString('en-US') +
+                      ' sats'
+                  : formatFiat(Number(state.amountUSDInput)).slice(1) + ' USDT'}
               </p>
 
-              {receive !== 'Tether USD' ? (
+              {state.receive !== 'Tether USD' ? (
                 <button
                   onClick={() => {
                     setSatsFirst(s => !s);
 
-                    if (amountUSDInput) {
-                      setAmountUSDInput(a => Number(a).toFixed(2));
+                    if (state.amountUSDInput) {
+                      dispatch({
+                        type: 'amountUSDInput',
+                        nextString: Number(state.amountUSDInput).toFixed(2),
+                      });
                     }
                   }}
                 >
@@ -328,14 +326,20 @@ export const CreateView: FC<{
               onClick={() => {
                 if (!createFunction) return;
 
-                setAmountUSDSaved(Number(amountUSDInput).toFixed(2));
-                setAmountSatsSaved(amountSatsInput);
+                dispatch({
+                  type: 'amountUSDSaved',
+                  nextString: Number(state.amountUSDInput).toFixed(2),
+                });
+                dispatch({
+                  type: 'amountSatsSaved',
+                  nextString: state.amountSatsInput,
+                });
 
                 createFunction();
 
                 setAmountOpen(false);
               }}
-              disabled={!Number(amountSatsInput)}
+              disabled={!Number(state.amountSatsInput)}
               className="mb-4 w-full"
             >
               {t('save')}
@@ -348,10 +352,10 @@ export const CreateView: FC<{
 
       <Button
         onClick={() => {
-          navigator.clipboard.writeText(receiveString);
+          navigator.clipboard.writeText(state.receiveString);
           toast({ title: 'Copied!' });
         }}
-        disabled={loading || !receiveString}
+        disabled={loading || !state.receiveString}
         className="mx-auto w-40"
       >
         {t('copy')}

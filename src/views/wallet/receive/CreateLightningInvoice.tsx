@@ -1,5 +1,5 @@
 import { useTranslations } from 'next-intl';
-import { Dispatch, FC, SetStateAction, useMemo, useState } from 'react';
+import { Dispatch, FC, useMemo, useState } from 'react';
 import { useLocalStorage } from 'usehooks-ts';
 
 import { Button } from '@/components/ui/button-v2';
@@ -12,37 +12,12 @@ import { handleApolloError } from '@/utils/error';
 import { shorten } from '@/utils/string';
 
 import { CreateView } from './CreateView';
-import { ReceiveOptions } from './Receive';
+import { ReceiveAction, ReceiveState } from './Receive';
 
 export const CreateLightningInvoice: FC<{
-  receive: ReceiveOptions;
-  setReceive: Dispatch<SetStateAction<ReceiveOptions>>;
-  receiveString: string;
-  setReceiveString: Dispatch<SetStateAction<string>>;
-  amountUSDInput: string;
-  setAmountUSDInput: Dispatch<SetStateAction<string>>;
-  amountSatsInput: string;
-  setAmountSatsInput: Dispatch<SetStateAction<string>>;
-  amountUSDSaved: string;
-  setAmountUSDSaved: Dispatch<SetStateAction<string>>;
-  amountSatsSaved: string;
-  setAmountSatsSaved: Dispatch<SetStateAction<string>>;
-  reset: () => void;
-}> = ({
-  receive,
-  setReceive,
-  receiveString,
-  setReceiveString,
-  amountUSDInput,
-  setAmountUSDInput,
-  amountSatsInput,
-  setAmountSatsInput,
-  amountUSDSaved,
-  setAmountUSDSaved,
-  amountSatsSaved,
-  setAmountSatsSaved,
-  reset,
-}) => {
+  state: ReceiveState;
+  dispatch: Dispatch<ReceiveAction>;
+}> = ({ state, dispatch }) => {
   const t = useTranslations('App');
   const { toast } = useToast();
 
@@ -78,16 +53,19 @@ export const CreateLightningInvoice: FC<{
     useCreateLightningInvoiceMutation({
       variables: {
         input: {
-          amount: Number(amountSatsInput),
+          amount: Number(state.amountSatsInput),
           invoice_description: description,
           wallet_account_id: liquidAccountId,
         },
       },
       onCompleted: data => {
-        setReceiveString(data.wallets.create_lightning_invoice.payment_request);
+        dispatch({
+          type: 'receiveString',
+          nextString: data.wallets.create_lightning_invoice.payment_request,
+        });
       },
       onError: err => {
-        reset();
+        dispatch({ type: 'reset' });
         setDescription('');
         setDescriptionSaved('');
 
@@ -105,25 +83,17 @@ export const CreateLightningInvoice: FC<{
 
   return (
     <CreateView
-      receive={receive}
-      setReceive={setReceive}
-      receiveString={receiveString}
-      setReceiveString={setReceiveString}
-      amountUSDInput={amountUSDInput}
-      setAmountUSDInput={setAmountUSDInput}
-      amountSatsInput={amountSatsInput}
-      setAmountSatsInput={setAmountSatsInput}
-      amountUSDSaved={amountUSDSaved}
-      setAmountUSDSaved={setAmountUSDSaved}
-      amountSatsSaved={amountSatsSaved}
-      setAmountSatsSaved={setAmountSatsSaved}
+      state={state}
+      dispatch={dispatch}
       receiveText={
-        receiveString ? shorten(receiveString, 12) : t('Wallet.amount')
+        state.receiveString
+          ? shorten(state.receiveString, 12)
+          : t('Wallet.amount')
       }
       dataLoading={loading}
       dataError={Boolean(walletError)}
       createFunction={() => {
-        if (amountSatsInput !== amountSatsSaved) {
+        if (state.amountSatsInput !== state.amountSatsSaved) {
           createLightningInvoice();
         }
       }}
@@ -170,7 +140,7 @@ export const CreateLightningInvoice: FC<{
 
                 if (
                   description !== descriptionSaved &&
-                  Number(amountSatsInput)
+                  Number(state.amountSatsInput)
                 ) {
                   createLightningInvoice();
                 }

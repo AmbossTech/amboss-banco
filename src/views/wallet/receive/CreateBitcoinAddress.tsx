@@ -1,5 +1,5 @@
 import { useTranslations } from 'next-intl';
-import { Dispatch, FC, SetStateAction, useMemo } from 'react';
+import { Dispatch, FC, useMemo } from 'react';
 import { useLocalStorage } from 'usehooks-ts';
 
 import { useToast } from '@/components/ui/use-toast';
@@ -11,37 +11,12 @@ import { handleApolloError } from '@/utils/error';
 import { getAddressFromBip21, shorten } from '@/utils/string';
 
 import { CreateView } from './CreateView';
-import { ReceiveOptions } from './Receive';
+import { ReceiveAction, ReceiveState } from './Receive';
 
 export const CreateBitcoinAddress: FC<{
-  receive: ReceiveOptions;
-  setReceive: Dispatch<SetStateAction<ReceiveOptions>>;
-  receiveString: string;
-  setReceiveString: Dispatch<SetStateAction<string>>;
-  amountUSDInput: string;
-  setAmountUSDInput: Dispatch<SetStateAction<string>>;
-  amountSatsInput: string;
-  setAmountSatsInput: Dispatch<SetStateAction<string>>;
-  amountUSDSaved: string;
-  setAmountUSDSaved: Dispatch<SetStateAction<string>>;
-  amountSatsSaved: string;
-  setAmountSatsSaved: Dispatch<SetStateAction<string>>;
-  reset: () => void;
-}> = ({
-  receive,
-  setReceive,
-  receiveString,
-  setReceiveString,
-  amountUSDInput,
-  setAmountUSDInput,
-  amountSatsInput,
-  setAmountSatsInput,
-  amountUSDSaved,
-  setAmountUSDSaved,
-  amountSatsSaved,
-  setAmountSatsSaved,
-  reset,
-}) => {
+  state: ReceiveState;
+  dispatch: Dispatch<ReceiveAction>;
+}> = ({ state, dispatch }) => {
   const t = useTranslations('App');
   const { toast } = useToast();
 
@@ -73,19 +48,21 @@ export const CreateBitcoinAddress: FC<{
     useCreateOnchainAddressSwapMutation({
       variables: {
         input: {
-          amount: Number(amountSatsInput),
+          amount: Number(state.amountSatsInput),
           deposit_coin: SwapCoin.Btc,
           deposit_network: SwapNetwork.Bitcoin,
           wallet_account_id: liquidAccountId,
         },
       },
       onCompleted: data =>
-        setReceiveString(
-          data.wallets.create_onchain_address_swap.bip21 ||
-            data.wallets.create_onchain_address_swap.receive_address
-        ),
+        dispatch({
+          type: 'receiveString',
+          nextString:
+            data.wallets.create_onchain_address_swap.bip21 ||
+            data.wallets.create_onchain_address_swap.receive_address,
+        }),
       onError: err => {
-        reset();
+        dispatch({ type: 'reset' });
 
         const messages = handleApolloError(err);
 
@@ -98,34 +75,24 @@ export const CreateBitcoinAddress: FC<{
     });
 
   const onchainAddressFormatted = useMemo(() => {
-    if (!receiveString) return t('Wallet.amount');
+    if (!state.receiveString) return t('Wallet.amount');
 
-    const address = getAddressFromBip21(receiveString);
+    const address = getAddressFromBip21(state.receiveString);
 
     return shorten(address, 12);
-  }, [receiveString, t]);
+  }, [state.receiveString, t]);
 
   const loading = walletLoading || onchainLoading;
 
   return (
     <CreateView
-      receive={receive}
-      setReceive={setReceive}
-      receiveString={receiveString}
-      setReceiveString={setReceiveString}
-      amountUSDInput={amountUSDInput}
-      setAmountUSDInput={setAmountUSDInput}
-      amountSatsInput={amountSatsInput}
-      setAmountSatsInput={setAmountSatsInput}
-      amountUSDSaved={amountUSDSaved}
-      setAmountUSDSaved={setAmountUSDSaved}
-      amountSatsSaved={amountSatsSaved}
-      setAmountSatsSaved={setAmountSatsSaved}
+      state={state}
+      dispatch={dispatch}
       receiveText={onchainAddressFormatted}
       dataLoading={loading}
       dataError={Boolean(walletError)}
       createFunction={() => {
-        if (amountSatsInput !== amountSatsSaved) {
+        if (state.amountSatsInput !== state.amountSatsSaved) {
           createOnchainAddress();
         }
       }}

@@ -1,4 +1,4 @@
-import { Dispatch, FC, SetStateAction, useEffect, useMemo } from 'react';
+import { Dispatch, FC, useEffect, useMemo } from 'react';
 import { useLocalStorage } from 'usehooks-ts';
 
 import { useToast } from '@/components/ui/use-toast';
@@ -9,35 +9,12 @@ import { LOCALSTORAGE_KEYS } from '@/utils/constants';
 import { handleApolloError } from '@/utils/error';
 
 import { CreateView } from './CreateView';
-import { ReceiveOptions } from './Receive';
+import { ReceiveAction, ReceiveState } from './Receive';
 
 export const CreateLiquidAddress: FC<{
-  receive: ReceiveOptions;
-  setReceive: Dispatch<SetStateAction<ReceiveOptions>>;
-  receiveString: string;
-  setReceiveString: Dispatch<SetStateAction<string>>;
-  amountUSDInput: string;
-  setAmountUSDInput: Dispatch<SetStateAction<string>>;
-  amountSatsInput: string;
-  setAmountSatsInput: Dispatch<SetStateAction<string>>;
-  amountUSDSaved: string;
-  setAmountUSDSaved: Dispatch<SetStateAction<string>>;
-  amountSatsSaved: string;
-  setAmountSatsSaved: Dispatch<SetStateAction<string>>;
-}> = ({
-  receive,
-  setReceive,
-  receiveString,
-  setReceiveString,
-  amountUSDInput,
-  setAmountUSDInput,
-  amountSatsInput,
-  setAmountSatsInput,
-  amountUSDSaved,
-  setAmountUSDSaved,
-  amountSatsSaved,
-  setAmountSatsSaved,
-}) => {
+  state: ReceiveState;
+  dispatch: Dispatch<ReceiveAction>;
+}> = ({ state, dispatch }) => {
   const { toast } = useToast();
 
   const [value] = useLocalStorage(LOCALSTORAGE_KEYS.currentWalletId, '');
@@ -69,10 +46,12 @@ export const CreateLiquidAddress: FC<{
     { data: liquidData, loading: liquidLoading, error: liquidError },
   ] = useCreateOnchainAddressMutation({
     onCompleted: data =>
-      setReceiveString(
-        data.wallets.create_onchain_address.bip21 ||
-          data.wallets.create_onchain_address.address
-      ),
+      dispatch({
+        type: 'receiveString',
+        nextString:
+          data.wallets.create_onchain_address.bip21 ||
+          data.wallets.create_onchain_address.address,
+      }),
     onError: err => {
       const messages = handleApolloError(err);
 
@@ -98,7 +77,7 @@ export const CreateLiquidAddress: FC<{
   useEffect(() => {
     if (!liquidAccountId) return;
 
-    switch (receive) {
+    switch (state.receive) {
       case 'Liquid Bitcoin':
         createLiquidAddress({
           variables: {
@@ -120,36 +99,26 @@ export const CreateLiquidAddress: FC<{
         });
         break;
     }
-  }, [createLiquidAddress, liquidAccountId, receive]);
+  }, [createLiquidAddress, liquidAccountId, state.receive]);
 
   const loading = walletLoading || liquidLoading;
   const error = Boolean(walletError) || Boolean(liquidError);
 
   return (
     <CreateView
-      receive={receive}
-      setReceive={setReceive}
-      receiveString={receiveString}
-      setReceiveString={setReceiveString}
-      amountUSDInput={amountUSDInput}
-      setAmountUSDInput={setAmountUSDInput}
-      amountSatsInput={amountSatsInput}
-      setAmountSatsInput={setAmountSatsInput}
-      amountUSDSaved={amountUSDSaved}
-      setAmountUSDSaved={setAmountUSDSaved}
-      amountSatsSaved={amountSatsSaved}
-      setAmountSatsSaved={setAmountSatsSaved}
+      state={state}
+      dispatch={dispatch}
       receiveText={liquidAddressFormatted}
       dataLoading={loading}
       dataError={error}
       createFunction={() => {
-        switch (receive) {
+        switch (state.receive) {
           case 'Liquid Bitcoin':
-            if (amountSatsInput !== amountSatsSaved) {
+            if (state.amountSatsInput !== state.amountSatsSaved) {
               createLiquidAddress({
                 variables: {
                   input: {
-                    amount: Number(amountSatsInput),
+                    amount: Number(state.amountSatsInput),
                     asset: LiquidAssetEnum.Btc,
                     wallet_account_id: liquidAccountId,
                   },
@@ -158,11 +127,11 @@ export const CreateLiquidAddress: FC<{
             }
             break;
           case 'Tether USD':
-            if (amountUSDInput !== amountUSDSaved) {
+            if (state.amountUSDInput !== state.amountUSDSaved) {
               createLiquidAddress({
                 variables: {
                   input: {
-                    amount: Number(amountUSDInput) * 100_000_000,
+                    amount: Number(state.amountUSDInput) * 100_000_000,
                     asset: LiquidAssetEnum.Usdt,
                     wallet_account_id: liquidAccountId,
                   },
