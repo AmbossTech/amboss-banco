@@ -32,34 +32,34 @@ function reducer(state: ReceiveState, action: ReceiveAction) {
     case 'receive': {
       return {
         ...state,
-        receive: action.nextReceive || state.receive,
+        receive: action.nextReceive ?? state.receive,
       };
     }
     case 'receiveString': {
       return {
         ...state,
-        receiveString: action.nextString || state.receiveString,
+        receiveString: action.nextString ?? state.receiveString,
       };
     }
     case 'amountUSDInput':
       return {
         ...state,
-        amountUSDInput: action.nextString || state.amountUSDInput,
+        amountUSDInput: action.nextString ?? state.amountUSDInput,
       };
     case 'amountSatsInput':
       return {
         ...state,
-        amountSatsInput: action.nextString || state.amountSatsInput,
+        amountSatsInput: action.nextString ?? state.amountSatsInput,
       };
     case 'amountUSDSaved':
       return {
         ...state,
-        amountUSDSaved: action.nextString || state.amountUSDSaved,
+        amountUSDSaved: action.nextString ?? state.amountUSDSaved,
       };
     case 'amountSatsSaved':
       return {
         ...state,
-        amountSatsSaved: action.nextString || state.amountSatsSaved,
+        amountSatsSaved: action.nextString ?? state.amountSatsSaved,
       };
     case 'reset':
       return {
