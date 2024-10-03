@@ -1,4 +1,5 @@
 import { RefreshCw } from 'lucide-react';
+import { FC } from 'react';
 import { useLocalStorage } from 'usehooks-ts';
 
 import { useRefreshWalletMutation } from '@/graphql/mutations/__generated__/refreshWallet.generated';
@@ -8,7 +9,7 @@ import { LOCALSTORAGE_KEYS } from '@/utils/constants';
 import { IconButton } from '../ui/button-v2';
 import { useToast } from '../ui/use-toast';
 
-export const RefreshButton = () => {
+export const RefreshButton: FC<{ className?: string }> = ({ className }) => {
   const { toast } = useToast();
 
   const [value] = useLocalStorage(LOCALSTORAGE_KEYS.currentWalletId, '');
@@ -31,7 +32,7 @@ export const RefreshButton = () => {
       }
       onClick={() => refresh()}
       disabled={refreshLoading || !value}
-      className="z-10"
+      className={className}
     />
   );
 };

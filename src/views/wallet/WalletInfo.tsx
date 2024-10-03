@@ -541,7 +541,7 @@ export const WalletInfo: FC<{
             className="z-10"
           />
 
-          <RefreshButton />
+          <RefreshButton className="z-[1]" />
         </div>
       </div>
 
