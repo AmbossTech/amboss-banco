@@ -24,6 +24,12 @@
         "tech-info": "Technical information about your wallet, helpful for advanced recovery.",
         "unlock": "Unlock to Decrypt"
       },
+      "Transactions": {
+        "ago": "ago",
+        "all": "All",
+        "no-results": "No results.",
+        "pending": "Pending"
+      },
       "Vault": {
         "lock": "Lock",
         "lock-wallet": "Lock your wallet",
