@@ -24,6 +24,12 @@
         "tech-info": "Información técnica sobre tu billetera, útil para recuperación avanzada.",
         "unlock": "Desbloquear para Desencriptar"
       },
+      "Transactions": {
+        "ago": "ago",
+        "all": "Todas",
+        "no-results": "Sin resultados.",
+        "pending": "Procesando"
+      },
       "Vault": {
         "lock": "Bloquear",
         "lock-wallet": "Bloquear tu billetera",

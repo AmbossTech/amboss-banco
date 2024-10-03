@@ -9,7 +9,6 @@ import {
   Eye,
   EyeOff,
   Info,
-  RefreshCw,
   Settings2,
 } from 'lucide-react';
 import Image from 'next/image';
@@ -22,6 +21,7 @@ import smallCircular from '/public/icons/small-circular.svg';
 import smallCircularLight from '/public/icons/small-circular-light.svg';
 import liquid from '/public/images/liquid.jpg';
 import tether from '/public/images/tether.png';
+import { RefreshButton } from '@/components/button/RefreshButton';
 import { Button, IconButton } from '@/components/ui/button-v2';
 import { Card } from '@/components/ui/card';
 import {
@@ -42,7 +42,6 @@ import {
 } from '@/components/ui/drawer';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/components/ui/use-toast';
-import { useRefreshWalletMutation } from '@/graphql/mutations/__generated__/refreshWallet.generated';
 import { useGetPricesHistoricalQuery } from '@/graphql/queries/__generated__/prices.generated';
 import { useGetWalletQuery } from '@/graphql/queries/__generated__/wallet.generated';
 import { cn } from '@/utils/cn';
@@ -168,17 +167,6 @@ export const WalletInfo: FC<{
         .toSorted((a, b) => Date.parse(b.date) - Date.parse(a.date)),
     [priceData]
   );
-
-  const [refresh, { loading: refreshLoading }] = useRefreshWalletMutation({
-    variables: { input: { wallet_id: id } },
-    refetchQueries: ['getWallet'],
-    onCompleted: () => toast({ title: 'Wallet Refreshed!' }),
-    onError: () =>
-      toast({
-        variant: 'destructive',
-        title: 'Error refeshing wallet.',
-      }),
-  });
 
   const balances = useMemo(() => {
     if (loading || error) return [];
@@ -541,7 +529,6 @@ export const WalletInfo: FC<{
       <div className="mb-3 flex w-full justify-between space-x-2">
         <button
           onClick={() => setView('assets')}
-          disabled={refreshLoading}
           className="z-10 h-fit font-semibold text-primary transition-colors hover:text-primary-hover"
         >
           {data?.wallets.find_one.name}
@@ -554,23 +541,12 @@ export const WalletInfo: FC<{
             className="z-10"
           />
 
-          <IconButton
-            icon={
-              <RefreshCw
-                size={20}
-                className={cn(refreshLoading && 'animate-spin')}
-              />
-            }
-            onClick={() => refresh()}
-            disabled={refreshLoading}
-            className="z-10"
-          />
+          <RefreshButton className="z-[1]" />
         </div>
       </div>
 
       <button
         onClick={() => setView('assets')}
-        disabled={refreshLoading}
         className="relative z-10 mb-1 text-4xl font-semibold"
       >
         {hideBalance ? '***' : totalBalance}
