@@ -47,6 +47,7 @@ export const TransactionsTable = <T,>({
     state: {
       columnFilters,
     },
+    initialState: { pagination: { pageSize: 5 } },
   });
 
   return (
@@ -78,7 +79,7 @@ export const TransactionsTable = <T,>({
 
       <div className="my-4 space-y-3">
         {loading ? (
-          Array.from({ length: 10 }).map((_, i) => (
+          Array.from({ length: 5 }).map((_, i) => (
             <Skeleton key={i} className="h-[52px] w-full rounded-xl" />
           ))
         ) : (

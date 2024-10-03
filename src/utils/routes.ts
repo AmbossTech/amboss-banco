@@ -9,7 +9,10 @@ export const ROUTES = {
     home: '/settings',
     twofa: '/settings/2fa',
   },
-  transactions: { home: '/transactions' },
+  transactions: {
+    home: '/transactions',
+    tx: (id: string) => `/transactions/${id}`,
+  },
   swaps: {
     home: '/swaps',
   },

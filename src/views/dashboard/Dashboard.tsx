@@ -17,6 +17,7 @@ import { ROUTES } from '@/utils/routes';
 import { WalletInfo } from '../wallet/WalletInfo';
 import { BancoCode } from './BancoCode';
 import { RecentContacts } from './RecentContacts';
+import { RecentTransactions } from './RecentTransactions';
 
 export type DashboardView = 'default' | 'assets' | 'asset';
 
@@ -108,6 +109,7 @@ export const Dashboard = () => {
           <BancoCode id={value} />
           <WalletInfo id={value} view={view} setView={setView} />
           <RecentContacts id={value} />
+          <RecentTransactions id={value} />
         </>
       ) : (
         <WalletInfo id={value} view={view} setView={setView} />
