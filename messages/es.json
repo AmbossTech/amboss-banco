@@ -26,9 +26,9 @@
       },
       "Transactions": {
         "ago": "ago",
-        "all": "All",
-        "no-results": "No results.",
-        "pending": "Pending"
+        "all": "Todas",
+        "no-results": "Sin resultados.",
+        "pending": "Procesando"
       },
       "Vault": {
         "lock": "Bloquear",
