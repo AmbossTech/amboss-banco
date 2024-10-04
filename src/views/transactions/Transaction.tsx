@@ -29,9 +29,9 @@ export const Transaction: FC<{
 
   return (
     <Link href={ROUTES.transactions.tx(id)} className="block">
-      <div className="flex w-full items-center justify-between space-x-2 overflow-x-auto whitespace-nowrap rounded-xl bg-slate-100 px-2 py-1 dark:bg-neutral-900">
+      <div className="group flex w-full items-center justify-between space-x-2 overflow-x-auto whitespace-nowrap rounded-xl bg-slate-100 px-2 py-1 transition-colors dark:bg-neutral-900 dark:hover:bg-neutral-800">
         <div className="flex items-center space-x-2">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white dark:bg-neutral-800">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white transition-colors group-hover:bg-slate-100 dark:bg-neutral-800 group-hover:dark:bg-neutral-800">
             {balanceNum < 0 ? (
               <ArrowUp size={24} />
             ) : (
