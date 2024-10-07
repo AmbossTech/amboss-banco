@@ -40,6 +40,7 @@ export const ROUTES = {
     faq: '/docs#faq',
     privacyPolicy: '/docs/legal/privacy-policy',
     termsOfService: '/docs/legal/terms-of-service',
+    security: '/docs/security',
   },
   external: {
     github: 'https://github.com/AmbossTech/amboss-banco',

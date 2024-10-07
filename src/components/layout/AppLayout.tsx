@@ -24,7 +24,6 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { ROUTES } from '@/utils/routes';
@@ -36,257 +35,255 @@ export const AppLayout: FC<{ children: ReactNode }> = ({ children }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <TooltipProvider>
-      <div className="grid h-screen w-full md:pl-[53px]">
-        <aside className="inset-y fixed left-0 z-20 hidden h-full flex-col border-r md:flex">
-          <div className="flex items-center justify-center border-b p-2 py-4">
-            <Vault className="size-5" />
-          </div>
-          <nav className="grid gap-1 p-2">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="rounded-lg"
-                  aria-label="Wallet"
-                  asChild
+    <div className="grid h-screen w-full md:pl-[53px]">
+      <aside className="inset-y fixed left-0 z-20 hidden h-full flex-col border-r md:flex">
+        <div className="flex items-center justify-center border-b p-2 py-4">
+          <Vault className="size-5" />
+        </div>
+        <nav className="grid gap-1 p-2">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="rounded-lg"
+                aria-label="Wallet"
+                asChild
+              >
+                <Link href={ROUTES.dashboard}>
+                  <Home className="size-5" />
+                </Link>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="right" sideOffset={5}>
+              Home
+            </TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="rounded-lg"
+                aria-label="Wallet"
+                asChild
+              >
+                <Link href={ROUTES.contacts.home}>
+                  <MessageCircle className="size-5" />
+                </Link>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="right" sideOffset={5}>
+              Contacts
+            </TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="rounded-lg"
+                aria-label="Transactions"
+                asChild
+              >
+                <Link href={ROUTES.transactions.home}>
+                  <ScrollText className="size-5" />
+                </Link>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="right" sideOffset={5}>
+              Transactions
+            </TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="rounded-lg"
+                aria-label="Swaps"
+                asChild
+              >
+                <Link href={ROUTES.swaps.home}>
+                  <ArrowLeftRight className="size-5" />
+                </Link>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="right" sideOffset={5}>
+              Swaps
+            </TooltipContent>
+          </Tooltip>
+        </nav>
+        <nav className="mt-auto grid gap-1 p-2">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="mt-auto rounded-lg"
+                aria-label="Settings"
+                asChild
+              >
+                <Link href={ROUTES.settings.home}>
+                  <Settings2 className="size-5" />
+                </Link>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="right" sideOffset={5}>
+              Settings
+            </TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="mt-auto rounded-lg"
+                aria-label="Help"
+                asChild
+              >
+                <Link href={'mailto:info@amboss.tech'}>
+                  <LifeBuoy className="size-5" />
+                </Link>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="right" sideOffset={5}>
+              Help
+            </TooltipContent>
+          </Tooltip>
+          <LogoutButtonWithTooltip />
+        </nav>
+      </aside>
+      <div className="flex flex-col">
+        <header className="sticky top-0 z-10 flex h-[53px] items-center justify-between gap-1 border-b bg-background px-4">
+          <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+            <SheetTrigger asChild>
+              <Button
+                variant="outline"
+                size="icon"
+                className="shrink-0 md:hidden"
+              >
+                <Menu className="h-5 w-5" />
+                <span className="sr-only">Toggle navigation menu</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="flex flex-col">
+              <nav className="grid gap-2 font-medium">
+                <Link
+                  href={ROUTES.dashboard}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
                 >
-                  <Link href={ROUTES.dashboard}>
-                    <Home className="size-5" />
-                  </Link>
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="right" sideOffset={5}>
-                Home
-              </TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="rounded-lg"
-                  aria-label="Wallet"
-                  asChild
+                  <Landmark className="h-5 w-5" />
+                  Home
+                </Link>
+              </nav>
+              <nav className="grid gap-2 font-medium">
+                <Link
+                  href={ROUTES.contacts.home}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
                 >
-                  <Link href={ROUTES.contacts.home}>
-                    <MessageCircle className="size-5" />
-                  </Link>
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="right" sideOffset={5}>
-                Contacts
-              </TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="rounded-lg"
-                  aria-label="Transactions"
-                  asChild
+                  <MessageCircle className="h-5 w-5" />
+                  Chat
+                </Link>
+              </nav>
+              <nav className="grid gap-2 font-medium">
+                <Link
+                  href={ROUTES.transactions.home}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
                 >
-                  <Link href={ROUTES.transactions.home}>
-                    <ScrollText className="size-5" />
-                  </Link>
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="right" sideOffset={5}>
-                Transactions
-              </TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="rounded-lg"
-                  aria-label="Swaps"
-                  asChild
+                  <ScrollText className="h-5 w-5" />
+                  Transactions
+                </Link>
+              </nav>
+              <nav className="grid gap-2 font-medium">
+                <Link
+                  href={ROUTES.swaps.home}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
                 >
-                  <Link href={ROUTES.swaps.home}>
-                    <ArrowLeftRight className="size-5" />
-                  </Link>
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="right" sideOffset={5}>
-                Swaps
-              </TooltipContent>
-            </Tooltip>
-          </nav>
-          <nav className="mt-auto grid gap-1 p-2">
-            <Tooltip>
-              <TooltipTrigger asChild>
+                  <ArrowLeftRight className="h-5 w-5" />
+                  Swaps
+                </Link>
+              </nav>
+              <div className="mt-auto space-y-2">
                 <Button
-                  variant="ghost"
-                  size="icon"
-                  className="mt-auto rounded-lg"
+                  asChild
+                  variant="outline"
+                  className="mt-auto w-full rounded-lg"
                   aria-label="Settings"
-                  asChild
+                  onClick={() => setMobileMenuOpen(false)}
                 >
                   <Link href={ROUTES.settings.home}>
-                    <Settings2 className="size-5" />
+                    <Settings2 className="mr-2 h-5 w-5" />
+                    Settings
                   </Link>
                 </Button>
-              </TooltipTrigger>
-              <TooltipContent side="right" sideOffset={5}>
-                Settings
-              </TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
                 <Button
-                  variant="ghost"
-                  size="icon"
-                  className="mt-auto rounded-lg"
-                  aria-label="Help"
                   asChild
+                  variant="outline"
+                  className="mt-auto w-full rounded-lg"
+                  aria-label="Help"
+                  onClick={() => setMobileMenuOpen(false)}
                 >
                   <Link href={'mailto:info@amboss.tech'}>
-                    <LifeBuoy className="size-5" />
+                    <LifeBuoy className="mr-2 h-5 w-5" />
+                    Help
                   </Link>
                 </Button>
-              </TooltipTrigger>
-              <TooltipContent side="right" sideOffset={5}>
-                Help
-              </TooltipContent>
-            </Tooltip>
-            <LogoutButtonWithTooltip />
-          </nav>
-        </aside>
-        <div className="flex flex-col">
-          <header className="sticky top-0 z-10 flex h-[53px] items-center justify-between gap-1 border-b bg-background px-4">
-            <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-              <SheetTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="shrink-0 md:hidden"
-                >
-                  <Menu className="h-5 w-5" />
-                  <span className="sr-only">Toggle navigation menu</span>
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="left" className="flex flex-col">
-                <nav className="grid gap-2 font-medium">
-                  <Link
-                    href={ROUTES.dashboard}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
-                  >
-                    <Landmark className="h-5 w-5" />
-                    Home
-                  </Link>
-                </nav>
-                <nav className="grid gap-2 font-medium">
-                  <Link
-                    href={ROUTES.contacts.home}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
-                  >
-                    <MessageCircle className="h-5 w-5" />
-                    Chat
-                  </Link>
-                </nav>
-                <nav className="grid gap-2 font-medium">
-                  <Link
-                    href={ROUTES.transactions.home}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
-                  >
-                    <ScrollText className="h-5 w-5" />
-                    Transactions
-                  </Link>
-                </nav>
-                <nav className="grid gap-2 font-medium">
-                  <Link
-                    href={ROUTES.swaps.home}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
-                  >
-                    <ArrowLeftRight className="h-5 w-5" />
-                    Swaps
-                  </Link>
-                </nav>
-                <div className="mt-auto space-y-2">
-                  <Button
-                    asChild
-                    variant="outline"
-                    className="mt-auto w-full rounded-lg"
-                    aria-label="Settings"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    <Link href={ROUTES.settings.home}>
-                      <Settings2 className="mr-2 h-5 w-5" />
-                      Settings
-                    </Link>
-                  </Button>
-                  <Button
-                    asChild
-                    variant="outline"
-                    className="mt-auto w-full rounded-lg"
-                    aria-label="Help"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    <Link href={'mailto:info@amboss.tech'}>
-                      <LifeBuoy className="mr-2 h-5 w-5" />
-                      Help
-                    </Link>
-                  </Button>
-                  <LogoutButton />
+                <LogoutButton />
+              </div>
+            </SheetContent>
+          </Sheet>
+
+          <div className="flex items-center justify-center gap-4">
+            <h1 className="text-xl font-black">BancoLibre</h1>
+
+            <Badge variant={'destructive'} className="hidden md:block">
+              Beta - Limit funds and use at your own risk.
+            </Badge>
+          </div>
+
+          <div className="hidden gap-2 md:flex">
+            <WalletButton />
+            <VaultButton />
+            <ThemeToggle />
+          </div>
+
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button
+                variant="outline"
+                size="icon"
+                className="shrink-0 md:hidden"
+              >
+                <Settings className="h-5 w-5" />
+                <span className="sr-only">Toggle settings menu</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="flex flex-col">
+              <div className="mt-6 space-y-2">
+                <WalletButton />
+                <VaultButton />
+                <div className="flex space-x-2">
+                  <ThemeToggle />
                 </div>
-              </SheetContent>
-            </Sheet>
+              </div>
+            </SheetContent>
+          </Sheet>
+        </header>
 
-            <div className="flex items-center justify-center gap-4">
-              <h1 className="text-xl font-black">BancoLibre</h1>
+        <Badge
+          variant={'destructive'}
+          className="mx-4 mt-2 block text-center md:hidden"
+        >
+          Beta - Limit funds and use at your own risk.
+        </Badge>
 
-              <Badge variant={'destructive'} className="hidden md:block">
-                Beta - Limit funds and use at your own risk.
-              </Badge>
-            </div>
-
-            <div className="hidden gap-2 md:flex">
-              <WalletButton />
-              <VaultButton />
-              <ThemeToggle />
-            </div>
-
-            <Sheet>
-              <SheetTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="shrink-0 md:hidden"
-                >
-                  <Settings className="h-5 w-5" />
-                  <span className="sr-only">Toggle settings menu</span>
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="right" className="flex flex-col">
-                <div className="mt-6 space-y-2">
-                  <WalletButton />
-                  <VaultButton />
-                  <div className="flex space-x-2">
-                    <ThemeToggle />
-                  </div>
-                </div>
-              </SheetContent>
-            </Sheet>
-          </header>
-
-          <Badge
-            variant={'destructive'}
-            className="mx-4 mt-2 block text-center md:hidden"
-          >
-            Beta - Limit funds and use at your own risk.
-          </Badge>
-
-          <main className="flex flex-col justify-center px-4">{children}</main>
-        </div>
+        <main className="flex flex-col justify-center px-4">{children}</main>
       </div>
-    </TooltipProvider>
+    </div>
   );
 };

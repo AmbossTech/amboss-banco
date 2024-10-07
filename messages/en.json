@@ -170,6 +170,7 @@
       "plain": "The password hint will be stored in plain text. Avoid using your full password as a hint!",
       "referral": "Referral Code",
       "save": "Please save your password as it cannot be recovered if lost.",
+      "security": "The password is your responsibility to keep safe. You may want to consider using a password manager. <learn>Learn more</learn> about BancoLibre security practices.",
       "set": "Set a password",
       "submit": "Create Account"
     },
