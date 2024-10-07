@@ -155,7 +155,7 @@
       "plain": "El recordatorio para la contraseña se guarda sin encripción. Evita usar la misma contraseña como recordatorio!",
       "referral": "Código de Invitación",
       "save": "Por favór guarda la contraseña. No se puede recuperar si se pierde.",
-      "security": "The password is your responsibility to keep safe. You may want to consider using a password manager. <learn>Learn more</learn> about BancoLibre security practices.",
+      "security": "Es su responsabilidad mantener la contraseña segura. Recomendamos el uso de un administrador de contraseñas. <learn>Aprende más</learn> sobre las practicas de seguridad de BancoLibre.",
       "set": "Crea una contraseña",
       "submit": "Crea una cuenta"
     },
