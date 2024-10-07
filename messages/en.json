@@ -9,6 +9,7 @@
       "recent": "Recent Contacts",
       "sell": "Sell",
       "tether-explainer": "Tether (USDT) is a stablecoin, a type of cryptocurrency designed to maintain a stable value relative to a fiat currency, in this case, the United States dollar (USD). It is issued by Tether Limited, a company founded in 2014, and is pegged to the value of the US dollar.",
+      "transactions": "Recent Transactions",
       "warning": "In order to send USD you need to add Bitcoin to your wallet.",
       "warning-title": "Add Bitcoin!",
       "what-asset": "What is {asset}?"
@@ -27,8 +28,22 @@
       "Transactions": {
         "ago": "ago",
         "all": "All",
+        "amount": "Amount",
+        "asset": "Asset",
+        "blinded": "Copy Blinded URL",
+        "copy-id": "Copy ID",
+        "copy-tx": "Copy Transaction ID",
+        "date": "Date",
+        "details": "Transaction Details",
+        "fees": "Fees",
         "no-results": "No results.",
-        "pending": "Pending"
+        "paid": "Paid",
+        "pending": "Pending",
+        "received": "Received",
+        "sent": "Sent",
+        "status": "Status",
+        "time": "Time",
+        "unblinded": "Copy Unblinded URL"
       },
       "Vault": {
         "lock": "Lock",
