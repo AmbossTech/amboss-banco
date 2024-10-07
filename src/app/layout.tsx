@@ -8,6 +8,7 @@ import { getLocale, getMessages } from 'next-intl/server';
 import PlausibleProvider from 'next-plausible';
 
 import { Toaster } from '@/components/ui/toaster';
+import { TooltipProvider } from '@/components/ui/tooltip';
 import { ApolloWrapper } from '@/lib/apollo/wrapper';
 import { ThemeProvider } from '@/lib/themes/wrapper';
 
@@ -55,14 +56,16 @@ export default async function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <ApolloWrapper
-              serverUrl={serverUrl}
-              accessToken={accessToken}
-              refreshToken={refreshToken}
-            >
-              {children}
-              <Toaster />
-            </ApolloWrapper>
+            <TooltipProvider>
+              <ApolloWrapper
+                serverUrl={serverUrl}
+                accessToken={accessToken}
+                refreshToken={refreshToken}
+              >
+                {children}
+                <Toaster />
+              </ApolloWrapper>
+            </TooltipProvider>
           </ThemeProvider>
         </NextIntlClientProvider>
       </body>

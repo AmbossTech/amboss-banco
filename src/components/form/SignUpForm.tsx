@@ -2,7 +2,7 @@
 
 import { ApolloError, useApolloClient } from '@apollo/client';
 import stringEntropy from 'fast-password-entropy';
-import { ArrowLeft, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { ArrowLeft, Eye, EyeOff, Info, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
@@ -24,6 +24,7 @@ import { Button } from '../ui/button-v2';
 import { Checkbox } from '../ui/checkbox';
 import { Label } from '../ui/label';
 import { Progress } from '../ui/progress';
+import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 import { useToast } from '../ui/use-toast';
 import { WaitlistForm } from './WaitlistForm';
 
@@ -264,7 +265,31 @@ export function SignUpForm() {
 
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="password">{c('password')}</Label>
+              <div className="flex items-center space-x-2">
+                <Label htmlFor="password">{c('password')}</Label>
+
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button type="button">
+                      <Info size={16} />
+                    </button>
+                  </TooltipTrigger>
+
+                  <TooltipContent className="w-72">
+                    {s.rich('security', {
+                      learn: chunks => (
+                        <Link
+                          href={ROUTES.docs.security}
+                          target="_blank"
+                          className="underline underline-offset-2"
+                        >
+                          {chunks}
+                        </Link>
+                      ),
+                    })}
+                  </TooltipContent>
+                </Tooltip>
+              </div>
 
               <div className="flex items-center gap-2">
                 <Input
