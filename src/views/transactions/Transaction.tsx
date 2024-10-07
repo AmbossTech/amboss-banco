@@ -35,7 +35,10 @@ export const Transaction: FC<{
             {balanceNum < 0 ? (
               <ArrowUp size={24} />
             ) : (
-              <ArrowDown size={24} className="text-green-400" />
+              <ArrowDown
+                size={24}
+                className="text-green-500 dark:text-green-400"
+              />
             )}
           </div>
 
@@ -63,7 +66,12 @@ export const Transaction: FC<{
         </div>
 
         <div className="text-right">
-          <p className={cn('font-medium', balanceNum > 0 && 'text-green-400')}>
+          <p
+            className={cn(
+              'font-medium',
+              balanceNum > 0 && 'text-green-500 dark:text-green-400'
+            )}
+          >
             {formatted_balance.includes('-')
               ? '-' + formatted_balance.replaceAll('-', '')
               : '+' + formatted_balance}

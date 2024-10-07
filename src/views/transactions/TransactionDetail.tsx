@@ -188,7 +188,10 @@ export const TransactionDetail: FC<{ id: string }> = ({ id }) => {
             {balance < 0 ? (
               <ArrowUp size={24} />
             ) : (
-              <ArrowDown size={24} className="text-green-400" />
+              <ArrowDown
+                size={24}
+                className="text-green-500 dark:text-green-400"
+              />
             )}
           </div>
 
@@ -237,7 +240,11 @@ export const TransactionDetail: FC<{ id: string }> = ({ id }) => {
               {t('status')}
             </p>
 
-            <p className={cn(transaction.date && 'text-green-400')}>
+            <p
+              className={cn(
+                transaction.date && 'text-green-500 dark:text-green-400'
+              )}
+            >
               {transaction.date ? t('paid') : t('pending')}
             </p>
           </div>
