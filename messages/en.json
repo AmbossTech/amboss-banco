@@ -111,6 +111,11 @@
     "wallet": "Wallet"
   },
   "Public": {
+    "404": {
+      "desc": "It looks like the page you were looking for retired early. Let’s get you back on track!",
+      "home": "Go Home",
+      "not-found": "Page Not Found"
+    },
     "Footer": {
       "contact": "Contact",
       "copyright": "Copyright",
