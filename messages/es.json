@@ -112,9 +112,9 @@
   },
   "Public": {
     "404": {
-      "desc": "It looks like the page you were looking for retired early. Let’s get you back on track!",
-      "home": "Go Home",
-      "not-found": "Page Not Found"
+      "desc": "Parece que la página que estabas buscando se retiró antes de tiempo. ¡Vamos a ponerte de nuevo en marcha!",
+      "home": "Ir al Inicio",
+      "not-found": "Página No Encontrada"
     },
     "Footer": {
       "contact": "Contacto",
