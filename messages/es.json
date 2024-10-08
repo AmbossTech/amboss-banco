@@ -26,7 +26,6 @@
         "unlock": "Desbloquear para Desencriptar"
       },
       "Transactions": {
-        "ago": "Hace",
         "all": "Todas",
         "amount": "Cantidad",
         "asset": "Activo",
@@ -36,7 +35,6 @@
         "date": "Fecha",
         "details": "Detalles de la Transacción",
         "fees": "Comisiónes",
-        "no-results": "Sin resultados.",
         "paid": "Pagado",
         "pending": "Procesando",
         "received": "Recivido",
@@ -57,6 +55,7 @@
       },
       "add-contact": "Agregar Contacto",
       "add-desc": "Agrega una descripción",
+      "ago": "Hace",
       "amount": "Especifíca una cantidad.",
       "amount-custom": "Cambia la cantidad",
       "assets": "Activos",
@@ -67,6 +66,7 @@
       "enter-desc": "Opcionalmente agrega una descripción.",
       "fee": "Comisión",
       "locked": "Tu bóveda esta bloqueada.",
+      "no-results": "Sin resultados.",
       "receive": "Recibir",
       "receive-warn": "Por favor no enviar a esta dirección más de una vez.",
       "recipient": "Ingrese el destinatario",
@@ -107,6 +107,7 @@
     "accounts": "Cuentas",
     "contacts": "Contactos",
     "settings": "Configuración",
+    "swaps": "Swaps",
     "transactions": "Transacciones",
     "wallet": "Billetera"
   },

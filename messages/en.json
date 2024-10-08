@@ -26,7 +26,6 @@
         "unlock": "Unlock to Decrypt"
       },
       "Transactions": {
-        "ago": "ago",
         "all": "All",
         "amount": "Amount",
         "asset": "Asset",
@@ -36,7 +35,6 @@
         "date": "Date",
         "details": "Transaction Details",
         "fees": "Fees",
-        "no-results": "No results.",
         "paid": "Paid",
         "pending": "Pending",
         "received": "Received",
@@ -57,6 +55,7 @@
       },
       "add-contact": "Add Contact",
       "add-desc": "Add Description",
+      "ago": "ago",
       "amount": "Please specify an amount.",
       "amount-custom": "Customize Amount",
       "assets": "Assets",
@@ -67,6 +66,7 @@
       "enter-desc": "Enter an optional description.",
       "fee": "Fee",
       "locked": "Your vault is locked.",
+      "no-results": "No results.",
       "receive": "Receive",
       "receive-warn": "Please do not send to this address more than once or after 24 hours from generation.",
       "recipient": "Enter recipient",
@@ -107,6 +107,7 @@
     "accounts": "Accounts",
     "contacts": "Contacts",
     "settings": "Settings",
+    "swaps": "Swaps",
     "transactions": "Transactions",
     "wallet": "Wallet"
   },

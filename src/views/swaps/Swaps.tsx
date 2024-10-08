@@ -1,105 +1,55 @@
 'use client';
 
 import { ColumnDef } from '@tanstack/react-table';
-import { format, formatDistanceToNowStrict } from 'date-fns';
-import { ChevronRight, Loader2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useLocalStorage } from 'usehooks-ts';
 
+import { useToast } from '@/components/ui/use-toast';
 import { useGetWalletSwapsQuery } from '@/graphql/queries/__generated__/swaps.generated';
 import { SimpleSwap } from '@/graphql/types';
 import { LOCALSTORAGE_KEYS } from '@/utils/constants';
-import { numberWithPrecisionAndDecimals } from '@/utils/numbers';
+import { handleApolloError } from '@/utils/error';
 
-import { SimpleTable } from '../wallet/SimpleTable';
+import { Swap } from './Swap';
+import { SwapsTable } from './SwapsTable';
 
 export const columns: ColumnDef<SimpleSwap>[] = [
   {
-    accessorKey: 'date',
-    header: 'Date',
-    cell: ({ row }) =>
-      row.original.created_at ? (
-        <div>
-          {`${formatDistanceToNowStrict(row.original.created_at)} ago`}
-          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-            {format(row.original.created_at, 'MMM do, yyyy - HH:mm')}
-          </p>
-        </div>
-      ) : (
-        'Pending'
-      ),
-  },
-  {
-    accessorKey: 'pair',
-    header: 'Pair',
-    cell: ({ row }) => (
-      <div className="flex items-center justify-start gap-2">
-        <div>
-          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-            From
-          </p>
-          <div className="flex gap-1">
-            {row.original.deposit_amount ? (
-              <p>
-                {numberWithPrecisionAndDecimals(row.original.deposit_amount, 0)}
-              </p>
-            ) : null}
-            <p>{row.original.deposit_coin}</p>
-          </div>
-        </div>
-
-        <ChevronRight className="size-4" />
-
-        <div>
-          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">To</p>
-          <div className="flex gap-1">
-            {row.original.settle_amount ? (
-              <p>
-                {numberWithPrecisionAndDecimals(row.original.settle_amount, 0)}
-              </p>
-            ) : null}
-            <p>{row.original.settle_coin}</p>
-          </div>
-        </div>
-      </div>
-    ),
-  },
-  {
-    accessorKey: 'provider',
-    header: 'Provider',
-    cell: ({ row }) => <div>{row.original.provider}</div>,
+    id: 'swap',
+    cell: ({ row }) => <Swap data={row.original} />,
   },
 ];
 
 export const Swaps = () => {
+  const t = useTranslations('Index');
+  const { toast } = useToast();
+
   const [value] = useLocalStorage(LOCALSTORAGE_KEYS.currentWalletId, '');
 
-  const { data, loading, error } = useGetWalletSwapsQuery({
+  const { data, loading } = useGetWalletSwapsQuery({
     variables: { id: value },
+    onError: err => {
+      const messages = handleApolloError(err);
+
+      toast({
+        variant: 'destructive',
+        title: 'Error getting swaps.',
+        description: messages.join(', '),
+      });
+    },
   });
 
-  console.log(data?.wallets?.find_one?.swaps?.find_many?.[0]);
+  const swaps = data?.wallets.find_one.swaps.find_many || [];
 
   return (
-    <div className="py-4">
-      <h2 className="scroll-m-20 pb-4 text-xl font-semibold tracking-tight">
-        Swaps
-      </h2>
-      {loading ? (
-        <div className="my-10 flex w-full justify-center">
-          <Loader2 className="animate-spin" />
-        </div>
-      ) : error ? (
-        <div className="my-4 flex w-full justify-center">
-          <p className="text-sm text-muted-foreground">
-            Error loading wallet swaps
-          </p>
-        </div>
-      ) : (
-        <SimpleTable<SimpleSwap>
-          data={data?.wallets.find_one.swaps.find_many || []}
-          columns={columns}
-        />
-      )}
+    <div className="mx-auto w-full max-w-lg py-4 lg:py-10">
+      <h1 className="mb-6 text-3xl font-semibold">{t('swaps')}</h1>
+
+      <SwapsTable<SimpleSwap>
+        data={swaps}
+        columns={columns}
+        loading={loading}
+      />
     </div>
   );
 };

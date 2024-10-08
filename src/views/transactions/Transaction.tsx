@@ -46,18 +46,18 @@ export const Transaction: FC<{
             <div>
               <p className="font-medium">
                 {locale === 'es'
-                  ? t('App.Wallet.Transactions.ago') +
+                  ? t('App.Wallet.ago') +
                     ' ' +
                     formatDistanceToNowStrict(date, {
                       locale: es,
                     })
-                  : formatDistanceToNowStrict(date) +
-                    ' ' +
-                    t('App.Wallet.Transactions.ago')}
+                  : formatDistanceToNowStrict(date) + ' ' + t('App.Wallet.ago')}
               </p>
 
               <p className="text-sm text-slate-600 dark:text-neutral-400">
-                {format(date, 'MMM dd, yyyy')}
+                {format(date, 'MMM dd, yyyy', {
+                  locale: locale === 'es' ? es : undefined,
+                })}
               </p>
             </div>
           ) : (
