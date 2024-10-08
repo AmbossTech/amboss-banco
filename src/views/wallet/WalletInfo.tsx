@@ -529,7 +529,7 @@ export const WalletInfo: FC<{
       <div className="mb-3 flex w-full justify-between space-x-2">
         <button
           onClick={() => setView('assets')}
-          className="z-10 h-fit font-semibold text-primary transition-colors hover:text-primary-hover"
+          className="z-[1] h-fit font-semibold text-primary transition-colors hover:text-primary-hover"
         >
           {data?.wallets.find_one.name}
         </button>
@@ -538,7 +538,7 @@ export const WalletInfo: FC<{
           <IconButton
             icon={hideBalance ? <EyeOff size={20} /> : <Eye size={20} />}
             onClick={() => setHideBalance(h => !h)}
-            className="z-10"
+            className="z-[1]"
           />
 
           <RefreshButton className="z-[1]" />
@@ -547,7 +547,7 @@ export const WalletInfo: FC<{
 
       <button
         onClick={() => setView('assets')}
-        className="relative z-10 mb-1 text-4xl font-semibold"
+        className="relative z-[1] mb-1 text-4xl font-semibold"
       >
         {hideBalance ? '***' : totalBalance}
       </button>
@@ -556,7 +556,7 @@ export const WalletInfo: FC<{
         {balancePercentages.map(b => (
           <p
             key={b.assetId}
-            className="z-10 text-sm font-medium text-slate-600 dark:text-neutral-400 lg:text-base"
+            className="z-[1] text-sm font-medium text-slate-600 dark:text-neutral-400 lg:text-base"
           >
             {hideBalance ? '***' : b.formatted_balance} {b.ticker}
           </p>
@@ -567,7 +567,7 @@ export const WalletInfo: FC<{
         <Button asChild>
           <Link
             href={ROUTES.wallet.receive}
-            className="z-10 flex w-full items-center justify-center space-x-2 sm:max-w-32"
+            className="z-[1] flex w-full items-center justify-center space-x-2 sm:max-w-32"
           >
             <p>{t('receive')}</p> <ArrowDown size={16} />
           </Link>
@@ -576,7 +576,7 @@ export const WalletInfo: FC<{
         <Button asChild variant="secondary">
           <Link
             href={ROUTES.wallet.send}
-            className="z-10 flex w-full items-center justify-center space-x-2 sm:max-w-32"
+            className="z-[1] flex w-full items-center justify-center space-x-2 sm:max-w-32"
           >
             <p>{t('send')}</p> <ArrowUp size={16} />
           </Link>
