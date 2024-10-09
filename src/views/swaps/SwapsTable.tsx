@@ -2,19 +2,16 @@
 
 import {
   ColumnDef,
-  ColumnFiltersState,
   flexRender,
   getCoreRowModel,
-  getFilteredRowModel,
   getPaginationRowModel,
   useReactTable,
 } from '@tanstack/react-table';
 import { SquareArrowLeft, SquareArrowRight } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { Fragment, useMemo, useState } from 'react';
+import { Fragment } from 'react';
 
 import { Skeleton } from '@/components/ui/skeleton';
-import { cn } from '@/utils/cn';
 
 type TableProps<T> = {
   data: T[];
@@ -22,65 +19,27 @@ type TableProps<T> = {
   loading: boolean;
 };
 
-export const TransactionsTable = <T,>({
+export const SwapsTable = <T,>({
   data,
   columns,
   loading,
 }: TableProps<T>): JSX.Element => {
   const t = useTranslations();
 
-  const filterOptions = useMemo(
-    () => [t('App.Wallet.Transactions.all'), 'Liquid Bitcoin', 'Tether USD'],
-    [t]
-  );
-
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-
   const table = useReactTable({
     data,
     columns,
-    onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    filterFns: {},
-    state: {
-      columnFilters,
-    },
     initialState: { pagination: { pageSize: 5 } },
   });
 
   return (
     <div className="w-full max-w-[calc(100dvw-32px)]">
-      <div className="flex flex-wrap gap-2">
-        {filterOptions.map(o => (
-          <button
-            key={o}
-            onClick={() => {
-              if (o !== t('App.Wallet.Transactions.all')) {
-                table.getColumn('transaction')?.setFilterValue(o);
-              } else {
-                table.getColumn('transaction')?.setFilterValue('');
-              }
-            }}
-            disabled={loading}
-            className={cn(
-              'rounded-full border border-slate-200 px-3 py-1.5 font-medium text-foreground transition-all hover:border-foreground hover:bg-foreground hover:text-background disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800',
-              ((!table.getState().columnFilters.length &&
-                o === t('App.Wallet.Transactions.all')) ||
-                table.getState().columnFilters[0]?.value === o) &&
-                'border-foreground bg-foreground text-background'
-            )}
-          >
-            {o}
-          </button>
-        ))}
-      </div>
-
-      <div className="my-4 space-y-3">
+      <div className="mb-4 space-y-2">
         {loading ? (
           Array.from({ length: 5 }).map((_, i) => (
-            <Skeleton key={i} className="h-[52px] w-full rounded-xl" />
+            <Skeleton key={i} className="h-24 w-full rounded-xl" />
           ))
         ) : (
           <>
@@ -109,7 +68,7 @@ export const TransactionsTable = <T,>({
           {loading ? null : (
             <>
               {table.getFilteredRowModel().rows.length}{' '}
-              {t('Index.transactions').slice(0, -1).toLowerCase()}(s)
+              {t('Index.swaps').slice(0, -1).toLowerCase()}(s)
             </>
           )}
         </div>

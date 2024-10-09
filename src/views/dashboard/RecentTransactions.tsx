@@ -98,9 +98,7 @@ export const RecentTransactions: FC<{ id: string }> = ({ id }) => {
                 />
               ))
             ) : (
-              <p className="font-semibold">
-                {t('Wallet.Transactions.no-results')}
-              </p>
+              <p className="font-semibold">{t('Wallet.no-results')}</p>
             )}
           </>
         )}
