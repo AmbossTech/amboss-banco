@@ -514,7 +514,7 @@ export const WalletInfo: FC<{
     );
 
   return (
-    <Card className="relative">
+    <Card className="relative overflow-hidden">
       <Image
         src={smallCircular}
         alt="circles"
