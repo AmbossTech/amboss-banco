@@ -100,7 +100,7 @@ export const Dashboard = () => {
   }, [data, loading, error, value, push, setValue]);
 
   return (
-    <div className="mx-auto w-full max-w-lg space-y-4 py-4 lg:space-y-6 lg:py-10">
+    <div className="mx-auto w-full max-w-lg space-y-6 py-4 lg:py-10">
       {checkingId ? (
         <Loader2 className="mx-auto size-4 animate-spin" />
       ) : view === 'default' ? (
