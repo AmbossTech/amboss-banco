@@ -105,11 +105,23 @@
   },
   "Index": {
     "accounts": "Accounts",
+    "beta": "Beta - Limit funds and use at your own risk.",
     "contacts": "Contacts",
+    "create-wallet": "Create Wallet",
+    "full-refresh": "Full Refresh",
+    "help": "Help",
+    "home": "Home",
+    "loading": "Loading",
+    "logout": "Logout",
+    "new-wallet": "New Wallet",
+    "refresh": "Refresh",
+    "restore-wallet": "Restore Wallet",
+    "select-wallet": "Select Wallet",
     "settings": "Settings",
     "swaps": "Swaps",
     "transactions": "Transactions",
-    "wallet": "Wallet"
+    "wallet": "Wallet",
+    "wallets": "Wallets"
   },
   "Public": {
     "404": {

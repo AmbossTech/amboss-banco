@@ -236,7 +236,8 @@ const VaultPasswordButton: FC<{
   className?: string;
   variant?: Variants;
   size?: 'md';
-}> = ({ lockedTitle, className, variant, size }) => {
+  unstyled?: boolean;
+}> = ({ lockedTitle, className, variant, size, unstyled }) => {
   const t = useTranslations('App.Wallet.Vault');
 
   const keys = useKeyStore(s => s.keys);
@@ -257,17 +258,21 @@ const VaultPasswordButton: FC<{
           type="button"
           variant={variant}
           size={size}
-          className={cn('flex items-center justify-center', className)}
+          className={cn(
+            'flex items-center justify-center space-x-2',
+            className
+          )}
+          unstyled={unstyled}
         >
           {keys ? (
             <>
-              <Unlock className="mr-2" size={16} />
-              {t('unlocked')}
+              <Unlock size={16} />
+              <p>{t('unlocked')}</p>
             </>
           ) : (
             <>
-              <Lock className="mr-2" size={16} />
-              {lockedTitle}
+              <Lock size={16} />
+              <p>{lockedTitle}</p>
             </>
           )}
         </Button>
@@ -309,6 +314,7 @@ const PasskeyVaultButton: FC<{
   size?: 'md';
   protectedSymmetricKey: string;
   passkeyId: string;
+  unstyled?: boolean;
 }> = ({
   lockedTitle,
   className,
@@ -316,6 +322,7 @@ const PasskeyVaultButton: FC<{
   size,
   protectedSymmetricKey,
   passkeyId,
+  unstyled,
 }) => {
   const t = useTranslations('App.Wallet.Vault');
 
@@ -427,14 +434,15 @@ const PasskeyVaultButton: FC<{
         type="button"
         variant={variant}
         size={size}
-        className={cn('flex items-center justify-center', className)}
+        className={cn('flex items-center justify-center space-x-2', className)}
         disabled={loading || addLoading}
         onClick={() => {
           setup({ variables: { id: passkeyId } });
         }}
+        unstyled={unstyled}
       >
-        <Lock className="mr-2" size={16} />
-        {lockedTitle}
+        <Lock size={16} />
+        <p>{lockedTitle}</p>
       </Button>
     );
   }
@@ -444,13 +452,14 @@ const PasskeyVaultButton: FC<{
       type="button"
       variant={variant}
       size={size}
-      className={cn('flex items-center justify-center', className)}
+      className={cn('flex items-center justify-center space-x-2', className)}
       onClick={() => {
         clearKeys();
       }}
+      unstyled={unstyled}
     >
-      <Unlock className="mr-2" size={16} />
-      {t('unlocked')}
+      <Unlock size={16} />
+      <p>{t('unlocked')}</p>
     </Button>
   );
 };
@@ -460,7 +469,8 @@ export const VaultButton: FC<{
   className?: string;
   variant?: Variants;
   size?: 'md';
-}> = ({ lockedTitle, className, variant, size }) => {
+  unstyled?: boolean;
+}> = ({ lockedTitle, className, variant, size, unstyled }) => {
   const t = useTranslations();
 
   const lockedTitleFinal = lockedTitle || t('App.Wallet.Vault.locked');
@@ -473,11 +483,12 @@ export const VaultButton: FC<{
         type="button"
         variant={variant}
         size={size}
-        className={cn('flex items-center justify-center', className)}
+        className={cn('flex items-center justify-center space-x-2', className)}
         disabled
+        unstyled={unstyled}
       >
-        <Loader2 className="mr-2 animate-spin" size={16} />
-        {lockedTitleFinal}
+        <Loader2 className="animate-spin" size={16} />
+        <p>{lockedTitleFinal}</p>
       </Button>
     );
   }
@@ -488,11 +499,12 @@ export const VaultButton: FC<{
         type="button"
         variant={variant}
         size={size}
-        className={cn('flex items-center justify-center', className)}
+        className={cn('flex items-center justify-center space-x-2', className)}
         disabled
+        unstyled={unstyled}
       >
-        <X className="mr-2" size={16} />
-        {t('Common.error')}
+        <X size={16} />
+        <p>{t('Common.error')}</p>
       </Button>
     );
   }
@@ -506,6 +518,7 @@ export const VaultButton: FC<{
         size={size}
         protectedSymmetricKey={data.user.protected_symmetric_key}
         passkeyId={data.user.using_passkey_id}
+        unstyled={unstyled}
       />
     );
   }
@@ -516,6 +529,7 @@ export const VaultButton: FC<{
       className={className}
       variant={variant}
       size={size}
+      unstyled={unstyled}
     />
   );
 };
