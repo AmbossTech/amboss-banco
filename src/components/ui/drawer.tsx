@@ -46,7 +46,7 @@ const DrawerContent = React.forwardRef<
     <DrawerOverlay />
     <DrawerPrimitive.Content
       ref={ref}
-      className="fixed inset-x-0 bottom-0 z-50 mx-auto max-w-lg"
+      className="fixed inset-x-0 bottom-0 z-50 mx-auto max-w-lg outline-none"
       {...props}
     >
       <div

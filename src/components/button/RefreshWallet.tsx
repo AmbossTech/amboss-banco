@@ -1,11 +1,12 @@
 'use client';
 
-import { Loader2, RefreshCcw } from 'lucide-react';
+import { RefreshCw, RotateCw } from 'lucide-react';
 import { FC } from 'react';
 
 import { useRefreshWalletMutation } from '@/graphql/mutations/__generated__/refreshWallet.generated';
+import { cn } from '@/utils/cn';
 
-import { CommandItem } from '../ui/command';
+import { DropdownMenuItem } from '../ui/dropdown-menu';
 import { useToast } from '../ui/use-toast';
 
 export const RefreshWallet: FC<{
@@ -26,13 +27,21 @@ export const RefreshWallet: FC<{
   });
 
   return (
-    <CommandItem onSelect={() => refresh()} className="cursor-pointer">
-      {title}
-      {loading ? (
-        <Loader2 className="ml-auto size-4 animate-spin" />
+    <DropdownMenuItem
+      onClick={e => {
+        e.preventDefault();
+        refresh();
+      }}
+    >
+      {fullScan ? (
+        <RefreshCw
+          size={16}
+          className={cn('mr-3', loading && 'animate-spin')}
+        />
       ) : (
-        <RefreshCcw className="ml-auto size-4" />
+        <RotateCw size={16} className={cn('mr-3', loading && 'animate-spin')} />
       )}
-    </CommandItem>
+      {title}
+    </DropdownMenuItem>
   );
 };

@@ -1,6 +1,7 @@
 'use client';
 
 import { LogOut } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import { useLogoutMutation } from '@/graphql/mutations/__generated__/logout.generated';
 import { useKeyStore } from '@/stores/keys';
@@ -12,6 +13,8 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 import { useToast } from '../ui/use-toast';
 
 export const LogoutButtonWithTooltip = () => {
+  const t = useTranslations('Index');
+
   const { toast } = useToast();
 
   const clearKeys = useKeyStore(s => s.clear);
@@ -35,21 +38,22 @@ export const LogoutButtonWithTooltip = () => {
         <Button
           variant="ghost"
           size="icon"
-          className="mt-auto rounded-lg"
           aria-label="Account"
           onClick={() => logout()}
         >
-          <LogOut className="size-5" />
+          <LogOut className="size-6" />
         </Button>
       </TooltipTrigger>
       <TooltipContent side="right" sideOffset={5}>
-        Logout
+        {t('logout')}
       </TooltipContent>
     </Tooltip>
   );
 };
 
 export const LogoutButton = () => {
+  const t = useTranslations('Index');
+
   const { toast } = useToast();
 
   const clearKeys = useKeyStore(s => s.clear);
@@ -68,14 +72,13 @@ export const LogoutButton = () => {
   });
 
   return (
-    <Button
-      variant="outline"
-      className="mt-auto w-full rounded-lg"
+    <button
+      className="flex w-full items-center space-x-3 px-2 font-semibold"
       aria-label="Logout"
       onClick={() => logout()}
     >
-      <LogOut className="mr-2 h-5 w-5" />
-      Logout
-    </Button>
+      <LogOut size={24} />
+      <p>{t('logout')}</p>
+    </button>
   );
 };

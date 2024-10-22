@@ -1,35 +1,45 @@
 'use client';
 
-import { CaretSortIcon, CheckIcon } from '@radix-ui/react-icons';
-import { CircleEqual, PlusCircle, Settings } from 'lucide-react';
+import {
+  Check,
+  ChevronsUpDown,
+  Lock,
+  Plus,
+  PlusCircle,
+  Settings2,
+  Unlock,
+} from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
+import { useTranslations } from 'next-intl';
+import { FC, useEffect, useMemo } from 'react';
 import { useLocalStorage } from 'usehooks-ts';
 
 import { Button } from '@/components/ui/button';
-import {
-  Command,
-  CommandGroup,
-  CommandItem,
-  CommandList,
-} from '@/components/ui/command';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
 import { useUserQuery } from '@/graphql/queries/__generated__/user.generated';
 import { useGetAllWalletsQuery } from '@/graphql/queries/__generated__/wallet.generated';
 import { useChat, useContactStore } from '@/stores/contacts';
+import { useKeyStore } from '@/stores/keys';
 import { cn } from '@/utils/cn';
 import { LOCALSTORAGE_KEYS } from '@/utils/constants';
 import { ROUTES } from '@/utils/routes';
 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '../ui/dropdown-menu';
 import { RefreshWallet } from './RefreshWallet';
+import { VaultButton } from './VaultButtonV2';
 
-export function WalletButton() {
-  const [open, setOpen] = useState(false);
+export const WalletButton: FC<{ className?: string; cbk?: () => void }> = ({
+  className,
+  cbk,
+}) => {
+  const t = useTranslations('Index');
+
+  const keys = useKeyStore(s => s.keys);
 
   const setCurrentContact = useContactStore(s => s.setCurrentContact);
   const setCurrentPaymentOption = useChat(s => s.setCurrentPaymentOption);
@@ -66,124 +76,119 @@ export function WalletButton() {
   }, [data]);
 
   const buttonText = useMemo(() => {
-    if (loading) return 'Loading...';
-    if (!wallets.length) return 'Create a wallet';
+    if (loading) return t('loading') + '...';
+    if (!wallets.length) return t('create-wallet');
     if (value) {
-      return wallets.find(w => w.value === value)?.label || 'Select wallet...';
+      return wallets.find(w => w.value === value)?.label || t('select-wallet');
     }
-  }, [loading, wallets, value]);
+  }, [loading, wallets, value, t]);
 
   if (error) return null;
   if (!buttonText) return null;
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild disabled={loading}>
         <Button
           variant="outline"
+          size="lg"
           role="combobox"
-          aria-expanded={open}
-          className="w-[200px] justify-between"
+          className={cn('w-[200px] justify-between px-4', className)}
         >
-          {buttonText}
+          <div className="flex items-center space-x-2">
+            {keys ? (
+              <Unlock size={20} color="green" className="shrink-0" />
+            ) : (
+              <Lock size={20} color="red" className="shrink-0" />
+            )}
 
-          <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            <p className="text-base font-semibold">{buttonText}</p>
+          </div>
+
+          <ChevronsUpDown className="ml-2 shrink-0" size={16} />
         </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0">
-        <Command>
-          <CommandList>
-            {wallets.length ? (
-              <CommandGroup heading="Wallets">
-                {wallets.map(w => (
-                  <CommandItem
-                    className="cursor-pointer"
-                    key={w.value}
-                    value={w.value}
-                    onSelect={currentValue => {
-                      setValue(currentValue);
-                      push(ROUTES.dashboard);
-                      setOpen(false);
-                      setCurrentContact(undefined);
-                      setCurrentPaymentOption(undefined);
-                    }}
-                  >
-                    {w.label}
-                    <CheckIcon
-                      className={cn(
-                        'ml-auto h-4 w-4',
-                        value === w.value ? 'opacity-100' : 'opacity-0'
-                      )}
-                    />
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            ) : null}
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="min-w-[200px]" align="end">
+        {!!value && wallets.length ? (
+          <>
+            <RefreshWallet
+              walletId={value}
+              fullScan={false}
+              title={t('refresh')}
+            />
+            <RefreshWallet
+              walletId={value}
+              fullScan={true}
+              title={t('full-refresh')}
+            />
+            <DropdownMenuItem asChild>
+              <Link
+                href={ROUTES.wallet.settings}
+                onClick={() => cbk?.()}
+                className="flex items-center"
+              >
+                <Settings2 size={16} className="mr-3" />
+                {t('settings')}
+              </Link>
+            </DropdownMenuItem>
+            <VaultButton
+              unstyled
+              className="flex w-full cursor-pointer select-none items-center justify-start space-x-3 outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+            />
 
-            {!!value && wallets.length ? (
-              <CommandGroup heading="Current Wallet">
-                <RefreshWallet
-                  walletId={value}
-                  fullScan={false}
-                  title="Refresh"
-                />
-                <RefreshWallet
-                  walletId={value}
-                  fullScan={true}
-                  title="Full Refresh"
-                />
-                <CommandItem
-                  className="cursor-pointer"
-                  onSelect={() => {
-                    setOpen(false);
-                  }}
-                >
-                  <Link
-                    href={ROUTES.wallet.settings}
-                    className="flex w-full items-center justify-between"
-                  >
-                    Settings
-                    <Settings className="ml-auto size-4" />
-                  </Link>
-                </CommandItem>
-              </CommandGroup>
-            ) : null}
+            <div className="w-full border-t border-slate-200 dark:border-[#5A5A5A]" />
+          </>
+        ) : null}
 
-            {!reachedWalletLimit ? (
-              <CommandGroup heading="Actions">
-                <CommandItem
-                  className="cursor-pointer"
-                  onSelect={() => {
-                    setOpen(false);
-                  }}
-                >
-                  <Link
-                    href={ROUTES.setup.wallet.new}
-                    className="flex w-full items-center justify-between"
-                  >
-                    New Wallet
-                    <PlusCircle className={cn('ml-auto h-4 w-4')} />
-                  </Link>
-                </CommandItem>
-                <CommandItem
-                  className="cursor-pointer"
-                  onSelect={() => {
-                    setOpen(false);
-                  }}
-                >
-                  <Link
-                    href={ROUTES.setup.wallet.restore}
-                    className="flex w-full items-center justify-between"
-                  >
-                    Restore Wallet
-                    <CircleEqual className={cn('ml-auto h-4 w-4')} />
-                  </Link>
-                </CommandItem>
-              </CommandGroup>
-            ) : null}
-          </CommandList>
-        </Command>
-      </PopoverContent>
-    </Popover>
+        <p className="text-xs font-semibold uppercase text-slate-600 dark:text-neutral-500">
+          {t('wallets')}
+        </p>
+
+        {wallets.length
+          ? wallets.map(w => (
+              <DropdownMenuItem
+                key={w.value}
+                onClick={() => {
+                  setValue(w.value);
+                  push(ROUTES.dashboard);
+                  cbk?.();
+                  setCurrentContact(undefined);
+                  setCurrentPaymentOption(undefined);
+                }}
+              >
+                {w.label}
+                {value === w.value ? (
+                  <Check size={16} className="ml-3" />
+                ) : null}
+              </DropdownMenuItem>
+            ))
+          : null}
+
+        {!reachedWalletLimit ? (
+          <>
+            <DropdownMenuItem asChild>
+              <Link
+                href={ROUTES.setup.wallet.new}
+                onClick={() => cbk?.()}
+                className="flex items-center"
+              >
+                <PlusCircle size={16} className="mr-3" />
+                {t('new-wallet')}
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link
+                href={ROUTES.setup.wallet.restore}
+                onClick={() => cbk?.()}
+                className="flex items-center"
+              >
+                <Plus size={16} className="mr-3" />
+                {t('restore-wallet')}
+              </Link>
+            </DropdownMenuItem>
+          </>
+        ) : null}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
-}
+};
