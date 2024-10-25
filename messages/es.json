@@ -105,11 +105,23 @@
   },
   "Index": {
     "accounts": "Cuentas",
+    "beta": "Beta - Limita la cantidad de fondos y usa bajo tu propio riesgo.",
     "contacts": "Contactos",
+    "create-wallet": "Crear Billetera",
+    "full-refresh": "Refrescar Balance",
+    "help": "Ayuda",
+    "home": "Casa",
+    "loading": "Cargando",
+    "logout": "Salir",
+    "new-wallet": "Nueva Billetera",
+    "refresh": "Refrescar",
+    "restore-wallet": "Restaurar Billetera",
+    "select-wallet": "Seleccionar Billetera",
     "settings": "Configuración",
     "swaps": "Intercambios",
     "transactions": "Transacciones",
-    "wallet": "Billetera"
+    "wallet": "Billetera",
+    "wallets": "Billeteras"
   },
   "Public": {
     "404": {
