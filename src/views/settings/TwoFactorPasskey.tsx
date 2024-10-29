@@ -1,9 +1,11 @@
 import { startRegistration } from '@simplewebauthn/browser';
 import { PublicKeyCredentialCreationOptionsJSON } from '@simplewebauthn/types';
 import { format } from 'date-fns';
-import { useMemo } from 'react';
+import { KeyRound, Loader2, RectangleEllipsis } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { FC, useMemo } from 'react';
 
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/button-v2';
 import { useToast } from '@/components/ui/use-toast';
 import {
   useTwoFactorPasskeyAddMutation,
@@ -13,9 +15,11 @@ import { useGetAccountTwoFactorMethodsQuery } from '@/graphql/queries/__generate
 import { TwoFactorMethod } from '@/graphql/types';
 import { handleApolloError } from '@/utils/error';
 
-import { Section } from './Section';
+import { Setting } from './Setting';
 
 const PasskeyList = () => {
+  const t = useTranslations();
+
   const { data, loading, error } = useGetAccountTwoFactorMethodsQuery();
 
   const passkeyMethods = useMemo(() => {
@@ -25,42 +29,40 @@ const PasskeyList = () => {
     );
   }, [data, loading, error]);
 
-  if (loading || error || !passkeyMethods.length) {
-    return null;
-  }
+  if (!passkeyMethods.length) return null;
 
   return (
     <div>
-      <h3 className="mb-2 mt-4 text-sm font-medium">Saved Passkeys</h3>
-      <div className="flex flex-col gap-1">
-        {passkeyMethods.map((d, index) => (
-          <div key={d.id}>
-            <div className="flex items-center justify-start gap-4">
-              <p className="text-xs font-medium">
-                {index + 1}. {d.passkey_name || 'Passkey'}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                {format(d.created_at, 'MMM do, yyyy - HH:mm')}
-              </p>
-            </div>
-          </div>
+      <h3 className="mb-3 mt-7 w-full border-b border-slate-200 pb-2 text-lg font-semibold text-slate-600 dark:border-neutral-800 dark:text-neutral-400">
+        {t('App.Settings.saved-passkeys')}
+      </h3>
+
+      <div className="w-full space-y-6">
+        {passkeyMethods.map(p => (
+          <Setting
+            key={p.id}
+            title={p.passkey_name || t('Public.Login.passkey')}
+            description={format(p.created_at, 'MMM do, yyyy - HH:mm')}
+            icon={<RectangleEllipsis size={24} />}
+          />
         ))}
       </div>
     </div>
   );
 };
 
-export const Passkey = () => {
+export const Passkey: FC<{ hasAlready: boolean }> = ({ hasAlready }) => {
+  const t = useTranslations();
   const { toast } = useToast();
 
-  const [setup, { loading: addLoading }] = useTwoFactorPasskeyAddMutation({
+  const [add, { loading: addLoading }] = useTwoFactorPasskeyAddMutation({
     onCompleted: data => {
       try {
         handleRegistration(JSON.parse(data.two_factor.passkey.add.options));
       } catch (error) {
         toast({
           variant: 'destructive',
-          title: 'Error adding Passkey.',
+          title: 'Error adding 2FA method.',
         });
       }
     },
@@ -69,7 +71,7 @@ export const Passkey = () => {
 
       toast({
         variant: 'destructive',
-        title: 'Error getting Passkey details.',
+        title: 'Error adding 2FA method.',
         description: messages.join(', '),
       });
     },
@@ -79,9 +81,8 @@ export const Passkey = () => {
     useTwoFactorPasskeyVerifyMutation({
       onCompleted: () => {
         toast({
-          title: 'Passkey Setup',
-          description:
-            'Passkey 2FA login has been configured for your account.',
+          title: 'Success',
+          description: 'Passkey Enabled',
         });
       },
       onError: err => {
@@ -89,7 +90,7 @@ export const Passkey = () => {
 
         toast({
           variant: 'destructive',
-          title: 'Error setting up Passkey.',
+          title: 'Error verifying 2FA method.',
           description: messages.join(', '),
         });
       },
@@ -112,25 +113,34 @@ export const Passkey = () => {
     }
   };
 
+  const loading = addLoading || verifyLoading;
+
   return (
     <div>
-      <Section
-        title={'Passkeys'}
-        description={
-          'Enhance the security of your account by setting up Passkeys.'
-        }
-      >
+      <div className="flex w-full items-center justify-between space-x-2">
+        <Setting
+          title={t('Public.Login.passkey')}
+          description={
+            hasAlready ? t('App.Settings.added') : t('App.Settings.off')
+          }
+          icon={<KeyRound size={24} />}
+          className={hasAlready ? 'text-green-500 dark:text-green-400' : ''}
+        />
+
         <Button
-          className="w-full md:w-fit"
-          disabled={addLoading || verifyLoading}
-          onClick={() => {
-            setup();
-          }}
+          variant="secondary"
+          onClick={() => add()}
+          disabled={loading}
+          className="flex items-center justify-center"
         >
-          Setup New Passkey
+          {loading ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin text-black" />
+          ) : null}
+          {t('App.Settings.add-passkey')}
         </Button>
-        <PasskeyList />
-      </Section>
+      </div>
+
+      <PasskeyList />
     </div>
   );
 };

@@ -3,6 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { startAuthentication } from '@simplewebauthn/browser';
 import { PublicKeyCredentialRequestOptionsJSON } from '@simplewebauthn/types';
+import stringEntropy from 'fast-password-entropy';
 import { Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -55,6 +56,8 @@ export const LoginForm = () => {
 
   const [login, { data }] = useLoginMutation({
     onCompleted: data => {
+      localStorage.setItem('pw', entropy.toString());
+
       if (data.login.initial.two_factor?.methods.find(m => m.enabled)) {
         setView('2fa');
       } else {
@@ -80,6 +83,8 @@ export const LoginForm = () => {
       password: '',
     },
   });
+
+  const entropy = stringEntropy(form.getValues().password);
 
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     if (loading) return;
@@ -205,6 +210,7 @@ export const LoginForm = () => {
           <FormField
             control={form.control}
             name="email"
+            disabled={disabled}
             render={({ field }) => (
               <FormItem>
                 <FormLabel>{c('email')}</FormLabel>
@@ -219,6 +225,7 @@ export const LoginForm = () => {
           <FormField
             control={form.control}
             name="password"
+            disabled={disabled}
             render={({ field }) => (
               <FormItem>
                 <FormLabel>{c('password')}</FormLabel>

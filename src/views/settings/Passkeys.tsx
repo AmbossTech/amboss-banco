@@ -9,12 +9,13 @@ import {
   PublicKeyCredentialRequestOptionsJSON,
 } from '@simplewebauthn/types';
 import { format } from 'date-fns';
-import { Key } from 'lucide-react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { ArrowLeft, KeySquare, Loader2, RectangleEllipsis } from 'lucide-react';
+import Link from 'next/link';
+import { useTranslations } from 'next-intl';
+import { useEffect, useRef, useState } from 'react';
 
-import { VaultButton } from '@/components/button/VaultButton';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { VaultButton } from '@/components/button/VaultButtonV2';
+import { Button } from '@/components/ui/button-v2';
 import { useToast } from '@/components/ui/use-toast';
 import {
   useLoginPasskeyAddMutation,
@@ -33,31 +34,25 @@ import {
   cleanupWebauthnRegistrationResponse,
   getPRFSalt,
 } from '@/utils/passkey';
+import { ROUTES } from '@/utils/routes';
 import { WorkerMessage, WorkerResponse } from '@/workers/account/types';
 
-import { Section } from './Section';
+import { Setting } from './Setting';
 
 const PasskeyList = () => {
-  const workerRef = useRef<Worker>();
-
-  const { data, loading, error } = useGetAccountPasskeysQuery();
-
-  const [loadingWorker, setLoadingWorker] = useState(true);
-
-  const passkeys = data?.passkey.find_many || [];
+  const t = useTranslations();
 
   const { toast } = useToast();
 
   const keys = useKeyStore(s => s.keys);
 
-  const hasWithoutEncryption = useMemo(() => {
-    if (!data?.passkey.find_many.length) return false;
-    return data.passkey.find_many.some(
-      p => p.encryption_available && !p.encryption_enabled
-    );
-  }, [data]);
+  const workerRef = useRef<Worker>();
+  const [loadingWorker, setLoadingWorker] = useState(true);
 
-  const [setup, { loading: addLoading }] = useLoginPasskeyInitAuthMutation({
+  const { data } = useGetAccountPasskeysQuery();
+  const passkeys = data?.passkey.find_many || [];
+
+  const [setup, { loading: setupLoading }] = useLoginPasskeyInitAuthMutation({
     onCompleted: data => {
       try {
         handleAuthentication(JSON.parse(data.passkey.init_authenticate));
@@ -73,7 +68,7 @@ const PasskeyList = () => {
 
       toast({
         variant: 'destructive',
-        title: 'Error getting Passkey details.',
+        title: 'Error enabling encryption for Passkey.',
         description: messages.join(', '),
       });
     },
@@ -82,8 +77,8 @@ const PasskeyList = () => {
   const [verify, { loading: verifyLoading }] = useLoginPasskeyAuthMutation({
     onCompleted: () => {
       toast({
-        title: 'Passkey Setup',
-        description: 'Passkey encryption has been configured for this Passkey.',
+        title: 'Success',
+        description: 'Passkey Encryption Enabled',
       });
     },
     onError: err => {
@@ -185,48 +180,45 @@ const PasskeyList = () => {
     };
   }, [toast, verify]);
 
-  if (loading || error) {
-    return null;
-  }
+  const loading = loadingWorker || setupLoading || verifyLoading;
 
-  const getBadge = (
+  const getStatus = (
     passkey: GetAccountPasskeysQuery['passkey']['find_many'][0]
   ) => {
     if (passkey.encryption_enabled) {
       return (
-        <Badge variant={'outline'}>
-          <Key className="mr-1 size-3" color={'green'} />
-          Encryption Enabled
-        </Badge>
+        <p className="text-sm font-medium text-green-500 dark:text-green-400">
+          {t('App.Settings.encrypt-enabled')}
+        </p>
       );
     }
 
     if (passkey.encryption_available) {
       if (!keys) {
         return (
-          <Badge variant={'outline'}>
-            <Key className="mr-1 size-3" />
-            Encryption Available
-          </Badge>
+          <VaultButton
+            lockedTitle={t('App.Settings.unlock-encrypt')}
+            variant="secondary"
+          />
         );
       }
 
       return (
-        <button
-          className="cursor-pointer"
-          disabled={addLoading || verifyLoading || loadingWorker || !keys}
-          onClick={() => {
-            if (!!keys) {
-              setup({ variables: { id: passkey.id } });
-            }
-          }}
+        <Button
+          variant="secondary"
+          onClick={() => setup({ variables: { id: passkey.id } })}
+          disabled={loading}
         >
-          <Badge>Enable Encryption</Badge>
-        </button>
+          {t('App.Settings.enable-encrypt')}
+        </Button>
       );
     }
 
-    return <Badge variant={'outline'}>Only Login</Badge>;
+    return (
+      <p className="text-sm font-medium text-green-500 dark:text-green-400">
+        {t('App.Settings.login-only')}
+      </p>
+    );
   };
 
   if (!passkeys.length) {
@@ -235,37 +227,49 @@ const PasskeyList = () => {
 
   return (
     <div>
-      <h3 className="mb-2 mt-4 text-sm font-medium">Saved Passkeys</h3>
-      {!keys && hasWithoutEncryption ? (
-        <VaultButton
-          size="sm"
-          lockedTitle="Unlock to enable encryption for passkeys."
-          className="mb-2"
-        />
-      ) : null}
-      <div className="flex flex-col gap-1">
-        {passkeys.map((d, index) => (
-          <div key={d.id}>
-            <div className="flex flex-wrap items-center justify-start">
-              <p className="text-xs font-medium">
-                {index + 1}. {d.name || 'Passkey'}
-              </p>
-              <p className="mx-2 text-xs text-muted-foreground">
-                {format(d.created_at, 'MMM do, yyyy - HH:mm')}
-              </p>
-              {getBadge(d)}
-            </div>
-          </div>
+      <h3 className="mb-3 mt-7 w-full border-b border-slate-200 pb-2 text-lg font-semibold text-slate-600 dark:border-neutral-800 dark:text-neutral-400">
+          {t('App.Settings.saved-passkeys')}
+      </h3>
+
+      <div className="w-full space-y-6">
+        {passkeys.map(p => (
+          <Setting
+            key={p.id}
+            title={p.name || t('Public.Login.passkey')}
+            description={format(p.created_at, 'MMM do, yyyy - HH:mm')}
+            icon={<RectangleEllipsis size={24} />}
+          >
+            {getStatus(p)}
+          </Setting>
         ))}
       </div>
     </div>
   );
 };
 
-export const PasskeySettings = () => {
+export const Passkeys = () => {
+  const t = useTranslations();
   const { toast } = useToast();
 
-  const [setup, { loading: addLoading }] = useLoginPasskeyAddMutation({
+  const {
+    data: passkeysData,
+    loading: passkeysLoading,
+    error: passkeysError,
+  } = useGetAccountPasskeysQuery({
+    onError: err => {
+      const messages = handleApolloError(err);
+
+      toast({
+        variant: 'destructive',
+        title: 'Error getting Passkeys.',
+        description: messages.join(', '),
+      });
+    },
+  });
+
+  const hasPasskeys = passkeysData?.passkey.find_many.length;
+
+  const [add, { loading: addLoading }] = useLoginPasskeyAddMutation({
     onCompleted: data => {
       try {
         handleRegistration(JSON.parse(data.passkey.add));
@@ -281,7 +285,7 @@ export const PasskeySettings = () => {
 
       toast({
         variant: 'destructive',
-        title: 'Error getting Passkey details.',
+        title: 'Error adding Passkey.',
         description: messages.join(', '),
       });
     },
@@ -290,8 +294,8 @@ export const PasskeySettings = () => {
   const [verify, { loading: verifyLoading }] = useLoginPasskeyVerifyMutation({
     onCompleted: () => {
       toast({
-        title: 'Passkey Setup',
-        description: 'Passkey login has been configured for your account.',
+        title: 'Success',
+        description: 'Passkey Login Enabled',
       });
     },
     onError: err => {
@@ -299,7 +303,7 @@ export const PasskeySettings = () => {
 
       toast({
         variant: 'destructive',
-        title: 'Error setting up Passkey.',
+        title: 'Error verifying Passkey.',
         description: messages.join(', '),
       });
     },
@@ -332,21 +336,53 @@ export const PasskeySettings = () => {
     }
   };
 
+  const loading = passkeysLoading || addLoading || verifyLoading;
+
   return (
-    <Section
-      title="Login with Passkeys"
-      description="Passkeys can be used to login to your account. Some passkeys can also be used to unlock your vault."
-    >
-      <Button
-        className="w-full md:w-fit"
-        disabled={addLoading || verifyLoading}
-        onClick={() => {
-          setup();
-        }}
-      >
-        Setup New Passkey
-      </Button>
+    <div className="mx-auto w-full max-w-lg py-6 lg:py-10">
+      <div className="mb-6 flex w-full items-center justify-between space-x-2">
+        <Link
+          href={ROUTES.settings.home}
+          className="flex h-10 w-10 items-center justify-center transition-opacity hover:opacity-75"
+        >
+          <ArrowLeft size={24} />
+        </Link>
+
+        <h1 className="text-2xl font-semibold">{t('App.Settings.passkeys')}</h1>
+
+        <div />
+      </div>
+
+      <p className="mb-6 font-semibold">{t('App.Settings.login-wallet')}</p>
+
+      <div className="flex w-full items-center justify-between space-x-2">
+        <Setting
+          title={t('App.Settings.passkeys')}
+          description={
+            passkeysLoading || passkeysError
+              ? ''
+              : hasPasskeys
+                ? t('App.Settings.added')
+                : t('App.Settings.off')
+          }
+          icon={<KeySquare size={24} />}
+          className={hasPasskeys ? 'text-green-500 dark:text-green-400' : ''}
+        />
+
+        <Button
+          variant="secondary"
+          onClick={() => add()}
+          disabled={loading}
+          className="flex items-center justify-center"
+        >
+          {addLoading || verifyLoading ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin text-black" />
+          ) : null}
+          {t('App.Settings.add-passkey')}
+        </Button>
+      </div>
+
       <PasskeyList />
-    </Section>
+    </div>
   );
 };

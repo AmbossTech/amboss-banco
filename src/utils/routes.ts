@@ -7,7 +7,11 @@ export const ROUTES = {
   dashboard: '/dashboard',
   settings: {
     home: '/settings',
+    password: '/settings/password',
     twofa: '/settings/2fa',
+    passkeys: '/settings/passkeys',
+    appearance: '/settings/appearance',
+    language: '/settings/language',
   },
   transactions: {
     home: '/transactions',

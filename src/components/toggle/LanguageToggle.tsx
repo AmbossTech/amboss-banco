@@ -1,10 +1,10 @@
 'use client';
 
-import { Globe } from 'lucide-react';
+import { ChevronsUpDown, Globe } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useLocale } from 'next-intl';
 import * as React from 'react';
-import { useState } from 'react';
-import { useIsClient } from 'usehooks-ts';
+import { FC, useState } from 'react';
 
 import {
   DropdownMenu,
@@ -14,23 +14,26 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { SupportedLanguage } from '@/i18n';
 import { cn } from '@/utils/cn';
+import { localeToLanguage } from '@/views/settings/Settings';
 
 import { Button } from '../ui/button-v2';
 
-const getCookie = () =>
+export const getCookie = () =>
   document.cookie
     .split('; ')
     .find(c => c.startsWith('locale='))
     ?.split('=')[1] as SupportedLanguage | undefined;
 
-const setCookie = (locale: SupportedLanguage) =>
+export const setCookie = (locale: SupportedLanguage) =>
   (document.cookie = `locale=${locale}; max-age=31536000; path=/;`);
 
-const deleteCookie = () =>
+export const deleteCookie = () =>
   (document.cookie = 'locale=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;');
 
-export function LanguageToggle() {
-  const isClient = useIsClient();
+export const LanguageToggle: FC<{ type?: 'compact' | 'select' }> = ({
+  type = 'compact',
+}) => {
+  const locale = useLocale();
 
   const { refresh } = useRouter();
 
@@ -38,22 +41,26 @@ export function LanguageToggle() {
     typeof window !== 'undefined' ? getCookie() : undefined
   );
 
-  if (!isClient) return null;
-
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button
-          variant="neutral"
-          size="sm"
-          className="flex items-center space-x-1"
-        >
-          <Globe size={16} />
-          <p className="uppercase">
-            {language || document.documentElement.lang}
-          </p>
-          <span className="sr-only">Toggle theme</span>
-        </Button>
+        {type === 'compact' ? (
+          <Button
+            variant="neutral"
+            size="sm"
+            className="flex items-center space-x-1"
+          >
+            <Globe size={16} />
+            <p className="uppercase">{language || locale}</p>
+            <span className="sr-only">Toggle theme</span>
+          </Button>
+        ) : type === 'select' ? (
+          <button className="flex h-10 w-full items-center justify-between space-x-2 rounded-xl border border-slate-200 px-4 dark:border-neutral-800">
+            <p>{localeToLanguage(language)}</p>
+
+            <ChevronsUpDown size={16} />
+          </button>
+        ) : null}
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem
@@ -78,7 +85,7 @@ export function LanguageToggle() {
           onClick={() => {
             deleteCookie();
             setLanguage(undefined);
-            window.location.reload();
+            refresh();
           }}
         >
           <p className={cn(!language && 'font-bold')}>System</p>
@@ -86,4 +93,4 @@ export function LanguageToggle() {
       </DropdownMenuContent>
     </DropdownMenu>
   );
-}
+};
