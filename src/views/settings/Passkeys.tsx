@@ -228,7 +228,7 @@ const PasskeyList = () => {
   return (
     <div>
       <h3 className="mb-3 mt-7 w-full border-b border-slate-200 pb-2 text-lg font-semibold text-slate-600 dark:border-neutral-800 dark:text-neutral-400">
-          {t('App.Settings.saved-passkeys')}
+        {t('App.Settings.saved-passkeys')}
       </h3>
 
       <div className="w-full space-y-6">
