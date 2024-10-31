@@ -135,6 +135,8 @@ export function SignUpForm() {
             return;
           }
 
+          localStorage.setItem('pw', entropy.toString());
+
           window.location.href = ROUTES.dashboard;
 
           break;
@@ -160,7 +162,7 @@ export function SignUpForm() {
     return () => {
       if (workerRef.current) workerRef.current.terminate();
     };
-  }, [client, toast]);
+  }, [client, toast, entropy]);
 
   return view === 'waitlist' ? (
     <WaitlistForm setView={setView} setSubscriber={setSubscriber} />
@@ -259,7 +261,7 @@ export function SignUpForm() {
             {s('set')}
           </h1>
 
-          <p className="mb-6 rounded-xl border border-orange-400 px-4 py-2 text-sm">
+          <p className="mb-6 rounded-xl border border-orange-500 px-4 py-2 text-sm dark:border-orange-400">
             {s('save')}
           </p>
 

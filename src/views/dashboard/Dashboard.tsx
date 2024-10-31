@@ -1,12 +1,13 @@
 'use client';
 
-import { AlertTriangle, Loader2 } from 'lucide-react';
+import { AlertTriangle, Loader2, Shield } from 'lucide-react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { FC, useEffect, useMemo, useState } from 'react';
 import { useLocalStorage } from 'usehooks-ts';
 
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button-v2';
 import { useToast } from '@/components/ui/use-toast';
 import { useGetAllWalletsQuery } from '@/graphql/queries/__generated__/wallet.generated';
 import { useWalletInfo } from '@/hooks/wallet';
@@ -14,12 +15,36 @@ import { LOCALSTORAGE_KEYS } from '@/utils/constants';
 import { handleApolloError } from '@/utils/error';
 import { ROUTES } from '@/utils/routes';
 
+import { passwordStrength } from '../settings/Settings';
 import { WalletInfo } from '../wallet/WalletInfo';
 import { BancoCode } from './BancoCode';
 import { RecentContacts } from './RecentContacts';
 import { RecentTransactions } from './RecentTransactions';
 
 export type DashboardView = 'default' | 'assets' | 'asset';
+
+const PasswordWarning = () => {
+  const t = useTranslations();
+
+  const password = passwordStrength();
+
+  return ['Very Weak', 'Weak'].includes(password) ? (
+    <div className="flex w-full items-center justify-between space-x-3 rounded-xl border border-orange-500 px-4 py-2 dark:border-orange-400">
+      <div className="flex items-center space-x-3">
+        <Shield
+          size={24}
+          className="shrink-0 text-orange-500 dark:text-orange-400"
+        />
+
+        <p className="text-sm">{t('App.Dashboard.secure')}</p>
+      </div>
+
+      <Button asChild variant="secondary" className="py-1">
+        <Link href={ROUTES.settings.password}>{t('App.Dashboard.go')}</Link>
+      </Button>
+    </div>
+  ) : null;
+};
 
 const Warning: FC<{ id: string }> = ({ id }) => {
   const t = useTranslations('App.Dashboard');
@@ -43,11 +68,18 @@ const Warning: FC<{ id: string }> = ({ id }) => {
   if (!showAlert) return null;
 
   return (
-    <Alert>
-      <AlertTriangle size={16} />
-      <AlertTitle>{t('warning-title')}</AlertTitle>
-      <AlertDescription>{t('warning')}</AlertDescription>
-    </Alert>
+    <div className="flex w-full items-center space-x-3 rounded-xl border border-orange-500 px-4 py-2 text-sm dark:border-orange-400">
+      <AlertTriangle
+        size={24}
+        className="shrink-0 text-orange-500 dark:text-orange-400"
+      />
+
+      <div>
+        <p className="font-medium">{t('warning-title')}</p>
+
+        <p>{t('warning')}</p>
+      </div>
+    </div>
   );
 };
 
@@ -105,6 +137,7 @@ export const Dashboard = () => {
         <Loader2 className="mx-auto size-4 animate-spin" />
       ) : view === 'default' ? (
         <>
+          <PasswordWarning />
           <Warning id={value} />
           <BancoCode id={value} />
           <WalletInfo id={value} view={view} setView={setView} />

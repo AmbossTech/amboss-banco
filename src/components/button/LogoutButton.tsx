@@ -23,6 +23,7 @@ export const LogoutButtonWithTooltip = () => {
     onCompleted: () => {
       clearKeys();
       localStorage.removeItem(LOCALSTORAGE_KEYS.currentWalletId);
+      localStorage.removeItem('pw');
       window.location.assign(ROUTES.home);
     },
     onError: () =>
@@ -62,6 +63,7 @@ export const LogoutButton = () => {
     onCompleted: () => {
       clearKeys();
       localStorage.removeItem(LOCALSTORAGE_KEYS.currentWalletId);
+      localStorage.removeItem('pw');
       window.location.assign(ROUTES.home);
     },
     onError: () =>

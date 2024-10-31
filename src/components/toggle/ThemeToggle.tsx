@@ -1,38 +1,42 @@
 'use client';
 
-import { Moon, Sun } from 'lucide-react';
+import { ChevronsUpDown, Moon, Sun } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import * as React from 'react';
 
-import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { cn } from '@/utils/cn';
 
 export function ThemeToggle() {
-  const { setTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="icon">
-          <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-          <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-          <span className="sr-only">Toggle theme</span>
-        </Button>
+        <button className="flex h-10 w-full items-center justify-between space-x-2 rounded-xl border border-slate-200 px-4 dark:border-neutral-800">
+          <p className="capitalize">{theme}</p>
+
+          <ChevronsUpDown size={16} />
+        </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem onClick={() => setTheme('light')}>
-          Light
+          <p className={cn(theme === 'light' && 'font-bold')}>Light</p>
+
+          <Sun size={16} className="ml-2" />
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => setTheme('dark')}>
-          Dark
+          <p className={cn(theme === 'dark' && 'font-bold')}>Dark</p>
+
+          <Moon size={16} className="ml-2" />
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => setTheme('system')}>
-          System
+          <p className={cn(theme === 'system' && 'font-bold')}>System</p>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
