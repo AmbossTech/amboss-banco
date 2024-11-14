@@ -1,27 +1,10 @@
 'use client';
 
-import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
-import { Dispatch, FC, SetStateAction } from 'react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
+import { useTranslations } from 'next-intl';
+import { Dispatch, FC, SetStateAction, useEffect, useState } from 'react';
 
-import { Button } from '@/components/ui/button';
-import {
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
+import { Button } from '@/components/ui/button-v2';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
 import { useCreateContactMutation } from '@/graphql/mutations/__generated__/contact.generated';
@@ -29,31 +12,27 @@ import { GetWalletContactsDocument } from '@/graphql/queries/__generated__/conta
 import { useContactStore } from '@/stores/contacts';
 import { handleApolloError } from '@/utils/error';
 
-const formSchema = z.object({
-  money_address: z.string().min(1, {
-    message:
-      'A MIBAN Code or Lightning Address is required to create a new contact.',
-  }),
-});
-
 export const AddContact: FC<{
   walletId: string;
-  setOpenDialog: Dispatch<SetStateAction<boolean>>;
-}> = ({ walletId, setOpenDialog }) => {
-  const setContact = useContactStore(s => s.setCurrentContact);
-
+  openAdd: boolean;
+  setOpenAdd: Dispatch<SetStateAction<boolean>>;
+}> = ({ walletId, openAdd, setOpenAdd }) => {
+  const t = useTranslations();
   const { toast } = useToast();
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      money_address: '',
-    },
-  });
+  const [address, setAddress] = useState('');
+
+  useEffect(() => {
+    if (!openAdd) {
+      setAddress('');
+    }
+  }, [openAdd]);
+
+  const setContact = useContactStore(s => s.setCurrentContact);
 
   const [create, { loading }] = useCreateContactMutation({
     onCompleted: data => {
-      setOpenDialog(false);
+      setOpenAdd(false);
 
       toast({
         variant: 'default',
@@ -61,15 +40,15 @@ export const AddContact: FC<{
         description: 'New contact has been added successfully.',
       });
 
-      form.reset();
+      const { id, money_address } = data.contacts.create;
 
       const [user, domain] = data.contacts.create.money_address.split('@');
 
       setContact({
-        id: data.contacts.create.id,
+        id,
         user,
         domain,
-        address: data.contacts.create.money_address,
+        address: money_address,
       });
     },
     onError: err => {
@@ -86,60 +65,51 @@ export const AddContact: FC<{
     ],
   });
 
-  const handleSubmit = async (formData: z.infer<typeof formSchema>) => {
-    create({
-      variables: {
-        input: {
-          wallet_id: walletId,
-          money_address: formData.money_address,
-        },
-      },
-    });
-  };
-
   return (
-    <DialogContent className="mt-4">
-      <DialogHeader>
-        <DialogTitle>New Contact</DialogTitle>
-        <DialogDescription>
-          Add a contact to start sending them messages or money.
-        </DialogDescription>
-      </DialogHeader>
+    <div>
+      <p className="mb-4 text-2xl font-semibold">
+        {t('App.Contacts.new-contact')}
+      </p>
 
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(handleSubmit)}
-          className="w-full space-y-6"
-        >
-          <FormField
-            control={form.control}
-            name="money_address"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Address</FormLabel>
-                <FormControl>
-                  <Input
-                    type="money_address"
-                    placeholder="satoshi@nakamoto.com"
-                    autoComplete="off"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-                <FormDescription>
-                  Input the MIBAN Code or Lightning Address from the new
-                  contact.
-                </FormDescription>
-              </FormItem>
-            )}
-          />
+      <p className="mb-6 text-sm font-medium text-slate-600 dark:text-neutral-400">
+        {t('App.Contacts.add-contact')}
+      </p>
 
-          <Button type="submit" disabled={loading}>
-            {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-            Create
-          </Button>
-        </form>
-      </Form>
-    </DialogContent>
+      <label htmlFor="address" className="mb-2 block font-semibold">
+        {t('App.Contacts.address')}
+      </label>
+
+      <Input
+        id="address"
+        type="text"
+        value={address}
+        onChange={e => setAddress(e.target.value)}
+        disabled={loading}
+      />
+
+      <p className="mt-2 text-sm text-slate-600 dark:text-neutral-400">
+        {t('App.Contacts.input')}
+      </p>
+
+      <Button
+        onClick={() => {
+          create({
+            variables: {
+              input: {
+                wallet_id: walletId,
+                money_address: address,
+              },
+            },
+          });
+        }}
+        disabled={!address || loading}
+        className="mt-4 flex w-full items-center justify-center"
+      >
+        {loading ? (
+          <Loader2 className="mr-2 h-4 w-4 animate-spin text-black" />
+        ) : null}
+        {t('App.Contacts.create')}
+      </Button>
+    </div>
   );
 };

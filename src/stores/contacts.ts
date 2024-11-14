@@ -33,16 +33,12 @@ export type PaymentOption = {
 };
 
 type ChatState = {
-  currentChatBox: string;
   currentPaymentOption: PaymentOption | undefined;
-  setCurrentChatBox: (type: string) => void;
   setCurrentPaymentOption: (option: PaymentOption | undefined) => void;
 };
 
 export const useChat = create<ChatState>()(set => ({
-  currentChatBox: 'message',
   currentPaymentOption: undefined,
-  setCurrentChatBox: (type: string) => set({ currentChatBox: type }),
   setCurrentPaymentOption: (option: PaymentOption | undefined) =>
     set({ currentPaymentOption: option }),
 }));
