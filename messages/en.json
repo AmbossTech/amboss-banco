@@ -1,5 +1,22 @@
 {
   "App": {
+    "Contacts": {
+      "add-contact": "Add a contact to start sending them messages or money.",
+      "address": "Address",
+      "create": "Create",
+      "input": "Input the MIBAN Code or Lightning Address from the new contact.",
+      "loading": "Loading...",
+      "locked": "Messages Locked",
+      "max": "Max",
+      "message": "Message",
+      "min": "Min",
+      "new-contact": "New Contact",
+      "no-pay": "Pay Not Supported",
+      "no-support": "Messages Not Supported",
+      "none": "No contacts found.",
+      "pay": "Pay",
+      "search": "Search"
+    },
     "Dashboard": {
       "asset": "An asset in your wallet.",
       "buy": "Buy",

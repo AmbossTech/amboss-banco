@@ -71,7 +71,7 @@ export const useSendMessage = (cbk: () => void) => {
           if (error) {
             const messages = handleApolloError(error as ApolloError);
             toast({
-              variant: 'default',
+              variant: 'destructive',
               title: 'Unable to send message.',
               description: messages.join(', '),
             });
