@@ -1,21 +1,21 @@
 {
   "App": {
     "Contacts": {
-      "add-contact": "Add a contact to start sending them messages or money.",
-      "address": "Address",
-      "create": "Create",
-      "input": "Input the MIBAN Code or Lightning Address from the new contact.",
-      "loading": "Loading...",
-      "locked": "Messages Locked",
+      "add-contact": "Agrega un contacto para empezar a enviarle mensajes o dinero.",
+      "address": "Dirección",
+      "create": "Crear",
+      "input": "Introduce el código MIBAN o la dirección Lightning del nuevo contacto.",
+      "loading": "Cargando...",
+      "locked": "Mensajes bloqueados",
       "max": "Max",
-      "message": "Message",
+      "message": "Mensaje",
       "min": "Min",
-      "new-contact": "New Contact",
-      "no-pay": "Pay Not Supported",
-      "no-support": "Messages Not Supported",
-      "none": "No contacts found.",
-      "pay": "Pay",
-      "search": "Search"
+      "new-contact": "Nuevo contacto",
+      "no-pay": "Pago no soportado",
+      "no-support": "Mensajes no soportados",
+      "none": "No se encontraron contactos.",
+      "pay": "Pagar",
+      "search": "Buscar"
     },
     "Dashboard": {
       "asset": "Un activo en tu billetera.",
