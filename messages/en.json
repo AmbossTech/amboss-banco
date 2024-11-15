@@ -85,6 +85,15 @@
         "tech-info": "Technical information about your wallet, helpful for advanced recovery.",
         "unlock": "Unlock to Decrypt"
       },
+      "Setup": {
+        "create": "Create New Wallet",
+        "input": "Input a 12 or 24 word mnemonic to restore the wallet.",
+        "no-sensitive": "The wallet will be created on your device. No sensitive information is stored on the server.",
+        "restore": "Restore",
+        "seed": "Mnemonic",
+        "start": "Setup your first wallet to start your journey.",
+        "welcome": "Welcome to BancoLibre!"
+      },
       "Transactions": {
         "all": "All",
         "amount": "Amount",
@@ -251,6 +260,10 @@
       "security": "The password is your responsibility to keep safe. You may want to consider using a password manager. <learn>Learn more</learn> about BancoLibre security practices.",
       "set": "Set a password",
       "submit": "Create Account"
+    },
+    "Success": {
+      "waitlist-desc": "You're one step closer to experiencing BancoLibre. We'll notify you as soon as we're ready for you.",
+      "waitlist-title": "You're On the List!"
     },
     "Waitlist": {
       "good-things": "Good things take time. We’d love for you to be the first to know when we’re live!",

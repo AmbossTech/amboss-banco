@@ -2,6 +2,7 @@
 
 import { ChevronLeft } from 'lucide-react';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { ReactNode, useMemo } from 'react';
 import Confetti from 'react-confetti';
 import { useIsClient } from 'usehooks-ts';
@@ -16,6 +17,8 @@ export default function Page({
 }) {
   const isClient = useIsClient();
 
+  const t = useTranslations();
+
   const content = useMemo((): {
     title: string;
     description?: string;
@@ -24,16 +27,15 @@ export default function Page({
     switch (searchParams.variant) {
       case 'waitlist':
         return {
-          title: "You're On the List!",
-          description:
-            "You're one step closer to experiencing BancoLibre. We'll notify you as soon as we're ready for you.",
+          title: t('Public.Success.waitlist-title'),
+          description: t('Public.Success.waitlist-desc'),
           button: (
             <Link
               href={ROUTES.home}
               className="mb-2 flex text-muted-foreground hover:text-foreground"
             >
               <ChevronLeft className="size-4" />
-              <p className="text-xs">Home</p>
+              <p className="text-xs">{t('Index.home')}</p>
             </Link>
           ),
         };
@@ -41,19 +43,19 @@ export default function Page({
       default:
         return { title: 'Success!' };
     }
-  }, [searchParams]);
+  }, [searchParams, t]);
 
   return (
-    <main className="flex h-screen w-full flex-col items-center justify-center">
+    <main className="flex h-dvh w-full flex-col items-center justify-center">
       {isClient ? <Confetti /> : null}
-      <div className="z-50 mx-4 md:mx-0">
+      <div className="z-50 m-4">
         {content.button || null}
-        <Card className="max-w-96 text-center">
-          <CardHeader>
+        <Card className="max-w-96 space-y-3 text-center">
+          <CardHeader className="pb-0">
             <CardTitle className="text-xl">{content.title}</CardTitle>
           </CardHeader>
           {content.description ? (
-            <CardContent>
+            <CardContent className="pb-0">
               <p className="text-muted-foreground">{content.description}</p>
             </CardContent>
           ) : null}
