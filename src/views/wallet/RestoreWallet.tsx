@@ -53,8 +53,8 @@ const formSchema = z
   );
 
 const RestoreWalletButton = () => {
-const t = useTranslations();
-  
+  const t = useTranslations();
+
   const [, setValue] = useLocalStorage(LOCALSTORAGE_KEYS.currentWalletId, '');
 
   const setCurrentContact = useContactStore(s => s.setCurrentContact);
