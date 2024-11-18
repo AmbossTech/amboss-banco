@@ -1,20 +1,15 @@
 'use client';
 
-import { Loader2 } from 'lucide-react';
+import { ArrowLeft, Loader2 } from 'lucide-react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { useEffect, useRef, useState } from 'react';
 import { useLocalStorage } from 'usehooks-ts';
 
-import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { VaultButton } from '@/components/button/VaultButtonV2';
+import { Button } from '@/components/ui/button-v2';
 import { useToast } from '@/components/ui/use-toast';
-import { VaultLockedAlert } from '@/components/vault/VaultLockedAlert';
 import { useCreateWalletMutation } from '@/graphql/mutations/__generated__/wallet.generated';
 import { UserDocument } from '@/graphql/queries/__generated__/user.generated';
 import { GetAllWalletsDocument } from '@/graphql/queries/__generated__/wallet.generated';
@@ -30,6 +25,8 @@ import {
 } from '@/workers/crypto/types';
 
 const NewWalletButton = () => {
+  const t = useTranslations();
+
   const [, setValue] = useLocalStorage(LOCALSTORAGE_KEYS.currentWalletId, '');
 
   const setCurrentContact = useContactStore(s => s.setCurrentContact);
@@ -52,6 +49,8 @@ const NewWalletButton = () => {
       toast({
         title: 'New wallet created!',
       });
+
+      setLoading(false);
     },
     onError: err => {
       const messages = handleApolloError(err);
@@ -61,6 +60,8 @@ const NewWalletButton = () => {
         title: 'Error creating new wallet.',
         description: messages.join(', '),
       });
+
+      setLoading(false);
     },
     refetchQueries: [{ query: GetAllWalletsDocument }, { query: UserDocument }],
     awaitRefetchQueries: true,
@@ -71,10 +72,7 @@ const NewWalletButton = () => {
   const isLoading = loading || createLoading;
 
   const handleCreate = async () => {
-    if (isLoading) return;
-    if (!keys) {
-      return;
-    }
+    if (isLoading || !keys) return;
 
     setLoading(true);
 
@@ -133,39 +131,38 @@ const NewWalletButton = () => {
   }, [createWallet]);
 
   return (
-    <Button disabled={isLoading} onClick={handleCreate} className="w-full">
-      {isLoading ? <Loader2 className="mr-2 size-4 animate-spin" /> : null}
-      New Wallet
+    <Button
+      onClick={handleCreate}
+      disabled={isLoading}
+      className="flex w-full items-center justify-center space-x-2"
+    >
+      {isLoading ? <Loader2 size={16} className="animate-spin" /> : null}
+      <p>{t('Index.new-wallet')}</p>
     </Button>
   );
 };
 
 export function NewWallet() {
+  const t = useTranslations();
+
   const keys = useKeyStore(s => s.keys);
 
-  if (!keys) {
-    return (
-      <div>
-        <h1 className="mx-2 mb-2 font-semibold">Create New Wallet</h1>
-        <VaultLockedAlert />
-      </div>
-    );
-  }
-
   return (
-    <Card className="mx-4">
-      <CardHeader>
-        <CardTitle>Create New Wallet</CardTitle>
-        <CardDescription>
-          The wallet will be created and encrypted client-side. No sensitive
-          information is stored on the server.
-        </CardDescription>
-      </CardHeader>
-      <CardFooter>
-        <div className="flex w-full justify-center">
-          <NewWalletButton />
-        </div>
-      </CardFooter>
-    </Card>
+    <div className="relative mx-auto my-6 w-full max-w-lg space-y-6 px-4">
+      <Link
+        href={ROUTES.dashboard}
+        className="absolute -top-1 left-2 p-2 transition-opacity hover:opacity-75"
+      >
+        <ArrowLeft size={24} />
+      </Link>
+
+      <h1 className="text-center text-2xl font-semibold">
+        {t('App.Wallet.Setup.create')}
+      </h1>
+
+      <p className="text-sm">{t('App.Wallet.Setup.no-sensitive')}</p>
+
+      {!keys ? <VaultButton className="w-full" /> : <NewWalletButton />}
+    </div>
   );
 }

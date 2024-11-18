@@ -1,21 +1,17 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Loader2 } from 'lucide-react';
+import { ArrowLeft, Loader2 } from 'lucide-react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useLocalStorage } from 'usehooks-ts';
 import { z } from 'zod';
 
-import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { VaultButton } from '@/components/button/VaultButtonV2';
+import { Button } from '@/components/ui/button-v2';
 import {
   Form,
   FormControl,
@@ -27,7 +23,6 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
-import { VaultLockedAlert } from '@/components/vault/VaultLockedAlert';
 import { useCreateWalletMutation } from '@/graphql/mutations/__generated__/wallet.generated';
 import { UserDocument } from '@/graphql/queries/__generated__/user.generated';
 import { GetAllWalletsDocument } from '@/graphql/queries/__generated__/wallet.generated';
@@ -48,7 +43,7 @@ const formSchema = z
   })
   .refine(
     data => {
-      const split = data.mnemonic.split(' ');
+      const split = data.mnemonic.trim().split(' ');
       return split.length === 12 || split.length === 24;
     },
     {
@@ -58,6 +53,8 @@ const formSchema = z
   );
 
 const RestoreWalletButton = () => {
+  const t = useTranslations();
+
   const [, setValue] = useLocalStorage(LOCALSTORAGE_KEYS.currentWalletId, '');
 
   const setCurrentContact = useContactStore(s => s.setCurrentContact);
@@ -87,6 +84,8 @@ const RestoreWalletButton = () => {
       toast({
         title: 'Wallet restored!',
       });
+
+      setLoading(false);
     },
     onError: err => {
       const messages = handleApolloError(err);
@@ -96,6 +95,8 @@ const RestoreWalletButton = () => {
         title: 'Error restoring wallet.',
         description: messages.join(', '),
       });
+
+      setLoading(false);
     },
     refetchQueries: [{ query: GetAllWalletsDocument }, { query: UserDocument }],
     awaitRefetchQueries: true,
@@ -106,10 +107,7 @@ const RestoreWalletButton = () => {
   const isLoading = loading || createLoading;
 
   const handleSubmit = async (formData: z.infer<typeof formSchema>) => {
-    if (isLoading) return;
-    if (!keys || !formData.mnemonic) {
-      return;
-    }
+    if (isLoading || !keys || !formData.mnemonic) return;
 
     setLoading(true);
 
@@ -162,6 +160,7 @@ const RestoreWalletButton = () => {
             title: 'Error restoring wallet.',
             description: message.msg,
           });
+
           setLoading(false);
           break;
       }
@@ -188,26 +187,28 @@ const RestoreWalletButton = () => {
           name="mnemonic"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Mnemonic</FormLabel>
+              <FormLabel>{t('App.Wallet.Setup.seed')}</FormLabel>
               <FormControl>
                 <Input
                   type="mnemonic"
-                  placeholder="super secret words"
                   autoComplete="off"
+                  disabled={isLoading}
                   {...field}
                 />
               </FormControl>
               <FormMessage />
-              <FormDescription>
-                Input a 12 or 24 word mnemonic to restore the wallet.
-              </FormDescription>
+              <FormDescription>{t('App.Wallet.Setup.input')}</FormDescription>
             </FormItem>
           )}
         />
 
-        <Button type="submit" disabled={loading} className="w-full">
-          {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-          Import
+        <Button
+          type="submit"
+          disabled={!form.getValues().mnemonic || isLoading}
+          className="flex w-full items-center justify-center space-x-2"
+        >
+          {isLoading ? <Loader2 size={16} className="animate-spin" /> : null}
+          <p>{t('App.Wallet.Setup.restore')}</p>
         </Button>
       </form>
     </Form>
@@ -215,31 +216,26 @@ const RestoreWalletButton = () => {
 };
 
 export function RestoreWallet() {
+  const t = useTranslations();
+
   const keys = useKeyStore(s => s.keys);
 
-  if (!keys) {
-    return (
-      <div>
-        <h1 className="mx-4 mb-2 font-semibold">Restore Wallet</h1>
-        <VaultLockedAlert />
-      </div>
-    );
-  }
-
   return (
-    <Card className="mx-4">
-      <CardHeader>
-        <CardTitle>Restore Wallet</CardTitle>
-        <CardDescription>
-          The wallet will be created and encrypted client-side. No sensitive
-          information is stored on the server.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="flex w-full justify-center">
-          <RestoreWalletButton />
-        </div>
-      </CardContent>
-    </Card>
+    <div className="relative mx-auto my-6 w-full max-w-lg space-y-6 px-4">
+      <Link
+        href={ROUTES.dashboard}
+        className="absolute -top-1 left-2 p-2 transition-opacity hover:opacity-75"
+      >
+        <ArrowLeft size={24} />
+      </Link>
+
+      <h1 className="text-center text-2xl font-semibold">
+        {t('Index.restore-wallet')}
+      </h1>
+
+      <p className="text-sm">{t('App.Wallet.Setup.no-sensitive')}</p>
+
+      {!keys ? <VaultButton className="w-full" /> : <RestoreWalletButton />}
+    </div>
   );
 }

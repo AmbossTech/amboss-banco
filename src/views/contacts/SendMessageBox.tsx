@@ -69,6 +69,8 @@ export const SendMessageBox: FC<{ contactsLoading: boolean }> = ({
         return t('App.Contacts.message');
     }
   }, [
+    contactLoading,
+    t,
     loading,
     error,
     data?.wallets.find_one.contacts.find_one.encryption_pubkey,

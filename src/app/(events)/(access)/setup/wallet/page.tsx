@@ -1,7 +1,8 @@
-import { CircleEqual, PlusCircle } from 'lucide-react';
+import { Plus, PlusCircle } from 'lucide-react';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/button-v2';
 import {
   Card,
   CardContent,
@@ -12,28 +13,41 @@ import {
 import { ROUTES } from '@/utils/routes';
 
 export default function Page() {
+  const t = useTranslations();
+
   return (
-    <div className="flex justify-center p-4">
+    <div className="flex h-[calc(100dvh-102px)] w-full items-center justify-center p-4 lg:h-[calc(100dvh-86px)]">
       <Card>
         <CardHeader>
-          <CardTitle>Welcome to BancoLibre.</CardTitle>
+          <CardTitle className="text-xl">
+            {t('App.Wallet.Setup.welcome')}
+          </CardTitle>
 
-          <CardDescription>
-            Setup your first wallet to start your journey.
+          <CardDescription className="text-base">
+            {t('App.Wallet.Setup.start')}
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="flex items-center justify-center gap-2">
-            <Button asChild size={'sm'} className="w-full">
+
+        <CardContent className="pb-0">
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            <Button
+              asChild
+              className="flex w-full items-center justify-center space-x-2"
+            >
               <Link href={ROUTES.setup.wallet.new}>
-                <PlusCircle className="mr-1 size-4" />
-                New Wallet
+                <PlusCircle size={16} />
+                <p>{t('Index.new-wallet')}</p>
               </Link>
             </Button>
-            <Button variant="secondary" asChild size={'sm'} className="w-full">
+
+            <Button
+              asChild
+              variant="secondary"
+              className="flex w-full items-center justify-center space-x-2"
+            >
               <Link href={ROUTES.setup.wallet.restore}>
-                <CircleEqual className="mr-1 size-4" />
-                Restore Wallet
+                <Plus size={16} />
+                <p>{t('Index.restore-wallet')}</p>
               </Link>
             </Button>
           </div>
