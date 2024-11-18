@@ -86,13 +86,13 @@
         "unlock": "Desbloquear para Desencriptar"
       },
       "Setup": {
-        "create": "Create New Wallet",
-        "input": "Input a 12 or 24 word mnemonic to restore the wallet.",
-        "no-sensitive": "The wallet will be created on your device. No sensitive information is stored on the server.",
-        "restore": "Restore",
-        "seed": "Mnemonic",
-        "start": "Setup your first wallet to start your journey.",
-        "welcome": "Welcome to BancoLibre!"
+        "create": "Crear nueva billetera",
+        "input": "Ingrese una frase mnemotécnica de 12 o 24 palabras para restaurar la billetera.",
+        "no-sensitive": "La billetera se creará en su dispositivo. No se almacena información sensible en el servidor.",
+        "restore": "Restaurar",
+        "seed": "Frase mnemotécnica",
+        "start": "Configure su primera billetera para comenzar su viaje.",
+        "welcome": "¡Bienvenido a BancoLibre!"
       },
       "Transactions": {
         "all": "Todas",
@@ -262,8 +262,8 @@
       "submit": "Crea una cuenta"
     },
     "Success": {
-      "waitlist-desc": "You're one step closer to experiencing BancoLibre. We'll notify you as soon as we're ready for you.",
-      "waitlist-title": "You're On the List!"
+      "waitlist-desc": "Estás un paso más cerca de experimentar BancoLibre. Te notificaremos tan pronto como estemos listos para ti.",
+      "waitlist-title": "¡Estás en la lista!"
     },
     "Waitlist": {
       "good-things": "Las cosas buenas toman tiempo. Nos encantaría avisarte apenas estemos listos!",
