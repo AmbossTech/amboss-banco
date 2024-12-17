@@ -34,6 +34,7 @@ export function SignUpForm() {
 
   const searchParams = useSearchParams();
   const referralParam = searchParams.get('referral');
+  const emailParam = searchParams.get('email');
 
   const { toast } = useToast();
 
@@ -45,7 +46,7 @@ export function SignUpForm() {
   const [loading, setLoading] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
 
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState(emailParam || '');
   const [referralCode, setReferralCode] = useState(referralParam || '');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
