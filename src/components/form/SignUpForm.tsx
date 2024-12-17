@@ -26,7 +26,6 @@ import { Label } from '../ui/label';
 import { Progress } from '../ui/progress';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 import { useToast } from '../ui/use-toast';
-import { WaitlistForm } from './WaitlistForm';
 
 export function SignUpForm() {
   const s = useTranslations('Public.Signup');
@@ -42,10 +41,6 @@ export function SignUpForm() {
 
   const workerRef = useRef<Worker>();
 
-  const [view, setView] = useState<'waitlist' | 'sign-up'>(
-    referralParam ? 'sign-up' : 'waitlist'
-  );
-  const [subscriber, setSubscriber] = useState(false);
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
@@ -164,9 +159,7 @@ export function SignUpForm() {
     };
   }, [client, toast, entropy]);
 
-  return view === 'waitlist' ? (
-    <WaitlistForm setView={setView} setSubscriber={setSubscriber} />
-  ) : (
+  return (
     <form onSubmit={onSubmit} className="relative mx-auto my-10 max-w-96 px-4">
       {step > 0 ? (
         <button
@@ -197,7 +190,7 @@ export function SignUpForm() {
 
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">{c('email')}</Label>
+              <Label htmlFor="email">{c('email') + ' *'}</Label>
 
               <Input
                 id="email"
@@ -207,20 +200,18 @@ export function SignUpForm() {
               />
             </div>
 
-            {!subscriber ? (
-              <div className="space-y-2">
-                <Label htmlFor="referralCode">{s('referral')}</Label>
+            <div className="space-y-2">
+              <Label htmlFor="referralCode">{s('referral')}</Label>
 
-                <Input
-                  id="referralCode"
-                  value={referralCode}
-                  onChange={e => setReferralCode(e.target.value)}
-                  placeholder="36b8f84d"
-                />
+              <Input
+                id="referralCode"
+                value={referralCode}
+                onChange={e => setReferralCode(e.target.value)}
+                placeholder="36b8f84d"
+              />
 
-                <p className="text-sm text-neutral-400">{s('invite')}</p>
-              </div>
-            ) : null}
+              <p className="text-sm text-neutral-400">{s('invite')}</p>
+            </div>
 
             <Button
               type="button"
