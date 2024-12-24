@@ -1,57 +1,62 @@
-FROM node:20.11.1-alpine as base
+FROM node:20.11.1-alpine AS base
 
 # ---------------
-# Install Dependencies
+# Setup for deps and build
 # ---------------
-FROM base AS deps
+FROM base AS setup
+
+ENV PNPM_HOME=/usr/local/bin
+
+RUN corepack enable && corepack prepare pnpm@latest --activate
 
 RUN apk add --no-cache libc6-compat
 
+COPY . /app
 WORKDIR /app
 
-COPY package.json package-lock.json ./
-RUN npm ci
 
 # ---------------
-# Build App
+# Install dependencies
 # ---------------
-FROM base AS builder
+FROM setup AS deps
 
-WORKDIR /app
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile --ignore-scripts
 
-COPY --from=deps /app/node_modules ./node_modules
-COPY . .
+# ---------------
+# Build app
+# ---------------
+FROM deps AS build
 
-ENV NEXT_TELEMETRY_DISABLED 1
+ENV NEXT_TELEMETRY_DISABLED=1
 
-RUN npm run build
+RUN pnpm run build
 
 # ---------------
 # Final App
 # ---------------
-FROM base 
-WORKDIR /app
+FROM base
 
-ENV NODE_ENV production
-ENV NEXT_TELEMETRY_DISABLED 1
-
-COPY --from=builder /app/public ./public
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
 
 RUN mkdir .next
 
-COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/.next/static ./.next/static
+COPY --from=build /app/.next/standalone ./
+COPY --from=build /app/.next/static ./.next/static
+COPY --from=build /app/public ./public
 
-EXPOSE 3000
-
+# ---------------
 # Install AWSCLI
+# ---------------
 RUN apk add --no-cache python3 py3-pip
 RUN pip3 install --upgrade pip --break-system-packages
 RUN pip3 install --no-cache-dir awscli --break-system-packages
 RUN rm -rf /var/cache/apk/*
 
-ENV PORT 3000
-ENV HOSTNAME 0.0.0.0
+EXPOSE 3000
+
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
 
 COPY ./scripts/startup.sh /startup.sh
 ENTRYPOINT ["sh", "/startup.sh" ]

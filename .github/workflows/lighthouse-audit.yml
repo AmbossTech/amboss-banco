@@ -1,17 +1,26 @@
 name: Lighthouse audit
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
   lighthouseci:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [20]
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
         with:
-          node-version: 20
-      - run: npm install && npm install -g @lhci/cli
-      - run: npm run build
+          version: 9
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+      - run: pnpm install && pnpm install -g @lhci/cli
+      - run: pnpm run build
       - run: lhci collect
       - run: lhci upload
         env:
